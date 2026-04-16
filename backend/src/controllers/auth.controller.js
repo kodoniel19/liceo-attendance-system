@@ -290,14 +290,11 @@ exports.forgotPassword = async (req, res, next) => {
       res.json({ success: true, message: 'A password reset link has been sent to your email.' });
     } catch (emailErr) {
       logger.error('Forgot password email error:', emailErr);
-      const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:4200'}/reset-password?token=${rawToken}`;
-      
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Could not connect to Gmail, but a secure link was generated for you.',
-        devMode: true,
-        devResetUrl: resetUrl
+      res.status(500).json({
+        success: false,
+        message: `Failed to send reset email: ${emailErr.message}`
       });
+      return;
     }
   } catch (err) {
     next(err);
