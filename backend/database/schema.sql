@@ -156,6 +156,24 @@ CREATE TABLE attendance (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- ANNOUNCEMENTS TABLE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS announcements (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    class_section_id INT UNSIGNED,
+    instructor_id INT UNSIGNED NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    is_global BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (class_section_id) REFERENCES class_sections(id) ON DELETE CASCADE,
+    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_section (class_section_id),
+    INDEX idx_instructor (instructor_id),
+    INDEX idx_global (is_global)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- AUDIT LOG TABLE
 -- ============================================================
 CREATE TABLE audit_logs (

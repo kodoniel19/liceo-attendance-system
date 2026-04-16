@@ -46,6 +46,21 @@ async function initializeDatabase() {
       // FIX MISSING QR DATA COLUMN
       try { await conn.query("ALTER TABLE qr_sessions ADD COLUMN qr_data_url MEDIUMTEXT AFTER qr_secret"); } catch(e){}
 
+      // CREATE ANNOUNCEMENTS TABLE IF MISSING
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS announcements (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            class_section_id INT UNSIGNED,
+            instructor_id INT UNSIGNED NOT NULL,
+            title VARCHAR(200) NOT NULL,
+            content TEXT NOT NULL,
+            is_global BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (class_section_id) REFERENCES class_sections(id) ON DELETE CASCADE,
+            FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      `);
+
       // CLEAN SLATE: Remove all test/activity data for a fresh start
       try {
         logger.info("🧹 PERFORMING DATABASE CLEANUP...");
