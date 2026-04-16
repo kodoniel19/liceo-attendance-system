@@ -60,8 +60,8 @@ exports.getSections = async (req, res, next) => {
 exports.getSection = async (req, res, next) => {
   try {
     const sections = await query(
-      `SELECT cl.*, co.course_code, co.course_name, co.units,
-              u.first_name as instructor_first, u.last_name as instructor_last
+      `SELECT cl.*, co.course_code as courseCode, co.course_name as courseName, co.units,
+              u.first_name as instructorFirst, u.last_name as instructorLast
        FROM class_sections cl
        JOIN courses co ON cl.course_id = co.id
        JOIN users u ON cl.instructor_id = u.id
