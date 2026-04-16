@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Error Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha512-k2WPPrSgRFI6cTaHHhJdc8kAXaRM4JBFEDo1pPGGlYiOyv4vnA0Pp0G5XMYYxgAPmtmv/IIaQA6n5fLAyJaFMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.bundle.min.js" integrity="sha512-sH8JPhKJUeA9PWk3eOcOl8U+lfZTgtBXD41q6cO/slwxGHCxKcW45K4oPCUhHG7NMB4mbKEddVmPuTXtpbCbFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        .card {
+            box-shadow: 0 2px 6px #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Added By Gaurav Kalbande -->
+    <div class="container">
+        <div class="text-center">
+            <div class="col-12">
+                <div class="card mb-4 mt-3">
+                    <div class="card-body">
+                        <div class="d-lg-flex justify-content-center align-items-center mt-md-4 mt-xxl-5 pt-xxl-5 mb-md-4 mb-xxl-5 pb-xxl-5">
+                            <div class="text-center">
+                                <img src="error_bg.png" alt="error" class="img-fluid" />
+                            </div>
+                            <div class="text-center text-lg-start mt-3 mt-lg-0">
+                                <div class="mb-1">
+                                    <h2>It's not on <span class="fw-bold">YOU</span> , It's on <span class="fw-bold">US</span></h2>
+                                </div>
+
+                                <p>
+                                    Looks like we might have run into an issue.<br />
+                                    Please try refreshing the page or contact us if the issue still persists.
+                                </p>
+                                <div class='text-center text-lg-start mt-1'>
+                                    <!--<button type="button" tabindex="0" class="btn btn-primary me-1 mb-2" >Go To Home</button>-->
+                                    <button type="button" class="btn btn-primary me-1 mb-2" onclick="window.location.href='/CPanel/CPWelcome.aspx'">Go To Home</button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal" id="ReportIssueModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Details</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group" id="configDescription">
+                                <label><sup>*</sup>Description<code></code></label>
+                                <textarea type="text" class="form-control required-validation" placeholder="Please tell us the Issue (max-length 300 characters)" onkeypress="txtDescriptionLength(this)" id="txtDescription" name="txtDescription" maxlength="300" tabindex="0" spellcheck="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='text-center'>
+                        <button type="button" tabindex="0" class="btn btn-primary common-submit-btn" id="btnSubmit">Submit</button>
+                        <button type="button" class="btn btn-outline-danger common-cancel-btn" data-dismiss="modal" tabindex="0" id="btnClose">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<script src="<%=Page.ResolveClientUrl(" ~ /plugin/custom/js/Academic/ErrPage.js")%>"></script>-->
+    
+</body>
+</html>
