@@ -85,6 +85,10 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
               <span class="material-icons">room</span>
               <span>{{ s.room || 'No room assigned' }}</span>
             </div>
+            <div class="section-meta-item" *ngIf="s.instructorFirst">
+              <span class="material-icons">person</span>
+              <span>{{ s.instructorFirst }} {{ s.instructorLast }}</span>
+            </div>
             <div class="section-meta-item">
               <span class="material-icons">people</span>
               <span>{{ s.enrolledCount || 0 }} / {{ s.maxStudents }} students</span>
