@@ -68,7 +68,9 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p>If you didn't request this, you can safely ignore this email.</p>
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
-
+  const resend = getResend();
+  
+  try {
     if (resend) {
       try {
         await resend.emails.send({
