@@ -12,6 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="admin-shell">
       <!-- Sidebar -->
+      <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed()">
         <div class="sidebar-brand">
           <img src="assets/images/logo.png" alt="LDCU Seal" class="sidebar-brand-logo">
           <div class="sidebar-brand-text" *ngIf="!sidebarCollapsed()">
