@@ -55,7 +55,7 @@ CREATE TABLE class_sections (
     section_name VARCHAR(50) NOT NULL,
     academic_year VARCHAR(20) NOT NULL,
     semester ENUM('1st', '2nd', 'summer') NOT NULL,
-    schedule_day ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','MWF','TTH') NOT NULL,
+    schedule_day VARCHAR(50) NOT NULL,
     schedule_time_start TIME NOT NULL,
     schedule_time_end TIME NOT NULL,
     room VARCHAR(50),
