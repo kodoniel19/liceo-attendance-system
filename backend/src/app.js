@@ -21,6 +21,9 @@ const logger = require('./utils/logger');
 
 const app = express();
 
+// Trust proxy for Railway/Vercel
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
@@ -29,7 +32,7 @@ app.use(helmet({
 // CORS
 const allowedOrigins = [
   'http://localhost:4200',
-  'http://192.168.1.49:4200'
+  'https://liceo-attendance-system.vercel.app'
 ];
 app.use(cors({
   origin: (origin, callback) => {
