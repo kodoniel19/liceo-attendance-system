@@ -209,45 +209,50 @@ import { ApiService } from '../../../core/services/api.service';
 
     .view-btn { background-color: #f1f5f9 !important; color: #1e293b !important; font-weight: 600 !important; font-size: 0.8rem !important; }
 
-    .empty-state { text-align: center; padding: 80px 40px; color: #94a3b8; .empty-icon { font-size: 48px; margin-bottom: 16px; } h3 { color: #1e293b; margin-bottom: 8px; } }
+    .empty-state { text-align: center; padding: 80px 40px; color: #94a3b8; .empty-icon { font-size: 48px; margin-bottom: 16px; } h3 { color: #1e293b; margin-bottom: 20px; } }
 
-    /* Updated Modal Styling with Center Fix and Premium Blur */
+    /* Optimized Modal Layout */
     .modal-overlay { 
       position: fixed; inset: 0; 
-      background: rgba(255, 255, 255, 0.4); 
+      background: rgba(255, 255, 255, 0.5); 
       display: flex; justify-content: center; align-items: flex-start; 
-      z-index: 1000; padding: 40px 20px; 
-      backdrop-filter: blur(16px); 
+      z-index: 1000; padding: 6vh 20px; 
+      backdrop-filter: blur(20px); 
       overflow-y: auto;
     }
     .history-modal { 
-      background: white; border-radius: 28px; width: 100%; max-width: 850px; 
+      background: white; border-radius: 32px; width: 100%; max-width: 850px; 
+      min-height: 400px;
       display: flex; flex-direction: column; 
-      box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); 
-      overflow: hidden; border: 1px solid rgba(255,255,255,0.8);
-      margin-top: 2vh;
+      box-shadow: 0 30px 100px -20px rgba(0,0,0,0.2); 
+      overflow: hidden;
+      animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalSlide {
+      from { transform: translateY(20px) scale(0.98); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
     }
     
     .modal-header { 
-      padding: 32px; border-bottom: 1px solid #f1f5f9; 
+      padding: 32px 40px; border-bottom: 1px solid #f1f5f9; 
       display: flex; justify-content: space-between; align-items: center; 
-      background: #ffffff; position: sticky; top: 0; z-index: 30; 
+      background: #ffffff; flex-shrink: 0;
     }
-    .header-content { display: flex; align-items: center; gap: 24px; }
+    .header-content { display: flex; align-items: center; gap: 28px; }
     
-    .avatar-large { width: 80px; height: 80px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(139, 26, 26, 0.4); flex-shrink: 0; }
+    .avatar-large { width: 88px; height: 88px; border-radius: 24px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; box-shadow: 0 15px 30px -10px rgba(139, 26, 26, 0.4); flex-shrink: 0; }
     
-    .profile-details h3 { font-size: 1.75rem; font-weight: 900; color: #0f172a; margin: 0 0 4px; letter-spacing: -0.5px; }
-    .university-pill { display: inline-flex; padding: 4px 12px; background: #f1f5f9; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: #475569; font-family: monospace; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+    .profile-details h3 { font-size: 1.8rem; font-weight: 900; color: #0f172a; margin: 0 0 6px; letter-spacing: -1px; }
+    .university-pill { display: inline-flex; padding: 4px 12px; background: #f8fafc; border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #64748b; font-family: monospace; border: 1px solid #e2e8f0; margin-bottom: 8px; }
     
-    .attendance-avg-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(139, 26, 26, 0.05); color: #8b1a1a; border-radius: 8px; font-size: 0.8rem; font-weight: 800; border: 1px solid rgba(139, 26, 26, 0.1); 
-      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    .attendance-avg-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(139, 26, 26, 0.04); color: #8b1a1a; border-radius: 12px; font-size: 0.85rem; font-weight: 800; border: 1px solid rgba(139, 26, 26, 0.08); 
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
     }
 
-    .close-btn { background-color: #f1f5f9 !important; color: #64748b !important; border-radius: 12px !important; width: 44px !important; height: 44px !important; &:hover { background-color: #e2e8f0 !important; color: #0f172a !important; } }
+    .close-btn { background-color: #f1f5f9 !important; color: #64748b !important; border-radius: 14px !important; width: 44px !important; height: 44px !important; &:hover { background-color: #e2e8f0 !important; color: #0f172a !important; } }
 
-    .modal-body { flex: 1; overflow-y: auto; padding: 0; background: white; }
-    .loading-state-modal { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px; color: #64748b; font-weight: 500; p { margin-top: 20px; } }
+    .modal-body { flex: 1; overflow-y: auto; padding: 0; background: #ffffff; min-height: 200px; }
+    .loading-state-modal { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px; color: #64748b; font-weight: 500; p { margin-top: 20px; } }
 
     .history-premium-table { width: 100%; border-collapse: separate; border-spacing: 0; }
     .history-premium-table th { position: sticky; top: 0; background: #f8fafc; z-index: 10; padding: 16px 24px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; }
