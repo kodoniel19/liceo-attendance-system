@@ -92,53 +92,82 @@ import { ApiService } from '../../../core/services/api.service';
            <h3>No Students At Risk</h3>
            <p>All students are maintaining attendance above institutional thresholds.</p>
         </div>
+        </div>
       </div>
 
       <!-- History Modal -->
       <div class="modal-overlay" *ngIf="showHistoryModal()">
         <div class="history-modal animate-fade-in-up">
            <div class="modal-header">
-             <div>
-               <h3 *ngIf="selectedStudent()">{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
-               <p>Complete Attendance History across all subjects</p>
+             <div class="header-content">
+               <div class="student-profile-lg">
+                 <div class="avatar-large">{{ selectedStudent()?.lastName?.[0] }}{{ selectedStudent()?.firstName?.[0] }}</div>
+                 <div class="profile-details">
+                   <h3>{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
+                   <div class="university-pill">{{ selectedStudent()?.universityId }}</div>
+                 </div>
+               </div>
+               <div class="risk-stats-header">
+                 <div class="stat-item">
+                    <span class="stat-label">Overall Rate</span>
+                    <span class="stat-value" [class.text-danger]="selectedStudent()?.overallRate < 50">{{ selectedStudent()?.overallRate | number:'1.0-1' }}%</span>
+                 </div>
+               </div>
              </div>
-             <button mat-icon-button (click)="closeHistoryModal()"><mat-icon>close</mat-icon></button>
+             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn"><mat-icon>close</mat-icon></button>
            </div>
            
            <div class="modal-body">
-              <div *ngIf="historyLoading()" class="loading-state" style="padding: 40px 0;">
-                <mat-spinner diameter="36"></mat-spinner>
+              <div *ngIf="historyLoading()" class="loading-state-modal">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Retrieving academic records...</p>
               </div>
               
-              <table class="risk-table" *ngIf="!historyLoading() && attendanceHistory().length > 0">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Course Code</th>
-                    <th>Status</th>
-                    <th>Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let record of attendanceHistory()">
-                    <td style="font-size: 0.8rem; font-weight: 500;">{{ record.sessionDate | date:'mediumDate' }}</td>
-                    <td style="font-weight: 600;">{{ record.courseCode }}</td>
-                    <td>
-                      <span class="status-token" [ngClass]="record.status">{{ record.status }}</span>
-                    </td>
-                    <td style="font-size: 0.8rem; color: #64748b;">{{ record.remarks || '—' }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div *ngIf="!historyLoading() && attendanceHistory().length > 0" class="history-list-container">
+                <div class="history-table-wrapper">
+                  <table class="history-premium-table">
+                    <thead>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>Subject & Section</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let record of attendanceHistory()">
+                        <td class="cell-date">
+                          <div class="date-primary">{{ record.sessionDate | date:'MMM dd, yyyy' }}</div>
+                          <div class="date-secondary">{{ record.sessionDate | date:'shortTime' }}</div>
+                        </td>
+                        <td class="cell-subject">
+                          <div class="subject-name">{{ record.courseName }}</div>
+                          <div class="subject-meta">{{ record.courseCode }} • {{ record.sectionName }}</div>
+                        </td>
+                        <td class="cell-status">
+                          <span class="status-chip" [ngClass]="record.status">{{ record.status }}</span>
+                        </td>
+                        <td class="cell-remarks">
+                          <span class="remark-text">{{ record.remarks || 'No remarks recorded' }}</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-              <div class="empty-state" *ngIf="!historyLoading() && attendanceHistory().length === 0" style="padding: 40px 0;">
-                 <div class="empty-icon">📝</div>
-                 <h3>No Records Found</h3>
-                 <p>This student does not have any recorded attendance yet.</p>
+              <div class="empty-notif" *ngIf="!historyLoading() && attendanceHistory().length === 0">
+                 <div class="empty-illu">📋</div>
+                 <h4>Zero Records Found</h4>
+                 <p>This student hasn't logged any attendance sessions yet.</p>
               </div>
            </div>
+           
+           <div class="modal-footer">
+             <button mat-button (click)="closeHistoryModal()">Dismiss</button>
+           </div>
         </div>
-      </div>
+      </div>    </div>
     </div>
   `,
   styles: [`
@@ -185,17 +214,56 @@ import { ApiService } from '../../../core/services/api.service';
 
     .empty-state { text-align: center; padding: 80px 40px; color: #94a3b8; .empty-icon { font-size: 48px; margin-bottom: 16px; } h3 { color: #1e293b; margin-bottom: 8px; } }
 
-    /* Modal CSS */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(2px); }
-    .history-modal { background: white; border-radius: 20px; width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
-    .modal-header  { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 24px 20px; border-bottom: 1px solid #f1f5f9; h3 { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; margin: 0 0 4px; } p { margin: 0; font-size: 0.85rem; color: #64748b; } }
-    .modal-body    { overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
+    /* Premium Modal Styling */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(8px); }
+    .history-modal { background: white; border-radius: 24px; width: 100%; max-width: 850px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
     
-    .status-token { padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-    .status-token.present { background: #d1fae5; color: #065f46; }
-    .status-token.late    { background: #fef3c7; color: #92400e; }
-    .status-token.absent  { background: #fee2e2; color: #991b1b; }
-    .status-token.excused { background: #f1f5f9; color: #475569; }
+    .modal-header { padding: 32px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+    .header-content { display: flex; align-items: center; gap: 40px; }
+    
+    .student-profile-lg { display: flex; align-items: center; gap: 20px; }
+    .avatar-large { width: 72px; height: 72px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; box-shadow: 0 10px 15px -3px rgba(139, 26, 26, 0.3); }
+    .profile-details h3 { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0 0 6px; }
+    .university-pill { display: inline-block; padding: 4px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #64748b; font-family: monospace; }
+    
+    .risk-stats-header { padding-left: 40px; border-left: 2px solid #e2e8f0; }
+    .stat-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
+    .stat-value { font-size: 2rem; font-weight: 900; color: #0f172a; letter-spacing: -1px; }
+    .stat-value.text-danger { color: #ef4444; }
+
+    .modal-body { flex: 1; overflow-y: auto; padding: 0; background: white; }
+    .loading-state-modal { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px; color: #64748b; font-weight: 500; p { margin-top: 20px; } }
+
+    .history-premium-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .history-premium-table th { position: sticky; top: 0; background: #f8fafc; z-index: 10; padding: 16px 24px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+    .history-premium-table td { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+    .history-premium-table tr:last-child td { border-bottom: none; }
+    .history-premium-table tr:hover td { background: #f8fafc; }
+
+    .cell-date { width: 160px; }
+    .date-primary { font-weight: 700; color: #334155; font-size: 0.9rem; }
+    .date-secondary { font-size: 0.75rem; color: #94a3b8; font-weight: 500; margin-top: 2px; }
+
+    .cell-subject { min-width: 250px; }
+    .subject-name { font-weight: 700; color: #0f172a; font-size: 0.95rem; margin-bottom: 4px; line-height: 1.3; }
+    .subject-meta { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+
+    .status-chip { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-chip.present { background: #ecfdf5; color: #059669; }
+    .status-chip.late    { background: #fffbeb; color: #d97706; }
+    .status-chip.absent  { background: #fef2f2; color: #dc2626; }
+    .status-chip.excused { background: #f8fafc; color: #475569; }
+
+    .cell-remarks { max-width: 200px; }
+    .remark-text { font-size: 0.8rem; color: #64748b; line-height: 1.5; font-style: italic; }
+
+    .empty-notif { padding: 80px 40px; text-align: center; }
+    .empty-illu { font-size: 3rem; margin-bottom: 20px; opacity: 0.5; }
+    .empty-notif h4 { font-size: 1.25rem; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+    .empty-notif p { color: #64748b; font-size: 0.9rem; }
+
+    .modal-footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; }
+    .close-btn { color: #94a3b8; }
   `]
 })
 export class AdminMonitoringComponent implements OnInit {
