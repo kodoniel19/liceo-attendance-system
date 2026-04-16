@@ -36,8 +36,8 @@ import { ToastService } from '../../../core/services/toast.service';
         <div style="width:100%;max-width:400px">
           <div class="auth-header">
             <div class="auth-badge">New Account</div>
-            <h2 style="font-size:2rem;color:var(--color-primary);margin-bottom:8px">Create Account</h2>
-            <p style="color:var(--color-text-muted);font-size:0.875rem;margin-bottom:28px">Fill in your university details below</p>
+            <h2>Create Account</h2>
+            <p>Fill in your university details below</p>
           </div>
 
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -123,22 +123,29 @@ import { ToastService } from '../../../core/services/toast.service';
   styles: [`
     .auth-badge {
       display: inline-block; background: rgba(139,26,26,0.1);
-      color: var(--color-primary); padding: 4px 14px;
-      border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;
+      color: var(--color-primary); padding: 2px 10px;
+      border-radius: 20px; font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
     }
-    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .auth-submit-btn { width: 100%; height: 50px; font-size: 1rem !important; margin-top: 8px; }
-    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; color: #aaa; font-size: 0.8rem;
-      &::before, &::after { content: ''; flex: 1; height: 1px; background: var(--color-border); } }
-    .google-btn-wrapper { display: flex; justify-content: center; height: 44px; margin-bottom: 8px; }
+    .auth-header { margin-bottom: 12px; }
+    .auth-header h2 { font-size: 1.4rem !important; margin: 0 0 2px !important; color: var(--color-primary); }
+    .auth-header p { font-size: 0.75rem !important; margin: 0 0 8px !important; color: var(--color-text-muted); }
+    
+    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .auth-submit-btn { width: 100%; height: 42px; font-size: 0.9rem !important; margin-top: 2px; }
+    
     .google-banner {
-      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-      background: #e8f0fe; border: 1px solid #4285F4; border-radius: 10px; margin-bottom: 16px;
-      strong { font-size: 0.85rem; color: #1a1a2e; display: block; }
-      p { margin: 2px 0 0; font-size: 0.75rem; color: #64748b; }
+      display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+      background: #e8f0fe; border: 1px solid #4285F4; border-radius: 8px; margin-bottom: 10px;
+      strong { font-size: 0.75rem; color: #1a1a2e; display: block; }
+      p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
-    @media (max-width: 480px) { .register-grid { grid-template-columns: 1fr; } }
+    
+    mat-form-field { margin-bottom: -10px; width: 100%; transform: scale(0.95); transform-origin: top left; }
+    
+    @media (max-width: 480px) { 
+      .register-grid { grid-template-columns: 1fr; } 
+    }
   `]
 })
 export class RegisterComponent implements OnInit {
