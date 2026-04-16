@@ -54,7 +54,7 @@ exports.updateCourse = async (req, res, next) => {
     const { courseName, description, units, department, isActive } = req.body;
     await query(
       'UPDATE courses SET course_name = COALESCE(?, course_name), description = COALESCE(?, description), units = COALESCE(?, units), department = COALESCE(?, department), is_active = COALESCE(?, is_active) WHERE id = ?',
-      [courseName, description, units, department, isActive !== undefined ? isActive : null, id]
+      [courseName || null, description || null, units || null, department || null, isActive !== undefined ? (isActive ? 1 : 0) : null, id]
     );
     const course = await query('SELECT * FROM courses WHERE id = ?', [id]);
     res.json({ success: true, data: course[0] });
