@@ -17,7 +17,10 @@ async function initializeDatabase() {
       multipleStatements: true
     };
     
-    logger.info(`Checking database: ${config.database} at ${config.host}`);
+    logger.info(`🔍 [STARTUP] Attempting DB Connection:`);
+    logger.info(`   - Host: ${config.host}`);
+    logger.info(`   - User: ${config.user}`);
+    logger.info(`   - DB:   ${config.database}`);
     
     const conn = await mysql.createConnection(config);
     const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
