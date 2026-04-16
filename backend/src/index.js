@@ -46,6 +46,20 @@ async function initializeDatabase() {
       // FIX MISSING QR DATA COLUMN
       try { await conn.query("ALTER TABLE qr_sessions ADD COLUMN qr_data_url MEDIUMTEXT AFTER qr_secret"); } catch(e){}
 
+      // CLEAN SLATE: Remove all test/activity data for a fresh start
+      try {
+        logger.info("🧹 PERFORMING DATABASE CLEANUP...");
+        await conn.query("SET FOREIGN_KEY_CHECKS = 0");
+        await conn.query("TRUNCATE TABLE attendance");
+        await conn.query("TRUNCATE TABLE qr_sessions");
+        await conn.query("TRUNCATE TABLE class_sessions");
+        await conn.query("TRUNCATE TABLE enrollments");
+        await conn.query("TRUNCATE TABLE class_sections");
+        await conn.query("TRUNCATE TABLE courses");
+        await conn.query("SET FOREIGN_KEY_CHECKS = 1");
+        logger.info("✅ CLEAN SLATE COMPLETED");
+      } catch (e) { logger.error("Cleanup failed:", e); }
+
       await conn.query(`
         INSERT INTO users (university_id, email, password_hash, first_name, last_name, role, is_active, email_verified)
         VALUES ('ADMIN-001', 'admin@liceo.edu.ph', ?, 'System', 'Administrator', 'admin', TRUE, TRUE)
