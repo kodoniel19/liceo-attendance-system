@@ -70,7 +70,7 @@ exports.sendPasswordReset = async (email, firstName, token) => {
 
   const transporter = getTransporter();
   await transporter.sendMail({
-    from: `"Liceo Attendance System" <${process.env.SMTP_FROM || 'no-reply@liceo.edu.ph'}>`,
+    from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
     to: email,
     subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
     html
@@ -92,7 +92,7 @@ exports.sendWelcome = async (email, firstName, role) => {
 
   const transporter = getTransporter();
   await transporter.sendMail({
-    from: `"Liceo Attendance System" <${process.env.SMTP_FROM || 'no-reply@liceo.edu.ph'}>`,
+    from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
     to: email,
     subject: 'Welcome to Liceo Attendance System',
     html
