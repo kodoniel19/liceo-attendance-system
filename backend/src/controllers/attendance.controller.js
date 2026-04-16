@@ -61,7 +61,7 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
         COALESCE(
           ROUND(
             (SUM(CASE WHEN a.status IN ('present','late') THEN 1 ELSE 0 END) / NULLIF(COUNT(a.id), 0)) * 100, 2
-          ), 100.00
+          ), 0.00
         ) AS attendanceRate
       FROM enrollments e
       JOIN class_sections cl ON e.class_section_id = cl.id
