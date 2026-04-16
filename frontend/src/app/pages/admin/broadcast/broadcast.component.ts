@@ -14,8 +14,8 @@ import { ToastService } from '../../../core/services/toast.service';
   template: `
     <div class="admin-page animate-fade-in-up">
       <div class="page-header">
-        <h1>System-Wide Broadcast</h1>
-        <p>Send urgent announcements to all students and instructors instantly</p>
+        <h1>System Broadcast</h1>
+        <p>Send announcements to students and instructors</p>
       </div>
 
       <div class="broadcast-container">
@@ -83,37 +83,37 @@ import { ToastService } from '../../../core/services/toast.service';
   `,
   styles: [`
     .admin-page { padding: 0; max-width: 800px; margin: 0 auto; }
-    .page-header { margin-bottom: 32px;
-      h1 { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; margin: 0 0 4px; }
-      p { color: #64748b; font-size: 0.875rem; margin: 0; }
+    .page-header { margin-bottom: 16px;
+      h1 { font-size: 1.35rem; font-weight: 800; color: #1a1a2e; margin: 0 0 2px; }
+      p { color: #64748b; font-size: 0.8rem; margin: 0; }
     }
 
-    .broadcast-container { display: flex; flex-direction: column; gap: 24px; }
+    .broadcast-container { display: flex; flex-direction: column; gap: 16px; }
 
     .broadcast-warning {
-       display: flex; gap: 16px; padding: 20px; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 12px; color: #9a3412;
-       mat-icon { font-size: 24px; width: 24px; height: 24px; }
-       .warning-text { font-size: 0.9rem; line-height: 1.5; }
+       display: flex; gap: 12px; padding: 12px 16px; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 10px; color: #9a3412;
+       mat-icon { font-size: 20px; width: 20px; height: 20px; }
+       .warning-text { font-size: 0.82rem; line-height: 1.4; }
     }
 
     .broadcast-card-main {
-        background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); padding: 40px;
+        background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); padding: 24px 32px;
         position: relative; overflow: hidden;
         width: 100%;
-        @media (max-width: 600px) { padding: 24px; }
+        @media (max-width: 600px) { padding: 20px; }
     }
     .card-header-icon {
        position: absolute; top: -10px; right: -10px; opacity: 0.05;
        mat-icon { font-size: 150px; width: 150px; height: 150px; color: #6366f1; }
     }
 
-    .broadcast-form { display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+    .broadcast-form { display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-group label { font-size: 0.85rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; }
 
     .form-group input, .form-group textarea {
-       width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
-       font-size: 1rem; font-family: inherit; transition: all 0.2s;
+       width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+       font-size: 0.95rem; font-family: inherit; transition: all 0.2s;
        &:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
     }
     .char-count { align-self: flex-end; font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
