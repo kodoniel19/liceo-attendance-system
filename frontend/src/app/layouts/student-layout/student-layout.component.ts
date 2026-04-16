@@ -119,6 +119,10 @@ interface NavItem {
               <span class="material-icons sidebar__nav-icon">history</span>
               <span class="sidebar__nav-label">History</span>
             </a>
+            <a [routerLink]="'/student/notifications'" routerLinkActive="active" class="sidebar__nav-item" (click)="isMobile() && sidenav.close()">
+              <span class="material-icons sidebar__nav-icon">campaign</span>
+              <span class="sidebar__nav-label">Announcements</span>
+            </a>
           </nav>
 
           <!-- Footer -->
