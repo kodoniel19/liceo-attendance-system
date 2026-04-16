@@ -94,13 +94,14 @@ import { ToastService } from '../../../core/services/toast.service';
               </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field *ngIf="!isGoogleSignUp()">
+            <mat-form-field>
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" [type]="showPass() ? 'text' : 'password'">
               <mat-icon matPrefix>lock</mat-icon>
               <button mat-icon-button matSuffix type="button" (click)="showPass.update(v => !v)">
                 <mat-icon>{{ showPass() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
+              <mat-error *ngIf="form.get('password')?.hasError('required')">Required</mat-error>
               <mat-error *ngIf="form.get('password')?.hasError('minlength')">Min 8 characters</mat-error>
             </mat-form-field>
 
@@ -215,9 +216,6 @@ export class RegisterComponent implements OnInit {
           lastName: params['googleLastName'] || '',
           email: params['googleEmail']
         });
-        // Remove password requirement for Google sign-up
-        this.form.get('password')?.clearValidators();
-        this.form.get('password')?.updateValueAndValidity();
       }
     });
   }
