@@ -67,12 +67,12 @@ exports.generateQR = async (req, res, next) => {
       errorCorrectionLevel: 'Q', // Quartile EC: Great balance between reliability and larger module size
       type: 'image/png',
       quality: 1.0,
-      margin: 4, 
-      color: { 
-        dark: '#8B1A1A', 
-        light: '#FFFFFF' 
+      margin: 4,
+      color: {
+        dark: '#8B1A1A',
+        light: '#FFFFFF'
       },
-      width: 450 
+      width: 450
     });
 
     const result = await query(
@@ -186,20 +186,25 @@ exports.scanQR = async (req, res, next) => {
 
     const now = new Date();
     const scanTime = now;
-    let status = 'present';
-
-    // Check if this is a "Reopened" or "Secondary" QR session
-    const qrStats = await query(
+    
+    // Check if this is a "Reopened" or "Secondary" QR session (Instructor regenerated it)
+    const qrStatsQueryResult = await query(
       'SELECT COUNT(*) as count FROM qr_sessions WHERE class_session_id = ? AND id < ?',
       [sessionId, qrSession.id]
     );
-    const isSecondaryQR = qrStats[0].count > 0;
+    const isSecondaryQR = qrStatsQueryResult[0].count > 0;
 
     const lateThreshold = classSession[0].late_threshold_minutes || 15;
-    const sessionOpenedAt = new Date(classSession[0].created_at);
-    const lateDeadline = new Date(sessionOpenedAt.getTime() + lateThreshold * 60 * 1000);
-
-    if (now > lateDeadline || isSecondaryQR) {
+    
+    // Check if enough time has passed to be marked late (using DB time comparison)
+    const timeCheckQueryResult = await query(
+      'SELECT TIMESTAMPDIFF(MINUTE, created_at, NOW()) as minutesElapsed FROM qr_sessions WHERE id = ?',
+      [qrSession.id]
+    );
+    const minutesElapsed = timeCheckQueryResult[0].minutesElapsed;
+    
+    let status = 'present';
+    if (minutesElapsed >= lateThreshold || isSecondaryQR) {
       status = 'late';
     }
 
