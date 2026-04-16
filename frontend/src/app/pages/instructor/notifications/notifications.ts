@@ -15,7 +15,7 @@ import { ApiService } from '../../../core/services/api.service';
       <div class="page-header">
         <div class="page-header__title">
           <h1>System Announcements</h1>
-          <p>Important updates and broadcasts from the system administrator</p>
+          <p>Stay updated with all announcements</p>
         </div>
       </div>
 
@@ -64,7 +64,6 @@ import { ApiService } from '../../../core/services/api.service';
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .notif-card:hover { 
-      transform: translateY(-2px); 
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
       border-left: 4px solid #6366f1;
     }

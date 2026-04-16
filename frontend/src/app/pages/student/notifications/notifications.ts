@@ -15,7 +15,7 @@ import { ApiService } from '../../../core/services/api.service';
       <div class="page-header">
         <div class="page-header__title">
           <h1>Recent Notifications</h1>
-          <p>Stay updated with all announcements from your instructors</p>
+          <p>Stay updated with all announcements</p>
         </div>
       </div>
 
@@ -24,7 +24,7 @@ import { ApiService } from '../../../core/services/api.service';
       </div>
 
       <div class="notif-grid" *ngIf="!loading()">
-        <div class="notif-card" *ngFor="let n of notifications()" [routerLink]="['/student/subjects', n.sectionId]" [queryParams]="{ tab: 'updates' }">
+        <div class="notif-card" *ngFor="let n of notifications()">
           <div class="notif-card__icon">
             <mat-icon>campaign</mat-icon>
           </div>
@@ -38,9 +38,6 @@ import { ApiService } from '../../../core/services/api.service';
                <span class="time">{{ n.created_at | date:'medium' }}</span>
             </div>
             <div class="notif-card__body">{{ n.content }}</div>
-          </div>
-          <div class="notif-card__arrow">
-            <mat-icon>chevron_right</mat-icon>
           </div>
         </div>
 
@@ -57,10 +54,9 @@ import { ApiService } from '../../../core/services/api.service';
     .notif-card {
       background: white; border-radius: 16px; padding: 20px;
       display: flex; align-items: flex-start; gap: 20px;
-      border: 1px solid rgba(0,0,0,0.05); cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.05);
       transition: all 0.2s ease;
       &:hover { 
-        transform: translateX(8px); 
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         border-left: 4px solid var(--color-primary);
       }
