@@ -20,7 +20,7 @@ async function initializeDatabase() {
     logger.info(`Checking database: ${config.database} at ${config.host}`);
     
     const conn = await mysql.createConnection(config);
-    const schemaPath = path.join(__dirname, '..', '..', 'database', 'schema.sql');
+    const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
     
     if (fs.existsSync(schemaPath)) {
       let schema = fs.readFileSync(schemaPath, 'utf8');
