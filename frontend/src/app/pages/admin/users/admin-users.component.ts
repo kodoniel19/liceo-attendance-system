@@ -99,6 +99,9 @@ import { User } from '../../../core/models';
                       (click)="toggleActive(u)">
                       <mat-icon>{{ (u.is_active || u.isActive) ? 'block' : 'check_circle' }}</mat-icon>
                     </button>
+                    <button mat-icon-button title="Delete permanently" color="warn" (click)="deleteUser(u)">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -319,6 +322,18 @@ export class AdminUsersComponent implements OnInit {
         this.load();
       },
       error: e => this.toast.error('Error toggling status.')
+    });
+  }
+
+  deleteUser(u: User): void {
+    if (!confirm(`Are you sure you want to PERMANENTLY delete user ${(u.firstName || (u as any).first_name)} ${(u.lastName || (u as any).last_name)}?\nThis is irreversible!`)) return;
+    this.api.deleteUser(u.id).subscribe({
+      next: () => {
+        this.toast.success('User permanently deleted.');
+        this.api.triggerRefresh('users');
+        this.load();
+      },
+      error: e => this.toast.error(e?.error?.message || 'Error deleting user.')
     });
   }
 }

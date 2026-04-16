@@ -122,26 +122,29 @@ import { ToastService } from '../../../core/services/toast.service';
         @media (max-width: 480px) { flex-direction: column; align-items: stretch; }
     }
     .btn-clear { 
-        background-color: #94a3b8 !important; color: white !important; font-weight: 700 !important; border-radius: 30px !important; 
-        padding: 0 24px !important; height: 54px !important; font-size: 1rem !important; border: none !important; cursor: pointer !important;
+        background-color: #f1f5f9 !important; color: #64748b !important; font-weight: 700 !important; border-radius: 8px !important; 
+        padding: 0 24px !important; height: 44px !important; font-size: 0.9rem !important; border: none !important; cursor: pointer !important;
         display: inline-flex !important; align-items: center !important; justify-content: center !important;
         transition: all 0.2s !important;
-        &:hover { background-color: #64748b !important; }
+        &:hover { background-color: #e2e8f0 !important; color: #475569 !important; }
     }
     .btn-broadcast { 
-        background: linear-gradient(135deg, #8b1a1a 0%, #b91c1c 100%) !important;
-        color: white !important; border-radius: 30px !important; padding: 0 40px !important; height: 54px !important;
-        font-weight: 800 !important; font-size: 1rem !important; border: none !important; cursor: pointer !important;
-        display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 10px !important;
-        box-shadow: 0 10px 25px rgba(185, 28, 28, 0.4) !important;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        background: rgba(139, 26, 26, 0.08) !important;
+        color: #8B1A1A !important; border-radius: 8px !important; padding: 0 24px !important; height: 44px !important;
+        font-weight: 700 !important; font-size: 0.9rem !important; border: none !important; cursor: pointer !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
+        transition: all 0.2s ease !important;
         
-        &:hover:not(:disabled) { transform: translateY(-3px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(185, 28, 28, 0.5) !important; }
+        &:hover:not(:disabled) { 
+           background: #8B1A1A !important; color: white !important; transform: translateY(-1px) !important;
+           box-shadow: 0 4px 12px rgba(139, 26, 26, 0.2) !important;
+        }
+        &:hover:not(:disabled) ::ng-deep .mat-icon, &:hover:not(:disabled) ::ng-deep span { color: white !important; }
         &:active { transform: translateY(0) !important; }
         &:disabled { background: #cbd5e1 !important; box-shadow: none !important; cursor: not-allowed !important; opacity: 0.7 !important; }
         
-        ::ng-deep .mat-icon { font-size: 22px !important; width: 22px !important; height: 22px !important; margin: 0 !important; color: white !important; }
-        ::ng-deep span { color: white !important; }
+        ::ng-deep .mat-icon { font-size: 20px !important; width: 20px !important; height: 20px !important; margin: 0 !important; color: #8B1A1A !important; transition: all 0.2s ease !important; }
+        ::ng-deep span { color: #8B1A1A !important; transition: all 0.2s ease !important; }
     }
 
     .target-options { 

@@ -56,17 +56,19 @@ exports.updateUserAdmin = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// ── Deactivate user (admin only) ───────────────────────────────
+// ── Delete user (permanent) (admin only) ───────────────────────
 exports.deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (Number(id) === req.user.id) {
-      return res.status(400).json({ success: false, message: 'Cannot deactivate your own account.' });
+      return res.status(400).json({ success: false, message: 'Cannot delete your own account.' });
     }
-    const [user] = await query('SELECT is_active FROM users WHERE id=?', [id]);
+    const [user] = await query('SELECT id FROM users WHERE id=?', [id]);
     if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
-    await query('UPDATE users SET is_active = 0 WHERE id = ?', [id]);
-    res.json({ success: true, message: 'User deactivated.' });
+    
+    // Hard delete from database. Relying on foreign key cascading if any
+    await query('DELETE FROM users WHERE id = ?', [id]);
+    res.json({ success: true, message: 'User permanently deleted.' });
   } catch (err) { next(err); }
 };
 
