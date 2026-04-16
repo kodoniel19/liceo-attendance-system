@@ -30,6 +30,14 @@ async function initializeDatabase() {
       for (const stmt of statements) {
         try { await conn.query(stmt); } catch (e) {}
       }
+      
+      // ENSURE ADMIN EXISTS
+      const adminPass = '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMqJqhcanFp8.6L/g5oNDlMI1K'; // Admin@2024
+      await conn.query(`
+        INSERT IGNORE INTO users (university_id, email, password_hash, first_name, last_name, role, is_active, email_verified)
+        VALUES ('ADMIN-001', 'admin@liceo.edu.ph', ?, 'System', 'Administrator', 'admin', TRUE, TRUE)
+      `, [adminPass]);
+
       logger.info('✅ Database schema verified/initialized');
     }
     await conn.end();
