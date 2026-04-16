@@ -17,73 +17,36 @@ import { ToastService } from '../../../core/services/toast.service';
   template: `
     <div class="auth-page" style="justify-content:center;align-items:center">
       <div class="fp-card animate-fade-in-up">
-        <div style="font-size:48px;margin-bottom:16px;text-align:center">🔐</div>
-        <h2 style="color:var(--color-primary);text-align:center;margin-bottom:8px">Forgot Password?</h2>
-        <p style="color:var(--color-text-muted);text-align:center;margin-bottom:28px;font-size:0.875rem">
-          Enter your university email and we'll send you a reset link.
-        </p>
+        <div style="font-size:72px;margin-bottom:24px;text-align:center">🏥</div>
+        <h2 style="color:var(--color-primary);text-align:center;margin-bottom:12px">Forgot Password?</h2>
+        
+        <div class="info-alert" style="margin-bottom: 24px">
+          <p style="color:var(--color-text);text-align:center;font-size:0.95rem;line-height:1.6">
+            For security reasons, password resets are handled directly by the university administrators.
+          </p>
+        </div>
 
-        <ng-container *ngIf="!sent(); else sentMsg">
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
-            <mat-form-field>
-              <mat-label>University Email</mat-label>
-              <input matInput formControlName="email" type="email" placeholder="you@liceo.edu.ph">
-              <mat-icon matPrefix>email</mat-icon>
-              <mat-error>Enter a valid email</mat-error>
-            </mat-form-field>
-            <button mat-raised-button color="primary" type="submit" style="width:100%;height:50px;margin-top:8px" [disabled]="form.invalid || loading()">
-              <mat-spinner *ngIf="loading()" diameter="20"></mat-spinner>
-              <span *ngIf="!loading()">Send Reset Link</span>
-            </button>
-          </form>
-        </ng-container>
+        <div class="contact-card">
+          <p style="font-weight: 600; color: var(--color-primary); margin-bottom: 8px">How to reset:</p>
+          <ul style="padding-left: 20px; color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.6">
+            <li>Visit the Information Technology office.</li>
+            <li>Present your University ID for verification.</li>
+            <li>Request a temporary password reset.</li>
+          </ul>
+        </div>
 
-        <ng-template #sentMsg>
-          <div style="text-align:center;padding:10px 0" class="animate-fade-in">
-            <div class="success-icon-wrapper">
-              <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: var(--color-success)">check_circle</mat-icon>
-            </div>
-            
-            <h3 style="color: var(--color-text); margin-top: 16px; margin-bottom: 8px">{{ sentMessage() }}</h3>
-            <p style="color:var(--color-text-muted);font-size:0.875rem">
-              Please check your university email inbox and follow the instructions to reset your password.
-            </p>
-          </div>
-        </ng-template>
-
-        <div style="text-align:center;margin-top:20px">
-          <a routerLink="/login" style="color:var(--color-primary);font-size:0.875rem">← Back to Sign In</a>
+        <div style="text-align:center;margin-top:32px">
+          <a routerLink="/login" mat-stroked-button color="primary" style="width:100%;height:46px;display:flex;align-items:center;justify-content:center">
+            ← Back to Sign In
+          </a>
         </div>
       </div>
     </div>
   `,
-  styles: [`.fp-card { background: white; border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-xl); }`]
+  styles: [`
+    .fp-card { background: white; border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 440px; box-shadow: var(--shadow-xl); }
+    .info-alert { background: rgba(139,26,26,0.05); border-radius: 12px; padding: 16px; border: 1px solid rgba(139,26,26,0.1); }
+    .contact-card { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  `]
 })
-export class ForgotPasswordComponent {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private toast = inject(ToastService);
-  private router = inject(Router);
-
-  loading = signal(false);
-  sent = signal(false);
-  sentMessage = signal('Reset link sent!');
-
-  form = this.fb.group({ email: ['', [Validators.required, Validators.email]] });
-
-  onSubmit(): void {
-    if (this.form.invalid) return;
-    this.loading.set(true);
-    this.auth.forgotPassword(this.form.value.email!).subscribe({
-      next: (res: any) => {
-        this.loading.set(false);
-        this.sent.set(true);
-        this.sentMessage.set(res.message || 'Reset link sent!');
-      },
-      error: (e) => { 
-        this.loading.set(false); 
-        this.toast.error(e?.error?.message || 'Failed to request password reset.');
-      }
-    });
-  }
-}
+export class ForgotPasswordComponent {}
