@@ -99,21 +99,19 @@ import { ApiService } from '../../../core/services/api.service';
         <div class="history-modal animate-fade-in-up">
            <div class="modal-header">
              <div class="header-content">
-               <div class="student-profile-lg">
-                 <div class="avatar-large">{{ selectedStudent()?.lastName?.[0] }}{{ selectedStudent()?.firstName?.[0] }}</div>
-                 <div class="profile-details">
-                   <h3>{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
-                   <div class="university-pill">{{ selectedStudent()?.universityId }}</div>
-                 </div>
-               </div>
-               <div class="risk-stats-header">
-                 <div class="stat-item">
-                    <span class="stat-label">Overall Rate</span>
-                    <span class="stat-value" [class.text-danger]="selectedStudent()?.overallRate < 50">{{ selectedStudent()?.overallRate | number:'1.0-1' }}%</span>
-                 </div>
+               <div class="avatar-large">{{ selectedStudent()?.lastName?.[0] || '?' }}{{ selectedStudent()?.firstName?.[0] || '' }}</div>
+               <div class="profile-details">
+                 <div class="university-pill">{{ selectedStudent()?.universityId || 'ID UNKNOWN' }}</div>
+                 <h3>{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
+                 <span class="attendance-avg-badge">
+                   <mat-icon>analytics</mat-icon>
+                   Overall: {{ selectedStudent()?.overallRate | number:'1.0-1' }}%
+                 </span>
                </div>
              </div>
-             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn"><mat-icon>close</mat-icon></button>
+             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn" title="Close">
+               <mat-icon>close</mat-icon>
+             </button>
            </div>
            
            <div class="modal-body">
@@ -217,18 +215,19 @@ import { ApiService } from '../../../core/services/api.service';
     .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(8px); }
     .history-modal { background: white; border-radius: 24px; width: 100%; max-width: 850px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
     
-    .modal-header { padding: 32px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
-    .header-content { display: flex; align-items: center; gap: 40px; }
+    .modal-header { padding: 32px; border-bottom: 2px solid #8b1a1a15; display: flex; justify-content: space-between; align-items: center; background: #ffffff; position: relative; z-index: 20; }
+    .header-content { display: flex; align-items: center; gap: 24px; }
     
-    .student-profile-lg { display: flex; align-items: center; gap: 20px; }
-    .avatar-large { width: 72px; height: 72px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; box-shadow: 0 10px 15px -3px rgba(139, 26, 26, 0.3); }
-    .profile-details h3 { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0 0 6px; }
-    .university-pill { display: inline-block; padding: 4px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #64748b; font-family: monospace; }
+    .avatar-large { width: 80px; height: 80px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(139, 26, 26, 0.4); flex-shrink: 0; }
     
-    .risk-stats-header { padding-left: 40px; border-left: 2px solid #e2e8f0; }
-    .stat-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
-    .stat-value { font-size: 2rem; font-weight: 900; color: #0f172a; letter-spacing: -1px; }
-    .stat-value.text-danger { color: #ef4444; }
+    .profile-details h3 { font-size: 1.75rem; font-weight: 900; color: #0f172a; margin: 0 0 4px; letter-spacing: -0.5px; }
+    .university-pill { display: inline-flex; padding: 4px 12px; background: #f1f5f9; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: #475569; font-family: monospace; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+    
+    .attendance-avg-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(139, 26, 26, 0.05); color: #8b1a1a; border-radius: 8px; font-size: 0.8rem; font-weight: 800; border: 1px solid rgba(139, 26, 26, 0.1); 
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+
+    .close-btn { background-color: #f1f5f9 !important; color: #64748b !important; border-radius: 12px !important; width: 44px !important; height: 44px !important; &:hover { background-color: #e2e8f0 !important; color: #0f172a !important; } }
 
     .modal-body { flex: 1; overflow-y: auto; padding: 0; background: white; }
     .loading-state-modal { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px; color: #64748b; font-weight: 500; p { margin-top: 20px; } }
