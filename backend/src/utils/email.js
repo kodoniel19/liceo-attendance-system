@@ -69,39 +69,48 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
 
-  const resend = getResend();
-  
-  try {
     if (resend) {
-      await resend.emails.send({
-        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-        to: email,
-        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-        html
-      });
-      logger.info(`Password reset email sent (via Resend) to ${email}`);
-      return;
+      try {
+        await resend.emails.send({
+          from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+          to: email,
+          subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+          html
+        });
+        logger.info(`Password reset email sent (via Resend) to ${email}`);
+        return;
+      } catch (err) {
+        throw new Error(`Resend Error: ${err.message}`);
+      }
     }
 
     if (process.env.SENDGRID_API_KEY) {
-      await sgMail.send({
-        to: email,
-        from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
-        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-        html
-      });
-      logger.info(`Password reset email sent (via SendGrid) to ${email}`);
-      return;
+      try {
+        await sgMail.send({
+          to: email,
+          from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+          subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+          html
+        });
+        logger.info(`Password reset email sent (via SendGrid) to ${email}`);
+        return;
+      } catch (err) {
+        throw new Error(`SendGrid Error: ${err.message}`);
+      }
     }
 
     const transporter = createTransporter();
-    await transporter.sendMail({
-      from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
-      to: email,
-      subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-      html
-    });
-    logger.info(`Password reset email sent (via Gmail) to ${email}`);
+    try {
+      await transporter.sendMail({
+        from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
+        to: email,
+        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+        html
+      });
+      logger.info(`Password reset email sent (via Gmail) to ${email}`);
+    } catch (err) {
+      throw new Error(`Gmail Error (Fallback): ${err.message}`);
+    }
   } catch (err) {
     logger.error('Email delivery failed:', err);
     throw err;
