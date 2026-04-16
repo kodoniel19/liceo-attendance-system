@@ -33,7 +33,7 @@ import { ApiService } from '../../../core/services/api.service';
             <div class="notif-card__meta">
                <span class="course-pill" [class.global-pill]="n.isGlobal">{{ n.isGlobal ? 'Admin' : n.courseCode }}</span>
                <span class="dot">·</span>
-               <span class="instructor">{{ n.isGlobal ? 'Admin' : 'Prof. ' + n.instructorLast }}</span>
+               <span class="instructor">{{ n.isGlobal ? 'Admin' : 'Instructor ' + n.instructorLast }}</span>
                <span class="dot">·</span>
                <span class="time">{{ n.created_at | date:'medium' }}</span>
             </div>
