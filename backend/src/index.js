@@ -42,6 +42,9 @@ async function initializeDatabase() {
       
       // FIX ENROLLMENT STATUS ENUM CRASH
       try { await conn.query("ALTER TABLE enrollments MODIFY COLUMN status ENUM('active', 'dropped', 'incomplete', 'pending', 'declined') DEFAULT 'pending'"); } catch(e){}
+      
+      // FIX MISSING QR DATA COLUMN
+      try { await conn.query("ALTER TABLE qr_sessions ADD COLUMN qr_data_url MEDIUMTEXT AFTER qr_secret"); } catch(e){}
 
       await conn.query(`
         INSERT INTO users (university_id, email, password_hash, first_name, last_name, role, is_active, email_verified)

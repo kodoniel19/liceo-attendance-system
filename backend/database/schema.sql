@@ -115,6 +115,7 @@ CREATE TABLE qr_sessions (
     class_session_id INT UNSIGNED NOT NULL,
     qr_token VARCHAR(255) NOT NULL UNIQUE,
     qr_secret VARCHAR(100) NOT NULL COMMENT 'For HMAC verification',
+    qr_data_url MEDIUMTEXT,
     expires_at DATETIME NOT NULL,
     expiration_minutes INT DEFAULT 15,
     is_active BOOLEAN DEFAULT TRUE,
