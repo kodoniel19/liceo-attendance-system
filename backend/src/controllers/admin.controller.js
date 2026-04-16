@@ -47,10 +47,11 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
   try {
     const { title, content, targetRole } = req.body;
     const adminId = req.user.id;
+    const nowPHT = getPHTNow();
 
     const result = await query(
-      'INSERT INTO announcements (instructor_id, title, content, is_global, target_role) VALUES (?, ?, ?, TRUE, ?)',
-      [adminId, title, content, targetRole || 'all']
+      'INSERT INTO announcements (instructor_id, title, content, is_global, target_role, created_at) VALUES (?, ?, ?, TRUE, ?, ?)',
+      [adminId, title, content, targetRole || 'all', nowPHT]
     );
 
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });

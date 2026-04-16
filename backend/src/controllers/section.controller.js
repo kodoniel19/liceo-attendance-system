@@ -215,10 +215,11 @@ exports.createAnnouncement = async (req, res, next) => {
     const { sectionId } = req.params;
     const { title, content, isGlobal } = req.body;
     const instructorId = req.user.id;
+    const nowPHT = getPHTNow();
 
     const result = await query(
-      'INSERT INTO announcements (class_section_id, instructor_id, title, content, is_global) VALUES (?, ?, ?, ?, ?)',
-      [isGlobal ? null : sectionId, instructorId, title, content, isGlobal || false]
+      'INSERT INTO announcements (class_section_id, instructor_id, title, content, is_global, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+      [isGlobal ? null : sectionId, instructorId, title, content, isGlobal || false, nowPHT]
     );
 
     res.json({ success: true, message: 'Announcement created successfully', id: result.insertId });
