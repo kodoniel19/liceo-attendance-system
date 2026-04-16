@@ -63,7 +63,8 @@ export class RealtimeNotificationService {
           const latest = allNotifs[0];
           
           if (this.lastNotifId() !== null && latest.id > (this.lastNotifId() || 0)) {
-            const sourceName = latest.is_global ? 'Admin' : (latest.courseCode || 'Instructor');
+            const isGlobal = !!(latest.is_global || latest.isGlobal);
+            const sourceName = isGlobal ? 'Admin' : (latest.courseCode || 'Instructor');
             this.playAlert(`📢 NEW ANNOUNCEMENT from ${sourceName}: ${latest.title}`, 'announcement');
             this.api.triggerRefresh('announcements');
           }

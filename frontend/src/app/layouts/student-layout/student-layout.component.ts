@@ -62,7 +62,7 @@ interface NavItem {
                      <div class="notif-dot"></div>
                      <div class="notif-item-body">
                         <div class="notif-item-title">{{ a.title }}</div>
-                        <div class="notif-item-meta">{{ a.instructorFirst }} {{ a.instructorLast }} • {{ a.courseCode }}</div>
+                        <div class="notif-item-meta">{{ a.isGlobal ? 'Admin' : (a.instructorFirst + ' ' + a.instructorLast) }} • {{ a.isGlobal ? 'System' : a.courseCode }}</div>
                         <div class="notif-item-time">{{ a.created_at | date:'shortTime' }}</div>
                      </div>
                   </div>
