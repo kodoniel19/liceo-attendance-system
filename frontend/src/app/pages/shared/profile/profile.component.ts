@@ -358,9 +358,14 @@ export class ProfileComponent implements OnInit {
     this.savingPassword.set(true);
     this.api.changePassword(this.passwordForm.value.currentPassword, newPassword).subscribe({
       next: () => {
-        this.toast.success('Password changed successfully!');
+        this.toast.success('Password changed successfully! Please log in with your new password.', 5000);
         this.passwordForm.reset();
         this.savingPassword.set(false);
+        
+        // Automatic logout and redirect to login
+        setTimeout(() => {
+          this.auth.logout();
+        }, 1500);
       },
       error: e => {
         this.toast.error(e?.error?.message || 'Failed to change password.');
