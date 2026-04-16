@@ -107,7 +107,10 @@ interface NavItem {
                   </div>
                   <div class="g-item__content" [matTooltip]="s.courseName || ''" matTooltipPosition="right">
                     <div class="g-item__title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ s.courseName }}</div>
-                    <div class="g-item__sub">{{ s.courseCode }} • {{ s.sectionName }}</div>
+                    <div class="g-item__sub">
+                      {{ s.courseCode }} 
+                      <span *ngIf="s.sectionName && s.sectionName !== s.courseCode && !s.sectionName.includes(s.courseCode)"> • {{ s.sectionName }}</span>
+                    </div>
                   </div>
               </a>
               <div *ngIf="!loadingSections() && !enrollment().length" class="sidebar__empty">
