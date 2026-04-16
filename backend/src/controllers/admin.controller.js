@@ -73,9 +73,9 @@ exports.getStudentAttendanceHistory = async (req, res, next) => {
       SELECT 
           att.id,
           sess.start_time as sessionDate,
-          c.code as courseCode,
-          c.name as courseName,
-          cl.name as sectionName,
+          c.course_code as courseCode,
+          c.course_name as courseName,
+          cl.section_name as sectionName,
           att.status,
           att.remarks
       FROM attendance att

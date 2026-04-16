@@ -5,6 +5,7 @@ const logger = require('./utils/logger');
 const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
+const { initScheduler } = require('./services/sessionScheduler');
 
 // FORCE DATABASE INITIALIZATION ON STARTUP
 async function initializeDatabase() {
@@ -129,6 +130,9 @@ initializeDatabase().then(() => {
     logger.info(`🚀 Liceo Attendance API running on port ${PORT}`);
     logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   });
+  
+  // Start Automated Background Tasks
+  initScheduler();
 });
 
 // Handle unhandled promise rejections
