@@ -12,9 +12,8 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="admin-shell">
       <!-- Sidebar -->
-      <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed()">
         <div class="sidebar-brand">
-          <div class="sidebar-logo">🎓</div>
+          <img src="assets/images/logo.png" alt="LDCU Seal" class="sidebar-brand-logo">
           <div class="sidebar-brand-text" *ngIf="!sidebarCollapsed()">
             <div class="brand-name">Liceo</div>
             <div class="brand-sub">Admin Panel</div>
@@ -113,11 +112,11 @@ import { AuthService } from '../../core/services/auth.service';
     .admin-sidebar.collapsed { width: 72px; }
 
     .sidebar-brand {
-      display: flex; align-items: center; padding: 20px 16px;
+      display: flex; align-items: center; padding: 16px 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      gap: 10px; min-height: 70px;
+      gap: 12px; min-height: 70px;
     }
-    .sidebar-logo { font-size: 28px; flex-shrink: 0; }
+    .sidebar-brand-logo { width: 44px; height: 44px; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
     .sidebar-brand-text { flex: 1; }
     .brand-name { font-size: 1rem; font-weight: 800; color: #e94560; letter-spacing: 0.05em; }
     .brand-sub { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; }

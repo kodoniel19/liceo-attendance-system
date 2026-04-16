@@ -44,9 +44,7 @@ interface NavItem {
 
           <!-- Brand -->
           <div class="sidebar__brand">
-            <div class="sidebar__logo">
-              <span class="sidebar__logo-icon">🎓</span>
-            </div>
+            <img src="assets/images/logo.png" alt="LDCU Seal" class="sidebar__logo-img">
             <div class="sidebar__brand-text">
               <span class="sidebar__brand-name">Liceo</span>
               <span class="sidebar__brand-sub">Attendance System</span>
@@ -222,13 +220,10 @@ interface NavItem {
       display: flex; align-items: center; gap: 12px;
       padding: 24px 20px 20px;
     }
-    .sidebar__logo {
+    .sidebar__logo-img {
       width: 44px; height: 44px;
-      background: rgba(201, 162, 39, 0.2);
-      border: 2px solid rgba(201, 162, 39, 0.5);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
     }
     .sidebar__brand-name { display: block; font-weight: 800; font-size: 1.1rem; color: #fff; line-height: 1.1; }
     .sidebar__brand-sub  { display: block; font-size: 0.68rem; color: rgba(255, 255, 255, 0.5); margin-top: 2px; }
