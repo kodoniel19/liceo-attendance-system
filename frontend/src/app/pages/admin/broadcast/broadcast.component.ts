@@ -66,11 +66,11 @@ import { ToastService } from '../../../core/services/toast.service';
               </div>
 
               <div class="form-actions">
-                 <button type="button" mat-button class="btn-clear" (click)="reset()">Clear Form</button>
+                 <button type="button" mat-flat-button class="btn-clear" (click)="reset()">Clear Form</button>
                  <button type="submit" mat-flat-button class="btn-broadcast" [disabled]="sending() || !title || !content">
                     <mat-spinner diameter="18" *ngIf="sending()"></mat-spinner>
                     <mat-icon *ngIf="!sending()">send</mat-icon>
-                    <span>{{ sending() ? 'Broadcasting...' : 'Broadcast to University' }}</span>
+                    <span>{{ sending() ? 'Posting...' : 'Post' }}</span>
                  </button>
               </div>
            </form>
@@ -118,23 +118,30 @@ import { ToastService } from '../../../core/services/toast.service';
     .char-count { align-self: flex-end; font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
 
     .form-actions { 
-        display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px;
+        display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: 12px;
         @media (max-width: 480px) { flex-direction: column; align-items: stretch; }
     }
-    .btn-clear { font-weight: 700; color: #64748b; border-radius: 20px; }
+    .btn-clear { 
+        background-color: #94a3b8 !important; color: white !important; font-weight: 700 !important; border-radius: 30px !important; 
+        padding: 0 24px !important; height: 54px !important; font-size: 1rem !important; border: none !important; cursor: pointer !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        transition: all 0.2s !important;
+        &:hover { background-color: #64748b !important; }
+    }
     .btn-broadcast { 
-        background: linear-gradient(135deg, #8b1a1a 0%, #b91c1c 100%);
-        color: white; border-radius: 30px; padding: 0 40px; height: 54px;
-        font-weight: 800; font-size: 1rem; border: none; cursor: pointer;
-        display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-        box-shadow: 0 10px 25px rgba(185, 28, 28, 0.4);
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: linear-gradient(135deg, #8b1a1a 0%, #b91c1c 100%) !important;
+        color: white !important; border-radius: 30px !important; padding: 0 40px !important; height: 54px !important;
+        font-weight: 800 !important; font-size: 1rem !important; border: none !important; cursor: pointer !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 10px !important;
+        box-shadow: 0 10px 25px rgba(185, 28, 28, 0.4) !important;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
         
-        &:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(185, 28, 28, 0.5); }
-        &:active { transform: translateY(0); }
-        &:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+        &:hover:not(:disabled) { transform: translateY(-3px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(185, 28, 28, 0.5) !important; }
+        &:active { transform: translateY(0) !important; }
+        &:disabled { background: #cbd5e1 !important; box-shadow: none !important; cursor: not-allowed !important; opacity: 0.7 !important; }
         
-        mat-icon { font-size: 22px; width: 22px; height: 22px; margin: 0; }
+        ::ng-deep .mat-icon { font-size: 22px !important; width: 22px !important; height: 22px !important; margin: 0 !important; color: white !important; }
+        ::ng-deep span { color: white !important; }
     }
 
     .target-options { 
