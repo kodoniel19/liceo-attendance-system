@@ -9,12 +9,10 @@ const getTransporter = () => {
     throw new Error('SMTP_NOT_CONFIGURED');
   }
   return nodemailer.createTransport({
-    pool: true, // Keep connection open for faster delivery
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT) || 587,
     secure: process.env.SMTP_SECURE === 'true',
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    tls: { rejectUnauthorized: false } // Helps with local network environments
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
   });
 };
 
