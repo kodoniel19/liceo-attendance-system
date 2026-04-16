@@ -230,6 +230,10 @@ exports.googleLogin = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Email not verified by Google' });
     }
 
+    if (!payload.email.endsWith('@liceo.edu.ph')) {
+      return res.status(403).json({ success: false, message: 'Access denied. Only @liceo.edu.ph emails are allowed.' });
+    }
+
     const email = payload.email;
     const firstName = payload.given_name || email.split('@')[0];
     const lastName = payload.family_name || '';
