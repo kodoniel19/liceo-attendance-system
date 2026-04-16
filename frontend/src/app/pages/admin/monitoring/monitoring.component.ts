@@ -211,11 +211,28 @@ import { ApiService } from '../../../core/services/api.service';
 
     .empty-state { text-align: center; padding: 80px 40px; color: #94a3b8; .empty-icon { font-size: 48px; margin-bottom: 16px; } h3 { color: #1e293b; margin-bottom: 8px; } }
 
-    /* Premium Modal Styling */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(8px); }
-    .history-modal { background: white; border-radius: 24px; width: 100%; max-width: 850px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+    /* Updated Modal Styling with Center Fix and Premium Blur */
+    .modal-overlay { 
+      position: fixed; inset: 0; 
+      background: rgba(255, 255, 255, 0.4); 
+      display: flex; justify-content: center; align-items: flex-start; 
+      z-index: 1000; padding: 40px 20px; 
+      backdrop-filter: blur(16px); 
+      overflow-y: auto;
+    }
+    .history-modal { 
+      background: white; border-radius: 28px; width: 100%; max-width: 850px; 
+      display: flex; flex-direction: column; 
+      box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); 
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.8);
+      margin-top: 2vh;
+    }
     
-    .modal-header { padding: 32px; border-bottom: 2px solid #8b1a1a15; display: flex; justify-content: space-between; align-items: center; background: #ffffff; position: relative; z-index: 20; }
+    .modal-header { 
+      padding: 32px; border-bottom: 1px solid #f1f5f9; 
+      display: flex; justify-content: space-between; align-items: center; 
+      background: #ffffff; position: sticky; top: 0; z-index: 30; 
+    }
     .header-content { display: flex; align-items: center; gap: 24px; }
     
     .avatar-large { width: 80px; height: 80px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(139, 26, 26, 0.4); flex-shrink: 0; }
