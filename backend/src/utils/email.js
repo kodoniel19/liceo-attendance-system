@@ -1,5 +1,10 @@
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const logger = require('./logger');
+
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Dev fallback: log to console when no SMTP configured
 const createTransporter = () => {
@@ -61,15 +66,30 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
 
-  const transporter = createTransporter();
-  await transporter.sendMail({
-    from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-    html
-  });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      await sgMail.send({
+        to: email,
+        from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+        html
+      });
+      logger.info(`Password reset email sent (via SendGrid) to ${email}`);
+      return;
+    }
 
-  logger.info(`Password reset email sent to ${email}`);
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+      html
+    });
+    logger.info(`Password reset email sent (via Gmail) to ${email}`);
+  } catch (err) {
+    logger.error('Email delivery failed:', err);
+    throw err;
+  }
 };
 
 exports.sendWelcome = async (email, firstName, role) => {
@@ -83,11 +103,28 @@ exports.sendWelcome = async (email, firstName, role) => {
     </div>
   `);
 
-  const transporter = createTransporter();
-  await transporter.sendMail({
-    from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: 'Welcome to Liceo Attendance System',
-    html
-  });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      await sgMail.send({
+        to: email,
+        from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+        subject: 'Welcome to Liceo Attendance System',
+        html
+      });
+      logger.info(`Welcome email sent (via SendGrid) to ${email}`);
+      return;
+    }
+
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Welcome to Liceo Attendance System',
+      html
+    });
+    logger.info(`Welcome email sent (via Gmail) to ${email}`);
+  } catch (err) {
+    logger.error('Welcome email failed:', err);
+    throw err;
+  }
 };
