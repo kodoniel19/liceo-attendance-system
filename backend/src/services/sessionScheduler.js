@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const { query } = require('../config/database');
-const logger = require('./logger.service');
+const logger = require('../utils/logger');
 
 // Map getDay() integer to the string formats used in the DB
 const DAYS_MAP = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
