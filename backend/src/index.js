@@ -38,7 +38,7 @@ async function initializeDatabase() {
       const adminPass = '$2a$12$9s5wgEQASr3ucRByDyJ7wu6A79uJSiVot6jUoWvbsjEq9g/d/u7/m'; // Admin@2024
       
       // FIX SCHEDULE_DAY ENUM CRASH
-      try { await conn.query("ALTER TABLE class_sections MODIFY COLUMN schedule_day VARCHAR(50) NOT NULL"); } catch(e){}
+      try { await conn.query("ALTER TABLE class_sections MODIFY COLUMN schedule_day VARCHAR(255) NOT NULL"); } catch(e){}
       
       // FIX ENROLLMENT STATUS ENUM CRASH
       try { await conn.query("ALTER TABLE enrollments MODIFY COLUMN status ENUM('active', 'dropped', 'incomplete', 'pending', 'declined') DEFAULT 'pending'"); } catch(e){}
