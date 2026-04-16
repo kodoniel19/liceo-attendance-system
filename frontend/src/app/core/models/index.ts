@@ -54,6 +54,7 @@ export interface Course {
   department?: string;
   isActive?: boolean;
   is_active?: boolean;
+  instructorName?: string;
 }
 
 export interface ClassSection {
@@ -173,6 +174,8 @@ export interface AttendanceSummary {
   absentCount?: number;
   excusedCount?: number;
   attendanceRate?: number;
+  instructorFirst?: string;
+  instructorLast?: string;
 }
 
 // ─── Report & Dashboard Models ─────────────────────────────────

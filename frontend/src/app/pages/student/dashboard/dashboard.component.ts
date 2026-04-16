@@ -96,6 +96,9 @@ import { ToastService } from '../../../core/services/toast.service';
               <div class="header-left">
                 <div class="course-card__code">{{ s.courseCode }} — {{ s.sectionName }}</div>
                 <div class="course-card__name">{{ s.courseName }}</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 4px; font-weight: 600;">
+                  Instructor: {{ s.instructorFirst }} {{ s.instructorLast }}
+                </div>
               </div>
               <div class="course-rate" [style.color]="getRateColor(s.attendanceRate ?? 0)">
                 {{ s.attendanceRate ?? 0 }}%

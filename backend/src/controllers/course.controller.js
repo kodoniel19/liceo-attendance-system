@@ -9,7 +9,8 @@ exports.getCourses = async (req, res, next) => {
              (SELECT CONCAT(u.first_name, ' ', u.last_name) 
               FROM class_sections s 
               JOIN users u ON s.instructor_id = u.id 
-              WHERE s.course_id = c.id AND s.is_active = 1 
+              WHERE s.course_id = c.id 
+              ORDER BY s.id DESC
               LIMIT 1) as instructorName
       FROM courses c
       WHERE 1=1
