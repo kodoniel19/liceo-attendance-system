@@ -11,6 +11,7 @@ export class RealtimeNotificationService {
   private toast = inject(ToastService);
 
   private lastNotifId = signal<number | null>(null);
+  private lastInviteCount = signal<number>(0);
   private pollingSub?: Subscription;
   private audio: HTMLAudioElement;
 
@@ -25,24 +26,33 @@ export class RealtimeNotificationService {
 
     console.log('📡 Real-time Notification Watcher: ACTIVE');
     
-    // Check every 15 seconds for new announcements
-    this.pollingSub = interval(15000)
+    // Check every 10 seconds for new events (Announcements & Invites)
+    this.pollingSub = interval(10000)
       .pipe(
-        filter(() => this.auth.isStudent()), // Only poll for students
-        switchMap(() => this.api.getMyAnnouncements().pipe(catchError(() => of({ data: [] }))))
+        filter(() => this.auth.isStudent()),
+        switchMap(() => forkJoin({
+          announcements: this.api.getMyAnnouncements().pipe(catchError(() => of({ data: [] }))),
+          enrollments: this.api.getMyEnrollments().pipe(catchError(() => of({ data: [] })))
+        }))
       )
       .subscribe((res: any) => {
-        const notifs = res.data || [];
+        // 1. Handle Announcements
+        const notifs = res.announcements.data || [];
         if (notifs.length > 0) {
           const latest = notifs[0];
-          
-          // If this ID is newer than what we last saw, play sound!
           if (this.lastNotifId() !== null && latest.id > (this.lastNotifId() || 0)) {
-            this.playAlert(latest);
+            this.playAlert(`📢 NEW ANNOUNCEMENT\n${latest.courseCode}: ${latest.title}`);
           }
-          
           this.lastNotifId.set(latest.id);
         }
+
+        // 2. Handle New Invitations
+        const invites = (res.enrollments.data || []).filter((e: any) => e.enrollmentStatus === 'pending');
+        if (this.lastInviteCount() !== null && invites.length > this.lastInviteCount()) {
+          const newInvite = invites[0];
+          this.playAlert(`🎓 NEW CLASS INVITATION\nYou have been invited to ${newInvite.courseCode} — ${newInvite.sectionName}`);
+        }
+        this.lastInviteCount.set(invites.length);
       });
   }
 
@@ -51,11 +61,11 @@ export class RealtimeNotificationService {
     this.pollingSub = undefined;
   }
 
-  private playAlert(notif: any): void {
+  private playAlert(message: string): void {
     // Play the ringtone
     this.audio.play().catch(e => console.warn('Audio play failed:', e));
     
     // Show a premium toast
-    this.toast.info(`📢 NEW ANNOUNCEMENT\n${notif.courseCode}: ${notif.title}`, 8000);
+    this.toast.info(message, 8000);
   }
 }
