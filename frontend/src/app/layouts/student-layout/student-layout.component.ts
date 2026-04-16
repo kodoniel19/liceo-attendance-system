@@ -407,46 +407,39 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadEnrollments();
-    this.startPollingAnnouncements();
+    this.refreshAnnouncements();
+
+    // Listen for real-time updates from central notification service
+    this.api.refresh$.subscribe(source => {
+      if (source?.includes('announcements') || source?.includes('enrollments') || source === 'general') {
+        this.refreshAnnouncements();
+        this.loadEnrollments();
+      }
+    });
   }
+
 
   ngOnDestroy(): void {
     if (this.pollSub) this.pollSub.unsubscribe();
   }
 
-  startPollingAnnouncements(): void {
+  refreshAnnouncements(): void {
     const savedLastId = localStorage.getItem('last_notif_id');
     if (savedLastId) this.lastCheckedId = parseInt(savedLastId);
 
-    this.pollSub = timer(0, 10000).pipe( // 10 seconds for ultra-responsive feel
-      switchMap(() => this.api.getMyAnnouncements().pipe(
-        catchError(err => {
-          console.error('>>> Notification polling error:', err);
-          return of({ success: false, data: [] });
-        })
-      ))
-    ).subscribe(r => {
+    this.api.getMyAnnouncements().subscribe(r => {
       const announcements = r.data || [];
-      console.log(`>>> Polled announcements: ${announcements.length} found`);
-      
       announcements.sort((a: any, b: any) => b.id - a.id);
       this.recentAnnouncements.set(announcements.slice(0, 5));
       
       const newUnread = announcements.filter((a: any) => a.id > this.lastCheckedId).length;
-      
-      if (newUnread > this.unreadCount()) {
-        this.playNotifSound();
-      }
-
-      console.log(`>>> Unread count: ${newUnread} (last checked ID: ${this.lastCheckedId})`);
       this.unreadCount.set(newUnread);
     });
   }
 
-  private playNotifSound(): void {
-    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-    audio.play().catch(() => {});
-  }
+
+  // redundant sound logic removed, handled by RealtimeNotificationService
+
 
   markAsRead(): void {
     const latest = this.recentAnnouncements()[0];

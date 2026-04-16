@@ -203,7 +203,15 @@ export class StudentDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshDashboard();
+
+    // Listen for real-time updates from notification service
+    this.api.refresh$.subscribe(source => {
+      if (source?.includes('enrollments') || source === 'general') {
+        this.refreshDashboard();
+      }
+    });
   }
+
 
   refreshDashboard(): void {
     this.summaryLoading.set(true);
