@@ -35,7 +35,7 @@ async function initializeDatabase() {
       }
       
       // ENSURE ADMIN HAS CORRECT PASSWORD
-      const adminPass = '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMqJqhcanFp8.6L/g5oNDlMI1K'; // Admin@2024
+      const adminPass = '$2a$12$9s5wgEQASr3ucRByDyJ7wu6A79uJSiVot6jUoWvbsjEq9g/d/u7/m'; // Admin@2024
       await conn.query(`
         INSERT INTO users (university_id, email, password_hash, first_name, last_name, role, is_active, email_verified)
         VALUES ('ADMIN-001', 'admin@liceo.edu.ph', ?, 'System', 'Administrator', 'admin', TRUE, TRUE)
