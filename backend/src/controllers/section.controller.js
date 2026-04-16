@@ -80,7 +80,7 @@ exports.createSection = async (req, res, next) => {
     const result = await query(
       `INSERT INTO class_sections (course_id, instructor_id, section_name, academic_year, semester, schedule_day, schedule_time_start, schedule_time_end, room, max_students)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [courseId, instructor, sectionName, academicYear, semester, scheduleDay, scheduleTimeStart, scheduleTimeEnd, room || null, maxStudents || 40]
+      [courseId || null, instructor || null, sectionName || null, academicYear || null, semester || null, scheduleDay || null, scheduleTimeStart || null, scheduleTimeEnd || null, room || null, maxStudents || 40]
     );
     const section = await query('SELECT * FROM class_sections WHERE id = ?', [result.insertId]);
     res.status(201).json({ success: true, data: section[0] });
@@ -111,8 +111,8 @@ exports.updateSection = async (req, res, next) => {
          room               = ?,
          max_students       = COALESCE(?, max_students)
        WHERE id = ?`,
-      [courseId, sectionName, academicYear, semester, scheduleDay,
-       scheduleTimeStart, scheduleTimeEnd, room || null, maxStudents, id]
+      [courseId || null, sectionName || null, academicYear || null, semester || null, scheduleDay || null,
+       scheduleTimeStart || null, scheduleTimeEnd || null, room || null, maxStudents || null, id]
     );
 
     const [updated] = await query(
