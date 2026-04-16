@@ -25,7 +25,7 @@ import { ToastService } from '../../../core/services/toast.service';
     <div class="auth-page">
       <div class="auth-page__left animate-fade-in">
         <div style="position:relative;z-index:1;text-align:center">
-          <div style="font-size:72px;margin-bottom:24px">🎓</div>
+          <img src="assets/images/logo.png" alt="LDCU Logo" style="width:140px;height:auto;margin-bottom:24px;filter:drop-shadow(0 10px 15px rgba(0,0,0,0.2))" class="animate-bounce-subtle">
           <h1 style="font-size:1.8rem;color:#fff;font-weight:800;margin-bottom:8px">Join Liceo<br/>Attendance System</h1>
           <p style="color:rgba(255,255,255,0.7);margin-bottom:32px">Create your account and start tracking attendance seamlessly.</p>
           <div style="font-size: 60px; opacity: 0.15; position: absolute; top: -20px; right: -20px; font-size: 200px; pointer-events: none;">📋</div>

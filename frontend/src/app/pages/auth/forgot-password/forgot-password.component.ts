@@ -17,7 +17,9 @@ import { ToastService } from '../../../core/services/toast.service';
   template: `
     <div class="auth-page" style="justify-content:center;align-items:center">
       <div class="fp-card animate-fade-in-up">
-        <div style="font-size:72px;margin-bottom:24px;text-align:center">🏥</div>
+        <div style="text-align:center;margin-bottom:24px">
+          <img src="assets/images/logo.png" alt="LDCU Logo" style="width:120px;height:auto;filter:drop-shadow(0 5px 10px rgba(0,0,0,0.1))">
+        </div>
         <h2 style="color:var(--color-primary);text-align:center;margin-bottom:12px">Forgot Password?</h2>
         
         <div class="info-alert" style="margin-bottom: 24px">

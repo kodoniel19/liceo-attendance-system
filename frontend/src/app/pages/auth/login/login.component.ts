@@ -27,7 +27,7 @@ declare var google: any;
       <!-- Left Panel -->
       <div class="auth-page__left animate-fade-in">
         <div class="auth-left-content">
-          <div class="auth-left-logo">🎓</div>
+          <img src="assets/images/logo.png" alt="LDCU Logo" class="auth-brand-logo animate-bounce-subtle">
           <h1 class="auth-left-title">Liceo de Cagayan University</h1>
           <p class="auth-left-subtitle">QR Code Attendance Management System</p>
         </div>
@@ -87,7 +87,7 @@ declare var google: any;
   `,
   styles: [`
     .auth-left-content { position: relative; z-index: 1; text-align: center; }
-    .auth-left-logo { font-size: 72px; margin-bottom: 24px; }
+    .auth-brand-logo { width: 140px; height: auto; margin-bottom: 24px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2)); }
     .auth-left-title { font-size: 1.8rem; color: #fff; font-weight: 800; margin-bottom: 8px; }
     .auth-left-subtitle { color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-bottom: 48px; }
     .auth-features { display: flex; flex-direction: column; gap: 20px; text-align: left; max-width: 320px; }
