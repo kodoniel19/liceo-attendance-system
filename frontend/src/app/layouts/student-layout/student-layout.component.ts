@@ -109,7 +109,7 @@ interface NavItem {
                     <div class="g-item__title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ s.courseName }}</div>
                     <div class="g-item__sub">
                       {{ s.courseCode }} 
-                      <span *ngIf="s.sectionName && s.sectionName !== s.courseCode && !s.sectionName.includes(s.courseCode)"> • {{ s.sectionName }}</span>
+                      <span *ngIf="!isRedundant(s)"> • {{ s.sectionName }}</span>
                     </div>
                   </div>
               </a>
@@ -476,6 +476,13 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
       },
       error: () => this.loadingSections.set(false)
     });
+  }
+
+  isRedundant(s: any): boolean {
+    if (!s.sectionName || !s.courseCode) return true;
+    const n1 = s.courseCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const n2 = s.sectionName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return n1 === n2;
   }
 
   confirmLogout(): void {

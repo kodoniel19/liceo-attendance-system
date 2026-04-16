@@ -220,8 +220,8 @@ import { ApiService } from '../../../core/services/api.service';
       backdrop-filter: blur(18px); 
     }
     .history-modal { 
-      background: white; border-radius: 28px; width: 92%; max-width: 750px; 
-      max-height: 85vh;
+      background: white; border-radius: 28px; width: 92%; max-width: 720px; 
+      max-height: 78vh;
       display: flex; flex-direction: column; 
       box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15); 
       overflow: hidden; border: none;
