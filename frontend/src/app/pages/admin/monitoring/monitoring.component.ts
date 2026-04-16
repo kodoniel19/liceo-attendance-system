@@ -92,7 +92,6 @@ import { ApiService } from '../../../core/services/api.service';
            <h3>No Students At Risk</h3>
            <p>All students are maintaining attendance above institutional thresholds.</p>
         </div>
-        </div>
       </div>
 
       <!-- History Modal -->
@@ -167,7 +166,7 @@ import { ApiService } from '../../../core/services/api.service';
              <button mat-button (click)="closeHistoryModal()">Dismiss</button>
            </div>
         </div>
-      </div>    </div>
+      </div>
     </div>
   `,
   styles: [`
