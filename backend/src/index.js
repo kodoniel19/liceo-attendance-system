@@ -40,6 +40,18 @@ async function initializeDatabase() {
       `, [adminPass]);
 
       logger.info('✅ Database schema verified/initialized');
+
+      // DIAGNOSTIC CHECK
+      const [countResult] = await conn.query('SELECT COUNT(*) as count FROM users');
+      const [adminCheck] = await conn.query('SELECT email, role FROM users WHERE email = "admin@liceo.edu.ph"');
+      
+      logger.info(`📊 DATABASE DIAGNOSTICS:`);
+      logger.info(` - Total Users in DB: ${countResult[0].count}`);
+      if (adminCheck.length > 0) {
+        logger.info(` - Admin Found: YES (Role: ${adminCheck[0].role})`);
+      } else {
+        logger.error(` - Admin Found: NO (!!!)`);
+      }
     }
     await conn.end();
   } catch (err) {
