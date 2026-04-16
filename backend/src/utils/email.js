@@ -2,11 +2,7 @@ const nodemailer = require('nodemailer');
 const logger = require('./logger');
 
 // Dev fallback: log to console when no SMTP configured
-const isEmailConfigured = () =>
-  process.env.SMTP_USER &&
-  process.env.SMTP_USER !== 'your_email@gmail.com' &&
-  process.env.SMTP_PASS &&
-  process.env.SMTP_PASS !== 'your_app_password';
+const isEmailConfigured = () => !!process.env.SMTP_USER && !!process.env.SMTP_PASS;
 
 const getTransporter = () => {
   if (!isEmailConfigured()) {
