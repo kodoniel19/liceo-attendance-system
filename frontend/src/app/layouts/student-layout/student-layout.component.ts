@@ -450,9 +450,13 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  navigateToSubject(id: number): void {
+  navigateToSubject(id: number | null): void {
     this.markAsRead();
-    this.router.navigate(['/student/subjects', id], { queryParams: { tab: 'updates' } });
+    if (id) {
+       this.router.navigate(['/student/subjects', id], { queryParams: { tab: 'updates' } });
+    } else {
+       this.router.navigate(['/student/notifications']);
+    }
   }
 
   loadEnrollments(): void {

@@ -32,36 +32,54 @@ export class RealtimeNotificationService {
 
     console.log('📡 Real-time Notification Watcher: ACTIVE');
 
-    // Check every 5 seconds for new events (Announcements & Invites)
+    // Check every 5 seconds for new events
     this.pollingSub = interval(5000)
       .pipe(
-        filter(() => this.auth.isStudent()),
+        switchMap(() => {
+          const obs: any = {
+            announcements: this.api.getMyAnnouncements().pipe(catchError(() => of({ data: [] }))),
+          };
+          
+          if (this.auth.isStudent()) {
+            obs.enrollments = this.api.getMyEnrollments().pipe(catchError(() => of({ data: [] })));
+          }
+          
+          if (this.auth.isInstructor()) {
+            obs.instructorAnnouncements = this.api.getInstructorAnnouncements().pipe(catchError(() => of({ data: [] })));
+          }
 
-        switchMap(() => forkJoin({
-          announcements: this.api.getMyAnnouncements().pipe(catchError(() => of({ data: [] }))),
-          enrollments: this.api.getMyEnrollments().pipe(catchError(() => of({ data: [] })))
-        }))
+          return forkJoin(obs);
+        })
       )
       .subscribe((res: any) => {
-        // 1. Handle Announcements
-        const notifs = res.announcements.data || [];
-        if (notifs.length > 0) {
-          const latest = notifs[0];
+        // 1. Handle Announcements (Student or Global)
+        const studentNotifs = res.announcements?.data || [];
+        const instructorNotifs = res.instructorAnnouncements?.data || [];
+        const allNotifs = [...studentNotifs, ...instructorNotifs];
+        
+        if (allNotifs.length > 0) {
+          // Sort by ID to get the newest
+          allNotifs.sort((a, b) => b.id - a.id);
+          const latest = allNotifs[0];
+          
           if (this.lastNotifId() !== null && latest.id > (this.lastNotifId() || 0)) {
-            this.playAlert(`📢 NEW ANNOUNCEMENT\n${latest.courseCode}: ${latest.title}`, 'announcement');
+            const sourceName = latest.is_global ? 'SYSTEM' : (latest.courseCode || 'Section Update');
+            this.playAlert(`📢 NEW ANNOUNCEMENT\n${sourceName}: ${latest.title}`, 'announcement');
             this.api.triggerRefresh('announcements');
           }
           this.lastNotifId.set(latest.id);
         }
 
-        // 2. Handle New Invitations
-        const invites = (res.enrollments.data || []).filter((e: any) => e.enrollmentStatus === 'pending');
-        if (this.lastInviteCount() !== null && invites.length > (this.lastInviteCount() || 0)) {
-          const newInvite = invites[0];
-          this.playAlert(`🎓 NEW CLASS INVITATION\nYou have been invited to ${newInvite.courseCode} — ${newInvite.sectionName}`, 'invitation');
-          this.api.triggerRefresh('enrollments');
+        // 2. Handle New Invitations (Students only)
+        if (res.enrollments) {
+          const invites = (res.enrollments.data || []).filter((e: any) => e.enrollmentStatus === 'pending');
+          if (this.lastInviteCount() !== null && invites.length > (this.lastInviteCount() || 0)) {
+            const newInvite = invites[0];
+            this.playAlert(`🎓 NEW CLASS INVITATION\nYou have been invited to ${newInvite.courseCode} — ${newInvite.sectionName}`, 'invitation');
+            this.api.triggerRefresh('enrollments');
+          }
+          this.lastInviteCount.set(invites.length);
         }
-        this.lastInviteCount.set(invites.length);
       });
   }
 
