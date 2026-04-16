@@ -105,9 +105,9 @@ interface NavItem {
                   <div class="g-item__avatar" [style.background]="getAvatarColor(s.courseCode || '')">
                     {{ (s.courseCode || '?')[0] }}
                   </div>
-                  <div class="g-item__content">
-                    <div class="g-item__title">{{ s.courseCode }}</div>
-                    <div class="g-item__sub">{{ s.sectionName }}</div>
+                  <div class="g-item__content" [matTooltip]="s.courseName || ''" matTooltipPosition="right">
+                    <div class="g-item__title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ s.courseName }}</div>
+                    <div class="g-item__sub">{{ s.courseCode }} • {{ s.sectionName }}</div>
                   </div>
               </a>
               <div *ngIf="!loadingSections() && !enrollment().length" class="sidebar__empty">
@@ -465,7 +465,12 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
 
   loadEnrollments(): void {
     this.api.getMyEnrollments().subscribe({
-      next: r => { this.enrollment.set(r.data || []); this.loadingSections.set(false); },
+      next: r => { 
+        // Only show completely active enrollments in the sidebar
+        const activeOnly = (r.data || []).filter((x: any) => x.enrollmentStatus === 'active');
+        this.enrollment.set(activeOnly); 
+        this.loadingSections.set(false); 
+      },
       error: () => this.loadingSections.set(false)
     });
   }
