@@ -198,7 +198,8 @@ exports.getAnnouncements = async (req, res, next) => {
   try {
     const { sectionId } = req.params;
     const announcements = await query(
-      `SELECT a.*, u.first_name, u.last_name 
+      `SELECT a.*, DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at, 
+              u.first_name, u.last_name 
        FROM announcements a 
        JOIN users u ON a.instructor_id = u.id 
        WHERE a.class_section_id = ? 
@@ -342,7 +343,8 @@ exports.getMyAnnouncements = async (req, res, next) => {
     
     // Updated query to include global announcements
     const announcements = await query(`
-      SELECT a.id, a.title, a.content, a.created_at,
+      SELECT a.id, a.title, a.content, 
+             DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
              cl.id as sectionId, cl.section_name as sectionName,
              co.course_code as courseCode,
              u.first_name as instructorFirst, u.last_name as instructorLast,
