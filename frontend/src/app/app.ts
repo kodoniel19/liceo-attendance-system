@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { RealtimeNotificationService } from './core/services/realtime-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: `<router-outlet />`
 })
-export class App {}
+export class App implements OnInit {
+  private notif = inject(RealtimeNotificationService);
+
+  ngOnInit(): void {
+    this.notif.startWatching();
+  }
+}

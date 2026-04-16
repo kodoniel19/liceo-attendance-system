@@ -11,16 +11,16 @@ export class ToastService {
 
   constructor(private snackBar: MatSnackBar) {}
 
-  success(message: string): void {
-    this.snackBar.open(message, '✕', { ...this.defaults, panelClass: ['success-snack'] });
+  success(message: string, duration?: number): void {
+    this.snackBar.open(message, '✕', { ...this.defaults, duration: duration || this.defaults.duration, panelClass: ['success-snack'] });
   }
 
-  error(message: string): void {
-    this.snackBar.open(message, '✕', { ...this.defaults, duration: 5000, panelClass: ['error-snack'] });
+  error(message: string, duration?: number): void {
+    this.snackBar.open(message, '✕', { ...this.defaults, duration: duration || 5000, panelClass: ['error-snack'] });
   }
 
-  info(message: string): void {
-    this.snackBar.open(message, '✕', { ...this.defaults, panelClass: ['info-snack'] });
+  info(message: string, duration?: number): void {
+    this.snackBar.open(message, '✕', { ...this.defaults, duration: duration || this.defaults.duration, panelClass: ['info-snack'] });
   }
 
   extractError(err: any): string {
