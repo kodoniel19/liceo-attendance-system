@@ -82,7 +82,7 @@ exports.getStudentAttendanceHistory = async (req, res, next) => {
       JOIN class_sessions sess ON att.class_session_id = sess.id
       JOIN class_sections cl ON sess.class_section_id = cl.id
       JOIN courses c ON cl.course_id = c.id
-      WHERE att.student_id = ? AND sess.status = 'ended'
+      WHERE att.student_id = ?
       ORDER BY sess.start_time DESC
     `, [studentId]);
 
