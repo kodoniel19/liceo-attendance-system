@@ -39,20 +39,15 @@ import { ToastService } from '../../../core/services/toast.service';
         </ng-container>
 
         <ng-template #sentMsg>
-          <div style="text-align:center;padding:24px 0">
-            <div style="font-size:48px">✅</div>
-            <p style="color:var(--color-success);font-weight:600;margin-top:12px">{{ sentMessage() }}</p>
-            <p *ngIf="!devResetUrl()" style="color:var(--color-text-muted);font-size:0.875rem">Check your email inbox and follow the instructions.</p>
-            
-            <!-- Dev mode: show direct reset link -->
-            <div *ngIf="devResetUrl()" style="margin-top:16px">
-              <p style="color:var(--color-warning);font-size:0.8rem;margin-bottom:12px">
-                ⚠️ Email not configured — use the button below to reset your password directly.
-              </p>
-              <a mat-raised-button color="primary" [href]="devResetUrl()" style="width:100%;height:44px">
-                🔑 Reset Password Now
-              </a>
+          <div style="text-align:center;padding:10px 0" class="animate-fade-in">
+            <div class="success-icon-wrapper">
+              <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: var(--color-success)">check_circle</mat-icon>
             </div>
+            
+            <h3 style="color: var(--color-text); margin-top: 16px; margin-bottom: 8px">{{ sentMessage() }}</h3>
+            <p style="color:var(--color-text-muted);font-size:0.875rem">
+              Please check your university email inbox and follow the instructions to reset your password.
+            </p>
           </div>
         </ng-template>
 
@@ -73,7 +68,6 @@ export class ForgotPasswordComponent {
   loading = signal(false);
   sent = signal(false);
   sentMessage = signal('Reset link sent!');
-  devResetUrl = signal<string | null>(null);
 
   form = this.fb.group({ email: ['', [Validators.required, Validators.email]] });
 
@@ -84,12 +78,7 @@ export class ForgotPasswordComponent {
       next: (res: any) => {
         this.loading.set(false);
         this.sent.set(true);
-        if (res.devMode && res.devResetUrl) {
-          this.sentMessage.set('Reset link generated!');
-          this.devResetUrl.set(res.devResetUrl);
-        } else {
-          this.sentMessage.set(res.message || 'Reset link sent!');
-        }
+        this.sentMessage.set(res.message || 'Reset link sent!');
       },
       error: (e) => { 
         this.loading.set(false); 
