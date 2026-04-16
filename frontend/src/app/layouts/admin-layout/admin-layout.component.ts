@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-admin-layout',
@@ -285,6 +286,7 @@ export class AdminLayoutComponent implements OnInit {
   router = inject(Router);
   sidebarCollapsed = signal(false);
   showLogoutConfirm = signal(false);
+  private sub = new Subscription();
 
   // Notifications Logic
   unreadCount = signal(0);
@@ -294,11 +296,22 @@ export class AdminLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshAnnouncements();
-    this.api.refresh$.subscribe(source => {
+    
+    // Listen for cross-tab refreshes
+    this.sub.add(this.api.refresh$.subscribe(source => {
       if (source?.includes('announcements') || source === 'general') {
         this.refreshAnnouncements();
       }
-    });
+    }));
+
+    // Poll every 30 seconds for real-time updates across users
+    this.sub.add(timer(30000, 30000).subscribe(() => {
+      this.refreshAnnouncements();
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   refreshAnnouncements(): void {

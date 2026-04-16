@@ -147,6 +147,7 @@ export class AdminBroadcastComponent {
     this.api.sendGlobalBroadcast(this.title, this.content, this.targetRole).subscribe({
       next: () => {
         this.toast.success('System broadcast sent!');
+        this.api.triggerRefresh('announcements');
         this.sending.set(false);
         this.reset();
       },

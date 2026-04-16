@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,6 +13,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AuthService } from '../../core/services/auth.service';
 
 import { ApiService } from '../../core/services/api.service';
+import { Subscription, timer } from 'rxjs';
 
 interface NavItem {
   icon: string;
@@ -278,12 +279,13 @@ interface NavItem {
     .logout-modal__footer button { width: 100%; border-radius: 10px; padding: 6px 0; }
   `]
 })
-export class InstructorLayoutComponent implements OnInit {
+export class InstructorLayoutComponent implements OnInit, OnDestroy {
   auth = inject(AuthService);
   api = inject(ApiService);
   private bp = inject(BreakpointObserver);
 
   isMobile = signal(false);
+  private sub = new Subscription();
   showLogoutConfirm = signal(false);
   userInitials = computed(() => {
     const u = this.auth.user();
@@ -306,11 +308,22 @@ export class InstructorLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshAnnouncements();
-    this.api.refresh$.subscribe(source => {
+
+    // Cross-tab refresh
+    this.sub.add(this.api.refresh$.subscribe(source => {
       if (source?.includes('announcements') || source === 'general') {
         this.refreshAnnouncements();
       }
-    });
+    }));
+
+    // Local user polling (e.g. for when admin sends a broadcast)
+    this.sub.add(timer(30000, 30000).subscribe(() => {
+      this.refreshAnnouncements();
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   // Notifications Logic

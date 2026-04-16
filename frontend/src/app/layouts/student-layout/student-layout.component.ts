@@ -385,7 +385,7 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
   hasUnread = computed(() => this.unreadCount() > 0);
   recentAnnouncements = signal<any[]>([]);
   private lastCheckedId = 0;
-  private pollSub?: Subscription;
+  private sub = new Subscription();
 
   enrollment = signal<ClassSection[]>([]);
   loadingSections = signal(true);
@@ -404,18 +404,23 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
     this.loadEnrollments();
     this.refreshAnnouncements();
 
-    // Listen for real-time updates from central notification service
-    this.api.refresh$.subscribe(source => {
+    // Listen for real-time updates from central notification service (Cross-tab)
+    this.sub.add(this.api.refresh$.subscribe(source => {
       if (source?.includes('announcements') || source?.includes('enrollments') || source === 'general') {
         this.refreshAnnouncements();
         this.loadEnrollments();
       }
-    });
+    }));
+
+    // Poll every 30 seconds for real-time updates across users
+    this.sub.add(timer(30000, 30000).subscribe(() => {
+      this.refreshAnnouncements();
+    }));
   }
 
 
   ngOnDestroy(): void {
-    if (this.pollSub) this.pollSub.unsubscribe();
+    this.sub.unsubscribe();
   }
 
   refreshAnnouncements(): void {
