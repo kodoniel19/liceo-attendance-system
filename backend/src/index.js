@@ -27,7 +27,9 @@ async function initializeDatabase() {
     
     if (fs.existsSync(schemaPath)) {
       let schema = fs.readFileSync(schemaPath, 'utf8');
-      schema = schema.replace(/CREATE DATABASE[\s\S]*?;/gi, '').replace(/USE\s+[\w`]+\s*;/gi, '').trim();
+      // Only execute the DDL part of the schema, skip sample data to prevent duplicates on restart
+      const schemaParts = schema.split('-- SAMPLE DATA');
+      schema = schemaParts[0].replace(/CREATE DATABASE[\s\S]*?;/gi, '').replace(/USE\s+[\w`]+\s*;/gi, '').trim();
       const statements = schema.split(';').map(s => s.trim()).filter(s => s.length > 5);
       
       for (const stmt of statements) {
@@ -68,6 +70,23 @@ async function initializeDatabase() {
       `, [adminPass]);
 
       logger.info('✅ Database schema verified/initialized');
+
+      // 🧹 CLEANUP BUGGY DUPLICATE SECTIONS (from previous startup bug)
+      try {
+        await conn.query(`
+          DELETE FROM class_sections 
+          WHERE id NOT IN (
+            SELECT min_id FROM (
+              SELECT MIN(id) as min_id 
+              FROM class_sections 
+              GROUP BY course_id, instructor_id, section_name, academic_year, semester
+            ) temp
+          )
+        `);
+        logger.info('🧹 Cleaned up any phantom duplicate class sections');
+      } catch (e) {
+        logger.error('Error cleaning up duplicates:', e.message);
+      }
 
       // DIAGNOSTIC CHECK
       const [countResult] = await conn.query('SELECT COUNT(*) as count FROM users');

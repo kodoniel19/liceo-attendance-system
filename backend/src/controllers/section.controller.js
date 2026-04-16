@@ -139,10 +139,10 @@ exports.enrollStudent = async (req, res, next) => {
       } else {
         // Re-activate a dropped or incomplete enrollment
         await query(
-          "UPDATE enrollments SET status = 'active', enrollment_date = CURDATE() WHERE id = ?",
+          "UPDATE enrollments SET status = 'pending', enrollment_date = CURDATE() WHERE id = ?",
           [existing[0].id]
         );
-        return res.json({ success: true, message: 'Student enrollment reactivated.' });
+        return res.json({ success: true, message: 'Student re-invited.' });
       }
     }
 
