@@ -395,7 +395,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
           </div>
 
           <div class="modal-tabs-body">
-             <div class="tab-pad" style="flex: auto; border-bottom: 1px solid var(--color-border); max-height: 250px">
+             <div class="tab-pad" style="flex: none; border-bottom: 1px solid var(--color-border); padding-bottom: 16px;">
                 <h4 style="margin: 0 0 12px; font-size: 0.9rem; color: var(--color-primary)">New Announcement</h4>
                 <div class="announcement-form">
                    <mat-form-field appearance="outline" class="full-width">
