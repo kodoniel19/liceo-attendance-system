@@ -2,19 +2,14 @@ const nodemailer = require('nodemailer');
 const logger = require('./logger');
 
 // Dev fallback: log to console when no SMTP configured
-const isEmailConfigured = () => !!process.env.SMTP_USER && !!process.env.SMTP_PASS;
-
-const getTransporter = () => {
-  if (!isEmailConfigured()) {
-    throw new Error('SMTP_NOT_CONFIGURED');
-  }
+const createTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: { 
-      user: process.env.SMTP_USER?.trim(), 
-      pass: process.env.SMTP_PASS?.trim() 
+      user: (process.env.SMTP_USER || '').trim(), 
+      pass: (process.env.SMTP_PASS || '').trim() 
     },
     tls: { rejectUnauthorized: false }
   });
@@ -66,7 +61,7 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
 
-  const transporter = getTransporter();
+  const transporter = createTransporter();
   await transporter.sendMail({
     from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
     to: email,
@@ -88,7 +83,7 @@ exports.sendWelcome = async (email, firstName, role) => {
     </div>
   `);
 
-  const transporter = getTransporter();
+  const transporter = createTransporter();
   await transporter.sendMail({
     from: `"Liceo Attendance System" <${process.env.SMTP_USER}>`,
     to: email,
