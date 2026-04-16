@@ -27,9 +27,9 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
   template: `
     <div class="page-container">
       <div class="page-header animate-fade-in-up">
-        <div class="page-header__title">
-          <h1>{{ viewFilter() === 'active' ? 'My Classes' : 'Recycle Bin' }}</h1>
-          <p>{{ viewFilter() === 'active' ? 'Manage your class sections and student enrollments' : 'Restore or permanently remove archived sections' }}</p>
+        <div class="page-header__title" [class.admin-header-title]="auth.user()?.role === 'admin'">
+          <h1>{{ viewFilter() === 'active' ? (auth.user()?.role === 'admin' ? 'All Classes' : 'My Classes') : 'Recycle Bin' }}</h1>
+          <p>{{ viewFilter() === 'active' ? (auth.user()?.role === 'admin' ? 'Manage all the class sections' : 'Manage your class sections and student enrollments') : 'Restore or permanently remove archived sections' }}</p>
         </div>
         <div class="header-actions">
           <div class="pill-toggle" *ngIf="auth.user()?.role === 'admin'">
@@ -461,7 +461,12 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
     .confirm-modal__icon { font-size:48px; }
     .confirm-modal__footer { display:flex; justify-content:center; gap:12px; }
 
-    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom: 24px; }
+    .page-header__title h1 { font-size: 1.6rem; font-weight: 800; color: #8B1A1A; margin: 0 0 2px; }
+    .page-header__title p { color: #64748b; font-size: 0.9rem; margin: 0; }
+    
+    .admin-header-title h1 { color: #1a1a2e !important; }
+    
     .header-actions { display: flex; align-items: center; gap: 16px; }
 
     /* Pill Toggle */
