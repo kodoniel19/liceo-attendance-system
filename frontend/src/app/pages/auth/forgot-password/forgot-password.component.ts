@@ -29,9 +29,9 @@ import { ToastService } from '../../../core/services/toast.service';
         <div class="contact-card">
           <p style="font-weight: 600; color: var(--color-primary); margin-bottom: 8px">How to reset:</p>
           <ul style="padding-left: 20px; color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.6">
-            <li>Visit the Information Technology office.</li>
+            <li>Visit your assigned department.</li>
             <li>Present your University ID for verification.</li>
-            <li>Request a temporary password reset.</li>
+            <li>Request a password reset.</li>
           </ul>
         </div>
 
