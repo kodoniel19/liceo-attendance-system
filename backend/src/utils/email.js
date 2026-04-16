@@ -11,7 +11,10 @@ const createTransporter = () => {
       user: (process.env.SMTP_USER || '').trim(), 
       pass: (process.env.SMTP_PASS || '').trim() 
     },
-    tls: { rejectUnauthorized: false }
+    tls: { rejectUnauthorized: false },
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000
   });
 };
 
