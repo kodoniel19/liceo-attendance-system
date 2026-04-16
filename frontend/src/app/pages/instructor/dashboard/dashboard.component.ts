@@ -23,8 +23,9 @@ import { ClassSession } from '../../../core/models';
           <p>Here's your attendance overview for today, {{ today }}</p>
         </div>
         <div class="page-header__actions">
-          <a mat-raised-button color="primary" routerLink="/instructor/sessions">
-            <mat-icon>add</mat-icon> New Session
+          <a mat-flat-button class="btn-premium" routerLink="/instructor/sessions">
+            <mat-icon>add</mat-icon> 
+            <span>New Session</span>
           </a>
         </div>
       </div>
@@ -106,8 +107,9 @@ import { ClassSession } from '../../../core/models';
         <span class="material-icons">event_available</span>
         <h3>No Active Sessions</h3>
         <p>Start a new session to begin tracking attendance with QR codes.</p>
-        <a mat-raised-button color="primary" routerLink="/instructor/sessions" style="margin-top:16px">
-          <mat-icon>add</mat-icon> Create Session
+        <a mat-flat-button class="btn-premium" routerLink="/instructor/sessions" style="margin-top:16px">
+          <mat-icon>add</mat-icon> 
+          <span>Create Session</span>
         </a>
       </div>
     </div>
@@ -159,6 +161,19 @@ import { ClassSession } from '../../../core/models';
     .session-stat__value { display: block; font-size: 1.5rem; font-weight: 800; }
     .session-stat__label { font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
     .session-card__footer { display: flex; justify-content: flex-end; }
+    
+    .btn-premium {
+      background: linear-gradient(135deg, #8B1A1A 0%, #B91C1C 100%) !important;
+      color: white !important; border-radius: 30px !important; padding: 0 24px !important; height: 48px !important;
+      font-weight: 700 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
+      box-shadow: 0 8px 20px rgba(139, 26, 26, 0.3) !important;
+      transition: all 0.3s ease !important; border: none !important; cursor: pointer !important;
+      
+      &:hover { transform: translateY(-2px) !important; box-shadow: 0 12px 25px rgba(139, 26, 26, 0.4) !important; }
+      &:active { transform: translateY(0) !important; }
+      
+      mat-icon { font-size: 20px; width: 20px; height: 20px; margin: 0 !important; }
+    }
   `]
 })
 export class InstructorDashboardComponent implements OnInit {

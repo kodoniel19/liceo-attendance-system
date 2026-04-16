@@ -66,11 +66,10 @@ import { ToastService } from '../../../core/services/toast.service';
               </div>
 
               <div class="form-actions">
-                 <button type="button" mat-button (click)="reset()">Clear Form</button>
-                 <button type="submit" mat-raised-button color="primary" 
-                         [disabled]="sending() || !title || !content">
-                    <mat-icon *ngIf="!sending()">send</mat-icon>
+                 <button type="button" mat-button class="btn-clear" (click)="reset()">Clear Form</button>
+                 <button type="submit" mat-flat-button class="btn-broadcast" [disabled]="sending() || !title || !content">
                     <mat-spinner diameter="18" *ngIf="sending()"></mat-spinner>
+                    <mat-icon *ngIf="!sending()">send</mat-icon>
                     <span>{{ sending() ? 'Broadcasting...' : 'Broadcast to University' }}</span>
                  </button>
               </div>
@@ -119,10 +118,24 @@ import { ToastService } from '../../../core/services/toast.service';
     .char-count { align-self: flex-end; font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
 
     .form-actions { 
-       display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px;
-       @media (max-width: 480px) { flex-direction: column; align-items: stretch; }
+        display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px;
+        @media (max-width: 480px) { flex-direction: column; align-items: stretch; }
     }
-    .form-actions button[mat-raised-button] { padding: 0 32px; height: 48px; border-radius: 24px; font-weight: 700; letter-spacing: 0.02em; }
+    .btn-clear { font-weight: 700; color: #64748b; border-radius: 20px; }
+    .btn-broadcast { 
+        background: linear-gradient(135deg, #8b1a1a 0%, #b91c1c 100%);
+        color: white; border-radius: 30px; padding: 0 40px; height: 54px;
+        font-weight: 800; font-size: 1rem; border: none; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 10px 25px rgba(185, 28, 28, 0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        
+        &:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(185, 28, 28, 0.5); }
+        &:active { transform: translateY(0); }
+        &:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+        
+        mat-icon { font-size: 22px; width: 22px; height: 22px; margin: 0; }
+    }
 
     .target-options { 
        display: flex; gap: 24px; margin-top: 8px; flex-wrap: wrap; 
