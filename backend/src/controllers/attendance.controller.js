@@ -55,15 +55,17 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
         SUM(CASE WHEN a.status = 'late'    THEN 1 ELSE 0 END) AS lateCount,
         SUM(CASE WHEN a.status = 'absent'  THEN 1 ELSE 0 END) AS absentCount,
         SUM(CASE WHEN a.status = 'excused' THEN 1 ELSE 0 END) AS excusedCount,
-        ROUND(
-          (SUM(CASE WHEN a.status IN ('present','late') THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 2
+        COALESCE(
+          ROUND(
+            (SUM(CASE WHEN a.status IN ('present','late') THEN 1 ELSE 0 END) / NULLIF(COUNT(a.id), 0)) * 100, 2
+          ), 100.00
         ) AS attendanceRate
-      FROM attendance a
-      JOIN class_sessions cs ON a.class_session_id = cs.id
-      JOIN class_sections cl ON cs.class_section_id = cl.id
+      FROM enrollments e
+      JOIN class_sections cl ON e.class_section_id = cl.id
       JOIN courses co ON cl.course_id = co.id
-      JOIN enrollments e ON e.class_section_id = cl.id AND e.student_id = a.student_id
-      WHERE a.student_id = ? AND cs.status != 'cancelled' AND e.status = 'active'
+      LEFT JOIN class_sessions cs ON cs.class_section_id = cl.id AND cs.status != 'cancelled'
+      LEFT JOIN attendance a ON a.class_session_id = cs.id AND a.student_id = e.student_id
+      WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
       GROUP BY cl.id, co.id
     `, [studentId]);
 
