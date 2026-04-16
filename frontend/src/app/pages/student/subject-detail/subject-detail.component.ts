@@ -165,7 +165,13 @@ import { Subscription, forkJoin } from 'rxjs';
   styles: [`
     .back-link { font-size:0.8rem; color:var(--color-text-muted); display:flex; align-items:center; gap:4px; margin-bottom:8px; text-decoration:none; &:hover { color:var(--color-primary); } .material-icons { font-size:16px; } }
     
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .history-card { gap: 12px; padding: 12px; }
+      .history-card__date { min-width: 40px; padding-right: 12px; }
+      .date-day { font-size: 1.1rem; }
+    }
     
     .tab-content { 
       padding: 24px 0;

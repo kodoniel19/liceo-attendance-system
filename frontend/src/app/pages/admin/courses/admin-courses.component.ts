@@ -181,7 +181,8 @@ import { Course } from '../../../core/models';
     .btn-admin { background: #8B1A1A !important; color: white !important; border-radius: 12px !important; padding: 0 24px !important; height: 46px !important; font-weight: 700 !important; }
     .btn-primary-admin { background: #8B1A1A !important; color: white !important; }
     
-    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    @media (max-width: 480px) { .courses-grid { grid-template-columns: 1fr; } }
     
     .course-card {
       background: white; border-radius: 20px; padding: 24px; position: relative;
@@ -207,6 +208,14 @@ import { Course } from '../../../core/models';
     .action-btn { 
       height: 40px !important; border-radius: 10px !important; 
       display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700 !important;
+      background: rgba(139, 26, 26, 0.08) !important;
+      color: #8B1A1A !important;
+      border: none !important;
+      transition: all 0.2s ease !important;
+    }
+    .action-btn:hover {
+      background: #8B1A1A !important;
+      color: white !important;
     }
     
     .archive-btn {
