@@ -245,7 +245,7 @@ exports.getAvailableStudents = async (req, res, next) => {
                WHERE role = 'student' AND is_active = 1
                AND id NOT IN (
                  SELECT student_id FROM enrollments
-                 WHERE class_section_id = ? AND status = 'active'
+                 WHERE class_section_id = ? AND status IN ('active', 'pending')
                )`;
     const params = [sectionId];
     if (search) {

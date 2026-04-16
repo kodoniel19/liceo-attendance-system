@@ -232,9 +232,13 @@ export class HistoryComponent implements OnInit {
     this.loading.set(true);
     const params: any = {};
     
-    // Combine month and year for back-end (YYYY-MM)
-    if (this.monthCtrl.value && this.yearCtrl.value) {
-      params['month'] = `${this.yearCtrl.value}-${this.monthCtrl.value}`;
+    // Filter by specific month+year OR just by year
+    if (this.yearCtrl.value) {
+      if (this.monthCtrl.value) {
+        params['month'] = `${this.yearCtrl.value}-${this.monthCtrl.value}`;
+      } else {
+        params['year'] = this.yearCtrl.value;
+      }
     }
     
     if (this.sectionFilter.value) params['sectionId'] = this.sectionFilter.value;

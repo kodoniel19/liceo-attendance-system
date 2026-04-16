@@ -889,8 +889,14 @@ export class SectionsComponent implements OnInit {
       if (!targetSid) return;
       this.api.getAvailableStudents(targetSid, query).subscribe({
         next: r => {
-          if (forAddModal) this.addSearchResults.set(r.data || []);
-          else this.searchResults.set(r.data || []);
+          let results = r.data || [];
+          if (forAddModal) {
+            const enrolledIds = this.enrolledStudents().map(s => s.id);
+            results = results.filter((s: any) => !enrolledIds.includes(s.id));
+            this.addSearchResults.set(results);
+          } else {
+            this.searchResults.set(results);
+          }
         }
       });
     }

@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 exports.getMyAttendance = async (req, res, next) => {
   try {
     const studentId = req.user.id;
-    const { sectionId, month } = req.query;
+    const { sectionId, month, year } = req.query;
 
     let sql = `
       SELECT a.*, 
@@ -28,6 +28,9 @@ exports.getMyAttendance = async (req, res, next) => {
     if (month) {
       sql += ' AND DATE_FORMAT(cs.session_date, "%Y-%m") = ?';
       params.push(month);
+    } else if (year) {
+      sql += ' AND YEAR(cs.session_date) = ?';
+      params.push(year);
     }
 
     sql += ' ORDER BY cs.session_date DESC';
