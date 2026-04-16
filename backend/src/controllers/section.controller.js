@@ -1,5 +1,6 @@
 const { query } = require('../config/database');
 const logger = require('../utils/logger');
+const { getPHTNow } = require('../utils/time');
 
 exports.getSections = async (req, res, next) => {
   try {
