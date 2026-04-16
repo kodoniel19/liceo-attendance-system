@@ -16,12 +16,10 @@ async function setup() {
   try {
     conn = await mysql.createConnection({
       host, port, user, password,
+      database: dbName, // Connect directly to the database
       multipleStatements: true
     });
     console.log('✅ Connected to MySQL.');
-
-    await conn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
-    await conn.query(`USE \`${dbName}\``);
 
     const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
     if (fs.existsSync(schemaPath)) {
