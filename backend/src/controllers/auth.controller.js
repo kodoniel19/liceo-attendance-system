@@ -148,9 +148,9 @@ exports.register = async (req, res, next) => {
     const newUsers = await query('SELECT * FROM users WHERE id = ? LIMIT 1', [result.insertId]);
     logger.info(`New user registered: ${email} (${actualRole})${googleSignUp ? ' via Google' : ''}`);
 
-    res.status(201).json({ 
-      success: true, 
-      message: 'Account created successfully! Please sign in with your credentials.' 
+    res.status(201).json({
+      success: true,
+      message: 'Account created successfully! Please sign in with your credentials.'
     });
   } catch (err) {
     next(err);
