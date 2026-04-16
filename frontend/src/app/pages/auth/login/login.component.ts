@@ -36,6 +36,13 @@ declare var google: any;
       <!-- Right Panel -->
       <div class="auth-page__right animate-fade-in-up">
         <div class="auth-form-wrap">
+          <!-- Mobile Branding -->
+          <div class="mobile-branding-header">
+             <img src="assets/images/logo.png" alt="LDCU Logo" class="mobile-logo">
+             <h1 class="mobile-title">Liceo de Cagayan University</h1>
+             <p class="mobile-subtitle">QR Code Attendance System</p>
+          </div>
+
           <div class="auth-header">
             <div class="auth-badge">Welcome back</div>
             <h2>Sign In</h2>

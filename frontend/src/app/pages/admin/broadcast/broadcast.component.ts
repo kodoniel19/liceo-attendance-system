@@ -97,8 +97,10 @@ import { ToastService } from '../../../core/services/toast.service';
     }
 
     .broadcast-card-main {
-       background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); padding: 40px;
-       position: relative; overflow: hidden;
+        background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); padding: 40px;
+        position: relative; overflow: hidden;
+        width: 100%;
+        @media (max-width: 600px) { padding: 24px; }
     }
     .card-header-icon {
        position: absolute; top: -10px; right: -10px; opacity: 0.05;
@@ -116,10 +118,16 @@ import { ToastService } from '../../../core/services/toast.service';
     }
     .char-count { align-self: flex-end; font-size: 0.75rem; color: #94a3b8; margin-top: 4px; }
 
-    .form-actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px; }
+    .form-actions { 
+       display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px;
+       @media (max-width: 480px) { flex-direction: column; align-items: stretch; }
+    }
     .form-actions button[mat-raised-button] { padding: 0 32px; height: 48px; border-radius: 24px; font-weight: 700; letter-spacing: 0.02em; }
 
-    .target-options { display: flex; gap: 24px; margin-top: 8px; }
+    .target-options { 
+       display: flex; gap: 24px; margin-top: 8px; flex-wrap: wrap; 
+       @media (max-width: 600px) { flex-direction: column; gap: 12px; }
+    }
     .target-option { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #475569; font-weight: 600; }
     .target-option input { width: 18px; height: 18px; cursor: pointer; border: 2px solid #cbd5e1; transition: all 0.2s; }
   `]

@@ -34,6 +34,13 @@ import { ToastService } from '../../../core/services/toast.service';
 
       <div class="auth-page__right animate-fade-in-up">
         <div style="width:100%;max-width:400px">
+          <!-- Mobile Branding -->
+          <div class="mobile-branding-header">
+             <img src="assets/images/logo.png" alt="LDCU Logo" class="mobile-logo">
+             <h1 class="mobile-title">Liceo de Cagayan University</h1>
+             <p class="mobile-subtitle">QR Code Attendance System</p>
+          </div>
+
           <div class="auth-header">
             <div class="auth-badge">New Account</div>
             <h2>Create Account</h2>
