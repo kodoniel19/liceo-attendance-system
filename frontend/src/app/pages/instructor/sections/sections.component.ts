@@ -87,7 +87,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
             </div>
             <div class="section-meta-item" *ngIf="s.instructorFirst">
               <span class="material-icons">person</span>
-              <span>{{ s.instructorFirst }} {{ s.instructorLast }}</span>
+              <span>Instructor: {{ s.instructorFirst }} {{ s.instructorLast }}</span>
             </div>
             <div class="section-meta-item">
               <span class="material-icons">people</span>

@@ -68,6 +68,11 @@ import { Course } from '../../../core/models';
             {{ c.department }}
           </div>
 
+          <div class="course-dept" *ngIf="c.instructorName">
+            <mat-icon style="font-size:16px; width:16px; height:16px; margin-right:4px">person</mat-icon>
+            Instructor: {{ c.instructorName }}
+          </div>
+
           <div class="course-desc">{{ c.description || 'No description provided.' }}</div>
           
           <div class="course-actions">

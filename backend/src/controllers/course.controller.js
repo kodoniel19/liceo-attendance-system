@@ -4,30 +4,39 @@ const logger = require('../utils/logger');
 exports.getCourses = async (req, res, next) => {
   try {
     const { search, department, isActive, all } = req.query;
-    let sql = 'SELECT * FROM courses WHERE 1=1';
+    let sql = `
+      SELECT c.*, 
+             (SELECT CONCAT(u.first_name, ' ', u.last_name) 
+              FROM class_sections s 
+              JOIN users u ON s.instructor_id = u.id 
+              WHERE s.course_id = c.id AND s.is_active = 1 
+              LIMIT 1) as instructorName
+      FROM courses c
+      WHERE 1=1
+    `;
     const params = [];
 
     if (search) { 
-      sql += ' AND (course_code LIKE ? OR course_name LIKE ?)'; 
+      sql += ' AND (c.course_code LIKE ? OR c.course_name LIKE ?)'; 
       const s = `%${search}%`; 
       params.push(s, s); 
     }
     if (department) { 
-      sql += ' AND department = ?'; 
+      sql += ' AND c.department = ?'; 
       params.push(department); 
     }
     
     // If 'all' is not present, apply is_active and default to 1 (active only)
     if (all !== 'true') {
       if (isActive !== undefined) { 
-        sql += ' AND is_active = ?'; 
+        sql += ' AND c.is_active = ?'; 
         params.push(isActive === 'true' ? 1 : 0); 
       } else {
-        sql += ' AND is_active = 1';
+        sql += ' AND c.is_active = 1';
       }
     }
     
-    sql += ' ORDER BY course_code ASC';
+    sql += ' ORDER BY c.course_code ASC';
     const courses = await query(sql, params);
     res.json({ success: true, data: courses });
   } catch (err) { next(err); }
