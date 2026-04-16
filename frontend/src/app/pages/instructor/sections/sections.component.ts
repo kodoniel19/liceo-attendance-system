@@ -100,7 +100,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
             </span>
             <div class="footer-actions">
               <ng-container *ngIf="viewFilter() === 'active'">
-                <button mat-stroked-button (click)="openStudentsModal(s)">
+                <button mat-flat-button class="btn-manage-students" (click)="openStudentsModal(s)">
                   <mat-icon>group</mat-icon> Manage Students
                 </button>
               </ng-container>
@@ -229,7 +229,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
               </mat-tab>
 
               <!-- ── TAB 2: Add Students (only on create) ── -->
-              <mat-tab label="👥 Add Students">
+              <mat-tab *ngIf="!editingSection()" label="👥 Add Students">
                 <div class="tab-pad">
                   <p class="tab-desc">Search and pre-enroll students into this section.</p>
 
@@ -500,6 +500,21 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
     .schedule-lines { display:flex; flex-direction:column; gap:2px; }
     .section-card__footer { display:flex; justify-content:space-between; align-items:center; }
     .footer-actions { display:flex; gap:8px; }
+    .btn-manage-students {
+      background: rgba(139, 26, 26, 0.08) !important;
+      color: var(--color-primary) !important;
+      border-radius: 8px !important;
+      font-weight: 700 !important;
+      font-size: 0.8rem !important;
+      padding: 0 16px !important;
+      transition: all 0.2s ease !important;
+    }
+    .btn-manage-students:hover {
+      background: var(--color-primary) !important;
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 26, 26, 0.2) !important;
+    }
 
     /* Modals */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000; padding:16px; }
