@@ -8,6 +8,7 @@ router.use(authenticate);
 // Move global student routes above parameterized routes to prevent collision
 router.get('/my/enrolled', authorize('student'), sectionController.getMyEnrolledSections);
 router.get('/my/announcements', authorize('student'), sectionController.getMyAnnouncements);
+router.get('/instructor/announcements', authorize('instructor'), sectionController.getInstructorAnnouncements);
 
 router.get('/', sectionController.getSections);
 router.get('/:id', sectionController.getSection);

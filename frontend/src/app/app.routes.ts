@@ -119,6 +119,11 @@ export const routes: Routes = [
         title: 'Reports – Liceo Attendance'
       },
       {
+        path: 'notifications',
+        loadComponent: () => import('./pages/instructor/notifications/notifications').then(m => m.InstructorNotificationsComponent),
+        title: 'Announcements – Liceo Attendance'
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./pages/shared/profile/profile.component').then(m => m.ProfileComponent),
         title: 'Profile – Liceo Attendance'

@@ -165,6 +165,7 @@ CREATE TABLE IF NOT EXISTS announcements (
     title VARCHAR(200) NOT NULL,
     content TEXT NOT NULL,
     is_global BOOLEAN DEFAULT FALSE,
+    target_role ENUM('all', 'student', 'instructor') DEFAULT 'all',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (class_section_id) REFERENCES class_sections(id) ON DELETE CASCADE,
     FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE CASCADE,

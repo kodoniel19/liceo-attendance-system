@@ -47,6 +47,24 @@ import { ToastService } from '../../../core/services/toast.service';
                  <span class="char-count">{{ content.length }} characters</span>
               </div>
 
+              <div class="form-group">
+                 <label>Target Audience</label>
+                 <div class="target-options">
+                   <label class="target-option">
+                     <input type="radio" name="targetRole" [(ngModel)]="targetRole" value="all">
+                     <span>All Users</span>
+                   </label>
+                   <label class="target-option">
+                     <input type="radio" name="targetRole" [(ngModel)]="targetRole" value="student">
+                     <span>Students Only</span>
+                   </label>
+                   <label class="target-option">
+                     <input type="radio" name="targetRole" [(ngModel)]="targetRole" value="instructor">
+                     <span>Instructors Only</span>
+                   </label>
+                 </div>
+              </div>
+
               <div class="form-actions">
                  <button type="button" mat-button (click)="reset()">Clear Form</button>
                  <button type="submit" mat-raised-button color="primary" 
@@ -100,6 +118,10 @@ import { ToastService } from '../../../core/services/toast.service';
 
     .form-actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px; }
     .form-actions button[mat-raised-button] { padding: 0 32px; height: 48px; border-radius: 24px; font-weight: 700; letter-spacing: 0.02em; }
+
+    .target-options { display: flex; gap: 24px; margin-top: 8px; }
+    .target-option { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #475569; font-weight: 600; }
+    .target-option input { width: 18px; height: 18px; cursor: pointer; border: 2px solid #cbd5e1; transition: all 0.2s; }
   `]
 })
 export class AdminBroadcastComponent {
@@ -108,14 +130,15 @@ export class AdminBroadcastComponent {
 
   title = '';
   content = '';
+  targetRole = 'all';
   sending = signal(false);
 
   send(): void {
     if (!this.title || !this.content) return;
     this.sending.set(true);
-    this.api.sendGlobalBroadcast(this.title, this.content).subscribe({
+    this.api.sendGlobalBroadcast(this.title, this.content, this.targetRole).subscribe({
       next: () => {
-        this.toast.success('University-wide broadcast sent!');
+        this.toast.success('System broadcast sent!');
         this.sending.set(false);
         this.reset();
       },
@@ -129,5 +152,6 @@ export class AdminBroadcastComponent {
   reset(): void {
     this.title = '';
     this.content = '';
+    this.targetRole = 'all';
   }
 }

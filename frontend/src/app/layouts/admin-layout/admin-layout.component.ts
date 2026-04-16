@@ -1,14 +1,16 @@
-import { Component, signal, inject, HostListener } from '@angular/core';
+import { Component, signal, inject, HostListener, OnInit, computed } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, MatIconModule, MatButtonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, MatIconModule, MatButtonModule, MatMenuModule],
   template: `
     <div class="admin-shell">
       <!-- Sidebar -->
@@ -90,6 +92,25 @@ import { AuthService } from '../../core/services/auth.service';
             <span class="topbar-greeting">Admin Control Panel</span>
           </div>
           <div class="topbar-right">
+            <!-- Notification Bell -->
+            <button mat-icon-button class="notification-bell" [matMenuTriggerFor]="notifMenu" [class.pulse-active]="hasUnread()" (menuOpened)="markAsRead()">
+               <mat-icon [class.pulse]="hasUnread()">{{ hasUnread() ? 'notifications_active' : 'notifications' }}</mat-icon>
+               <span *ngIf="unreadCount() > 0" class="notif-badge">{{ unreadCount() }}</span>
+            </button>
+            <mat-menu #notifMenu="matMenu" class="modern-notif-menu">
+               <div class="notif-menu-header">Recent Broadcasts</div>
+               <button mat-menu-item *ngFor="let a of recentAnnouncements()" routerLink="/admin/broadcast">
+                  <div class="notif-item">
+                     <div class="notif-dot"></div>
+                     <div class="notif-item-body">
+                        <div class="notif-item-title">{{ a.title }}</div>
+                        <div class="notif-item-meta">By Admin • {{ a.created_at | date:'shortTime' }}</div>
+                     </div>
+                  </div>
+               </button>
+               <div *ngIf="recentAnnouncements().length === 0" class="notif-empty">No unread broadcasts</div>
+            </mat-menu>
+
             <div class="topbar-badge admin-badge">ADMIN</div>
           </div>
         </div>
@@ -222,13 +243,86 @@ import { AuthService } from '../../core/services/auth.service';
     .logout-modal__footer { display: flex; flex-direction: column; gap: 8px; }
     .btn-logout { background: #e94560; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; &:hover { background: #c23152; } }
     .btn-cancel { background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; &:hover { background: #e2e8f0; } }
+
+    /* Notifications */
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .notification-bell {
+       color: #64748b; position: relative;
+       width: 40px !important; height: 40px !important;
+       .mat-icon { font-size: 22px; }
+    }
+    .notif-badge {
+       position: absolute; top: 6px; right: 6px;
+       background: #e94560; color: white; font-size: 9px; font-weight: 800;
+       width: 14px; height: 14px; border-radius: 50%;
+       display: flex; align-items: center; justify-content: center;
+       border: 2px solid white;
+    }
+    .modern-notif-menu {
+       width: 280px; border-radius: 16px !important; overflow: hidden;
+       box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+    .notif-menu-header { padding: 12px 16px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #e94560; border-bottom: 1px solid #eee; background: #fdfdfd; }
+    .notif-item { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+    .notif-dot { width: 8px; height: 8px; background: #e94560; border-radius: 50%; flex-shrink: 0; }
+    .notif-item-body { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .notif-item-title { font-weight: 700; font-size: 0.82rem; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .notif-item-meta { font-size: 0.7rem; color: #666; font-weight: 500; }
+    .notif-empty { padding: 24px; text-align: center; color: #999; font-size: 0.82rem; }
+
+    .notification-bell.pulse-active {
+      animation: bellGlowAdmin 1.5s infinite alternate;
+    }
+    @keyframes bellGlowAdmin {
+      from { box-shadow: 0 0 0 rgba(233, 69, 96, 0); }
+      to { box-shadow: 0 0 15px rgba(233, 69, 96, 0.2); }
+    }
   `]
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   auth = inject(AuthService);
+  api = inject(ApiService);
   router = inject(Router);
   sidebarCollapsed = signal(false);
   showLogoutConfirm = signal(false);
+
+  // Notifications Logic
+  unreadCount = signal(0);
+  hasUnread = computed(() => this.unreadCount() > 0);
+  recentAnnouncements = signal<any[]>([]);
+  private lastCheckedId = 0;
+
+  ngOnInit(): void {
+    this.refreshAnnouncements();
+    this.api.refresh$.subscribe(source => {
+      if (source?.includes('announcements') || source === 'general') {
+        this.refreshAnnouncements();
+      }
+    });
+  }
+
+  refreshAnnouncements(): void {
+    const savedLastId = localStorage.getItem('last_admin_notif_id');
+    if (savedLastId) this.lastCheckedId = parseInt(savedLastId);
+
+    this.api.getInstructorAnnouncements().subscribe(r => {
+      const announcements = r.data || [];
+      announcements.sort((a: any, b: any) => b.id - a.id);
+      this.recentAnnouncements.set(announcements.slice(0, 5));
+      
+      const newUnread = announcements.filter((a: any) => a.id > this.lastCheckedId).length;
+      this.unreadCount.set(newUnread);
+    });
+  }
+
+  markAsRead(): void {
+    const latest = this.recentAnnouncements()[0];
+    if (latest) {
+      this.lastCheckedId = latest.id;
+      localStorage.setItem('last_admin_notif_id', this.lastCheckedId.toString());
+      this.unreadCount.set(0);
+    }
+  }
 
   toggleSidebar(): void { this.sidebarCollapsed.update(v => !v); }
 

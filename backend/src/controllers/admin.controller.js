@@ -45,12 +45,12 @@ exports.getAtRiskStudents = async (req, res, next) => {
 // FEATURE #5: Global Broadcast Creation
 exports.createGlobalAnnouncement = async (req, res, next) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, targetRole } = req.body;
     const adminId = req.user.id;
 
     const result = await query(
-      'INSERT INTO announcements (instructor_id, title, content, is_global) VALUES (?, ?, ?, TRUE)',
-      [adminId, title, content]
+      'INSERT INTO announcements (instructor_id, title, content, is_global, target_role) VALUES (?, ?, ?, TRUE, ?)',
+      [adminId, title, content, targetRole || 'all']
     );
 
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });

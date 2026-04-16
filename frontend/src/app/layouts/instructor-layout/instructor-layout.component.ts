@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -11,6 +11,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AuthService } from '../../core/services/auth.service';
+
+import { ApiService } from '../../core/services/api.service';
 
 interface NavItem {
   icon: string;
@@ -43,6 +45,28 @@ interface NavItem {
             <span class="sidebar__brand-name">Liceo</span>
             <span class="sidebar__brand-sub">Attendance System</span>
           </div>
+
+          <!-- Notification Bell -->
+          <button mat-icon-button class="notification-bell" [matMenuTriggerFor]="notifMenu" [class.pulse-active]="hasUnread()" (menuOpened)="markAsRead()">
+             <mat-icon [class.pulse]="hasUnread()">{{ hasUnread() ? 'notifications_active' : 'notifications' }}</mat-icon>
+             <span *ngIf="unreadCount() > 0" class="notif-badge">{{ unreadCount() }}</span>
+          </button>
+          <mat-menu #notifMenu="matMenu" class="modern-notif-menu">
+             <div class="notif-menu-header">System Broadcasts</div>
+             <button mat-menu-item *ngFor="let a of recentAnnouncements()" routerLink="/instructor/notifications">
+                <div class="notif-item">
+                   <div class="notif-dot"></div>
+                   <div class="notif-item-body">
+                      <div class="notif-item-title">{{ a.title }}</div>
+                      <div class="notif-item-meta">By Admin • {{ a.created_at | date:'shortTime' }}</div>
+                   </div>
+                </div>
+             </button>
+             <div *ngIf="recentAnnouncements().length === 0" class="notif-empty">No unread broadcasts</div>
+             <div class="notif-menu-footer" *ngIf="recentAnnouncements().length > 0">
+                <button mat-button color="primary" routerLink="/instructor/notifications" style="width: 100%; border-radius: 0; font-size: 0.75rem; font-weight: 700;">VIEW ALL</button>
+             </div>
+          </mat-menu>
         </div>
 
         <!-- Navigation -->
@@ -178,6 +202,41 @@ interface NavItem {
       &:hover { background: rgba(233,69,96,0.25); color: #e94560; }
     }
 
+    /* Notification Bell */
+    .notification-bell {
+       margin-left: auto; color: #C9A227; position: relative;
+       width: 36px !important; height: 36px !important; line-height: 36px !important;
+       .mat-icon { font-size: 20px; }
+    }
+    .notif-badge {
+       position: absolute; top: 4px; right: 4px;
+       background: #ef4444; color: white; font-size: 9px; font-weight: 800;
+       width: 14px; height: 14px; border-radius: 50%;
+       display: flex; align-items: center; justify-content: center;
+       border: 1px solid white;
+    }
+    .modern-notif-menu {
+       width: 280px; border-radius: 16px !important; overflow: hidden;
+       box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    }
+    .notif-menu-header { padding: 12px 16px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #8B1A1A; border-bottom: 1px solid #eee; background: #fdfdfd; }
+    .notif-item { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+    .notif-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; flex-shrink: 0; }
+    .notif-item-body { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .notif-item-title { font-weight: 700; font-size: 0.82rem; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .notif-item-meta { font-size: 0.7rem; color: #666; font-weight: 500; }
+    .notif-empty { padding: 24px; text-align: center; color: #999; font-size: 0.82rem; }
+
+    .notification-bell.pulse-active {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: bellGlow 1.5s infinite alternate;
+    }
+    @keyframes bellGlow {
+      from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.1); }
+      to { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+    }
+
     /* Content */
     .main-content { background: var(--color-bg); overflow-y: auto; }
     .topbar {
@@ -219,8 +278,9 @@ interface NavItem {
     .logout-modal__footer button { width: 100%; border-radius: 10px; padding: 6px 0; }
   `]
 })
-export class InstructorLayoutComponent {
+export class InstructorLayoutComponent implements OnInit {
   auth = inject(AuthService);
+  api = inject(ApiService);
   private bp = inject(BreakpointObserver);
 
   isMobile = signal(false);
@@ -236,11 +296,50 @@ export class InstructorLayoutComponent {
     { icon: 'event', label: 'Sessions', route: '/instructor/sessions' },
     { icon: 'menu_book', label: 'My Courses', route: '/instructor/courses' },
     { icon: 'class', label: 'My Classes', route: '/instructor/sections' },
+    { icon: 'campaign', label: 'Announcements', route: '/instructor/notifications' },
     { icon: 'bar_chart', label: 'Reports', route: '/instructor/reports' },
   ];
 
   constructor() {
     this.bp.observe([Breakpoints.Handset]).subscribe(r => this.isMobile.set(r.matches));
+  }
+
+  ngOnInit(): void {
+    this.refreshAnnouncements();
+    this.api.refresh$.subscribe(source => {
+      if (source?.includes('announcements') || source === 'general') {
+        this.refreshAnnouncements();
+      }
+    });
+  }
+
+  // Notifications Logic
+  unreadCount = signal(0);
+  hasUnread = computed(() => this.unreadCount() > 0);
+  recentAnnouncements = signal<any[]>([]);
+  private lastCheckedId = 0;
+
+  refreshAnnouncements(): void {
+    const savedLastId = localStorage.getItem('last_instructor_notif_id');
+    if (savedLastId) this.lastCheckedId = parseInt(savedLastId);
+
+    this.api.getInstructorAnnouncements().subscribe(r => {
+      const announcements = r.data || [];
+      announcements.sort((a: any, b: any) => b.id - a.id);
+      this.recentAnnouncements.set(announcements.slice(0, 5));
+      
+      const newUnread = announcements.filter((a: any) => a.id > this.lastCheckedId).length;
+      this.unreadCount.set(newUnread);
+    });
+  }
+
+  markAsRead(): void {
+    const latest = this.recentAnnouncements()[0];
+    if (latest) {
+      this.lastCheckedId = latest.id;
+      localStorage.setItem('last_instructor_notif_id', this.lastCheckedId.toString());
+      this.unreadCount.set(0);
+    }
   }
 
   confirmLogout(): void {

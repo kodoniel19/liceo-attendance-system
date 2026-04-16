@@ -165,11 +165,15 @@ export class ApiService {
   getMyAnnouncements(): Observable<ApiResponse<any[]>> { 
     return this.get('/sections/my/announcements', { _cb: Date.now() }); 
   }
+  getInstructorAnnouncements(): Observable<ApiResponse<any[]>> {
+    return this.get('/sections/instructor/announcements', { _cb: Date.now() });
+  }
+
 
   // ── Admin Exclusive ────────────────────────────────────────
   getAtRiskStudents(): Observable<ApiResponse<any[]>> { return this.get('/admin/stats/at-risk'); }
-  sendGlobalBroadcast(title: string, content: string): Observable<ApiResponse<any>> {
-    return this.post('/admin/broadcast', { title, content });
+  sendGlobalBroadcast(title: string, content: string, targetRole: string = 'all'): Observable<ApiResponse<any>> {
+    return this.post('/admin/broadcast', { title, content, targetRole });
   }
   getStudentAttendanceHistoryByAdmin(studentId: number): Observable<ApiResponse<any[]>> {
     return this.get(`/admin/student/${studentId}/attendance`);

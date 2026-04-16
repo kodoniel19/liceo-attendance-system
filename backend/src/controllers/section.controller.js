@@ -359,7 +359,7 @@ exports.getMyAnnouncements = async (req, res, next) => {
           JOIN class_sections cl ON e.class_section_id = cl.id
           WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
         )
-        OR a.is_global = TRUE
+        OR (a.is_global = TRUE AND a.target_role IN ('all', 'student'))
       )
       ORDER BY a.created_at DESC
     `, [studentId]);
@@ -367,3 +367,24 @@ exports.getMyAnnouncements = async (req, res, next) => {
     res.json({ success: true, data: announcements });
   } catch (err) { next(err); }
 };
+
+exports.getInstructorAnnouncements = async (req, res, next) => {
+  try {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    const instructorId = req.user.id;
+    
+    const announcements = await query(`
+      SELECT a.id, a.title, a.content, 
+             DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
+             u.first_name as adminFirst, u.last_name as adminLast,
+             a.is_global as isGlobal
+      FROM announcements a
+      INNER JOIN users u ON a.instructor_id = u.id
+      WHERE a.is_global = TRUE AND a.target_role IN ('all', 'instructor')
+      ORDER BY a.created_at DESC
+    `);
+
+    res.json({ success: true, data: announcements });
+  } catch (err) { next(err); }
+};
+
