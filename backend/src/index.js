@@ -1,3 +1,4 @@
+process.env.TZ = 'Asia/Manila';
 require('dotenv').config();
 const app = require('./app');
 const logger = require('./utils/logger');
@@ -48,8 +49,16 @@ async function initializeDatabase() {
       // FIX MISSING QR DATA COLUMN
       try { await conn.query("ALTER TABLE qr_sessions ADD COLUMN qr_data_url MEDIUMTEXT AFTER qr_secret"); } catch(e){}
 
-      // ENSURE TARGET ROLE COLUMN EXISTS
+      // FORCE SESSION TIMEZONE TO PHT
+      await conn.query("SET time_zone = '+08:00'");
+
+      // ENSURE TARGET ROLE COLUMN EXISTS AND FIX TIMEZONE ISSUES
       try { await conn.query("ALTER TABLE announcements ADD COLUMN target_role ENUM('all', 'student', 'instructor') DEFAULT 'all' AFTER is_global"); } catch(e){}
+      try { await conn.query("ALTER TABLE announcements MODIFY COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP"); } catch(e){}
+      try { await conn.query("ALTER TABLE attendance MODIFY COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP"); } catch(e){}
+      try { await conn.query("ALTER TABLE attendance MODIFY COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"); } catch(e){}
+      try { await conn.query("ALTER TABLE class_sessions MODIFY COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP"); } catch(e){}
+      try { await conn.query("ALTER TABLE class_sessions MODIFY COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"); } catch(e){}
 
       // CREATE ANNOUNCEMENTS TABLE IF MISSING
       await conn.query(`
