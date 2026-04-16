@@ -4,17 +4,14 @@ const logger = require('./logger');
 // Dev fallback: log to console when no SMTP configured
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    service: 'gmail',
     auth: { 
       user: (process.env.SMTP_USER || '').trim(), 
       pass: (process.env.SMTP_PASS || '').trim() 
     },
-    tls: { rejectUnauthorized: false },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
 };
 
