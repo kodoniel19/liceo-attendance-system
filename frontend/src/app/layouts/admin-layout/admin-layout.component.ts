@@ -93,25 +93,6 @@ import { Subscription, timer } from 'rxjs';
             <span class="topbar-greeting">Admin Control Panel</span>
           </div>
           <div class="topbar-right">
-            <!-- Notification Bell -->
-            <button mat-icon-button class="notification-bell" [matMenuTriggerFor]="notifMenu" [class.pulse-active]="hasUnread()" (menuOpened)="markAsRead()">
-               <mat-icon [class.pulse]="hasUnread()">{{ hasUnread() ? 'notifications_active' : 'notifications' }}</mat-icon>
-               <span *ngIf="unreadCount() > 0" class="notif-badge">{{ unreadCount() }}</span>
-            </button>
-            <mat-menu #notifMenu="matMenu" class="modern-notif-menu">
-               <div class="notif-menu-header">Recent Broadcasts</div>
-               <button mat-menu-item *ngFor="let a of recentAnnouncements()" routerLink="/admin/broadcast">
-                  <div class="notif-item">
-                     <div class="notif-dot"></div>
-                     <div class="notif-item-body">
-                        <div class="notif-item-title">{{ a.title }}</div>
-                        <div class="notif-item-meta">By Admin • {{ a.created_at | date:'shortTime' }}</div>
-                     </div>
-                  </div>
-               </button>
-               <div *ngIf="recentAnnouncements().length === 0" class="notif-empty">No unread broadcasts</div>
-            </mat-menu>
-
             <div class="topbar-badge admin-badge">ADMIN</div>
           </div>
         </div>
