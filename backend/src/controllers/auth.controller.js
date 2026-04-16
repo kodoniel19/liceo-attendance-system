@@ -290,14 +290,12 @@ exports.forgotPassword = async (req, res, next) => {
       res.json({ success: true, message: 'A password reset link has been sent to your email.' });
     } catch (emailErr) {
       if (emailErr.message === 'SMTP_NOT_CONFIGURED') {
-        // Security Patch: Never return the reset url to the client UI. 
-        // Only print it to the secure backend terminal for the admin.
         const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:4200'}/reset-password?token=${rawToken}`;
         logger.info(`[DEV MODE - SECURE] A user requested a password reset for ${email}. Since SMTP is disabled, here is the manual reset link for the admin: ${resetUrl}`);
 
-        return res.status(500).json({
-          success: false,
-          message: 'The email server is not currently configured to send outgoing emails. Please contact an administrator.'
+        return res.json({ 
+          success: true, 
+          message: 'If an account exists for this email, a reset link will be sent shortly.' 
         });
       }
       logger.error('Forgot password error:', emailErr);

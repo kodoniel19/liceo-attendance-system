@@ -468,8 +468,8 @@ a:hover { color: var(--color-primary-dark); }
   .auth-page__right {
     width: 480px;
     display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 48px 48px;
+    align-items: center; justify-content: safe center;
+    padding: 32px 48px;
     background: white;
     overflow-y: auto;
 
