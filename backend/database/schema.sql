@@ -77,7 +77,7 @@ CREATE TABLE enrollments (
     student_id INT UNSIGNED NOT NULL,
     class_section_id INT UNSIGNED NOT NULL,
     enrollment_date DATE NOT NULL,
-    status ENUM('active', 'dropped', 'incomplete') DEFAULT 'active',
+    status ENUM('active', 'dropped', 'incomplete', 'pending', 'declined') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_enrollment (student_id, class_section_id),
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,

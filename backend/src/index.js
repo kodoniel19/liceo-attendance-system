@@ -39,6 +39,9 @@ async function initializeDatabase() {
       
       // FIX SCHEDULE_DAY ENUM CRASH
       try { await conn.query("ALTER TABLE class_sections MODIFY COLUMN schedule_day VARCHAR(50) NOT NULL"); } catch(e){}
+      
+      // FIX ENROLLMENT STATUS ENUM CRASH
+      try { await conn.query("ALTER TABLE enrollments MODIFY COLUMN status ENUM('active', 'dropped', 'incomplete', 'pending', 'declined') DEFAULT 'pending'"); } catch(e){}
 
       await conn.query(`
         INSERT INTO users (university_id, email, password_hash, first_name, last_name, role, is_active, email_verified)
