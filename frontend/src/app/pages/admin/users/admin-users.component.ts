@@ -143,6 +143,9 @@ import { User } from '../../../core/models';
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>Email Address</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" />
+              <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
+              <mat-error *ngIf="userForm.get('email')?.hasError('pattern') && !userForm.get('email')?.hasError('required')">Only @liceo.edu.ph emails are allowed</mat-error>
+              <mat-error *ngIf="userForm.get('email')?.hasError('email') && !userForm.get('email')?.hasError('pattern') && !userForm.get('email')?.hasError('required')">Invalid email format</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>{{ editingUser() ? 'New Password (Optional)' : 'Password' }}</mat-label>
@@ -252,7 +255,7 @@ export class AdminUsersComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       universityId: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
       password: ['', [Validators.minLength(8)]],
       role: ['student', Validators.required],
       department: ['']
