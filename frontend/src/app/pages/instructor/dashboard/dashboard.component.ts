@@ -230,8 +230,8 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
       next: (r) => { 
         this.stats.set(r.data); 
         this.statsLoading.set(false); 
-        // Small delay to ensure canvas is ready
-        setTimeout(() => this.initChart(), 0);
+        // Ensure Angular change detection places the canvas first
+        setTimeout(() => this.initChart(), 100);
       },
       error: () => this.statsLoading.set(false)
     });

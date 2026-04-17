@@ -252,7 +252,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     this.api.getDashboardStats().subscribe({ 
       next: r => { 
         this.stats.set(r.data); 
-        setTimeout(() => this.initChart(), 0);
+        setTimeout(() => this.initChart(), 100);
       } 
     });
     this.api.getMyAttendanceSummary().subscribe({

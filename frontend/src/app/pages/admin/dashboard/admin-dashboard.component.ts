@@ -188,7 +188,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       next: r => { 
         this.stats.set(r.data); 
         this.loading.set(false); 
-        setTimeout(() => this.initChart(), 0);
+        setTimeout(() => this.initChart(), 100);
       },
       error: () => this.loading.set(false)
     });
