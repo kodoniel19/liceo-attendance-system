@@ -165,13 +165,34 @@ import { Subscription, forkJoin } from 'rxjs';
   styles: [`
     .back-link { font-size:0.8rem; color:var(--color-text-muted); display:flex; align-items:center; gap:4px; margin-bottom:8px; text-decoration:none; &:hover { color:var(--color-primary); } .material-icons { font-size:16px; } }
     
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: 1fr; }
+      .stats-grid { gap: 8px; }
+      .stat-card { padding: 12px 6px !important; text-align: center; justify-content: center; }
+      .stat-card__icon { width: 32px !important; height: 32px !important; margin-bottom: 6px !important; margin-left: auto; margin-right: auto; .material-icons { font-size: 18px !important; } }
+      .stat-card__value { font-size: 0.8rem !important; line-height: 1.2; word-break: break-word; }
+      .stat-card__label { font-size: 0.55rem !important; }
+      
       .history-card { gap: 12px; padding: 12px; }
       .history-card__date { min-width: 40px; padding-right: 12px; }
       .date-day { font-size: 1.1rem; }
     }
+
+    .stat-card {
+      background: white; border-radius: 16px; padding: 20px;
+      display: flex; flex-direction: column; align-items: flex-start;
+      border: 1px solid rgba(139, 26, 26, 0.05); transition: all 0.3s ease;
+      &:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    }
+    .stat-card__icon { 
+      width: 44px; height: 44px; border-radius: 12px; display: flex; 
+      align-items: center; justify-content: center; margin-bottom: 12px;
+      .material-icons { font-size: 24px; }
+    }
+    .stat-card__icon.info { background: rgba(139, 26, 26, 0.08); color: var(--color-primary); }
+    .stat-card__icon.success { background: rgba(39, 174, 96, 0.1); color: #27ae60; }
+    .stat-card__value { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+    .stat-card__label { font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     
     .tab-content { 
       padding: 24px 0;
