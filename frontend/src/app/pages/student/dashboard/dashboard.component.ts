@@ -138,22 +138,22 @@ Chart.register(...registerables);
         </div>
       </div>
 
-      <!-- Attendance Distribution Chart -->
-      <div class="animate-fade-in-up mt-4" *ngIf="stats()?.distribution">
+      <!-- Subject-By-Subject Attendance Chart -->
+      <div class="animate-fade-in-up mt-4" *ngIf="stats()?.subjectBreakdown">
         <div class="glass-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
-            <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--color-primary)">📊 Attendance Distribution</h3>
+            <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--color-primary)">📊 Subject Attendance Breakdown</h3>
           </div>
-          <div *ngIf="(stats()?.distribution?.present + stats()?.distribution?.late + stats()?.distribution?.absent + stats()?.distribution?.excused) > 0; else emptyChart" style="height: 200px; display:flex; align-items:center; justify-content:center;">
-             <div style="width: 100%; max-width: 400px; height: 100%;">
+          <div *ngIf="(stats()?.subjectBreakdown?.length) > 0 && hasChartData(); else emptyChart" style="height: 240px; display:flex; align-items:center; justify-content:center;">
+             <div style="width: 100%; height: 100%;">
                 <canvas id="distributionChart"></canvas>
              </div>
           </div>
           <ng-template #emptyChart>
-            <div style="height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted); text-align: center;">
-              <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">pie_chart_outline</span>
+            <div style="height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted); text-align: center;">
+              <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">bar_chart</span>
               <p style="margin: 0; font-weight: 600;">No attendance records.</p>
-              <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.7;">Your graph will appear here<br>after your first scan.</p>
+              <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.7;">Your subject breakdown will appear<br>after your first scan.</p>
             </div>
           </ng-template>
         </div>
@@ -275,50 +275,76 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  hasChartData(): boolean {
+    const breakdown = this.stats()?.subjectBreakdown;
+    if (!breakdown || !breakdown.length) return false;
+    
+    // Check if there is actual any presence data across all subjects
+    let hasData = false;
+    for (const b of breakdown) {
+       if (parseInt(b.present||0)>0 || parseInt(b.late||0)>0 || parseInt(b.absent||0)>0 || parseInt(b.excused||0)>0) {
+          hasData = true;
+          break;
+       }
+    }
+    return hasData;
+  }
+
   private initChart(): void {
-    const data = this.stats()?.distribution;
-    if (!data) return;
+    const breakdown = this.stats()?.subjectBreakdown;
+    if (!breakdown || breakdown.length === 0) return;
+
+    if (!this.hasChartData()) return;
 
     const ctx = document.getElementById('distributionChart') as HTMLCanvasElement;
     if (!ctx) return;
 
     if (this.chart) this.chart.destroy();
 
+    const labels = breakdown.map((b: any) => b.label);
+    const presentData = breakdown.map((b: any) => parseInt(b.present, 10) || 0);
+    const lateData = breakdown.map((b: any) => parseInt(b.late, 10) || 0);
+    const absentData = breakdown.map((b: any) => parseInt(b.absent, 10) || 0);
+    const excusedData = breakdown.map((b: any) => parseInt(b.excused, 10) || 0);
+
     this.chart = new Chart(ctx, {
-      type: 'doughnut',
+      type: 'bar',
       data: {
-        labels: ['Present', 'Late', 'Absent', 'Excused'],
-        datasets: [{
-          data: [data.present, data.late, data.absent, data.excused],
-          backgroundColor: [
-            '#27ae60', // Present
-            '#f1c40f', // Late
-            '#e74c3c', // Absent
-            '#3498db'  // Excused
-          ],
-          borderWidth: 0,
-          weight: 0.5
-        }]
+        labels: labels,
+        datasets: [
+          { label: 'Present', data: presentData, backgroundColor: '#10b981', stack: 'Stack 0', borderRadius: 4 },
+          { label: 'Late', data: lateData, backgroundColor: '#f59e0b', stack: 'Stack 0', borderRadius: 4 },
+          { label: 'Excused', data: excusedData, backgroundColor: '#3b82f6', stack: 'Stack 0', borderRadius: 4 },
+          { label: 'Absent', data: absentData, backgroundColor: '#ef4444', stack: 'Stack 0', borderRadius: 4 }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '70%',
+        indexAxis: 'y',
         plugins: {
           legend: {
-            position: 'right',
+            position: 'bottom',
             labels: {
               usePointStyle: true,
+              boxWidth: 8,
               padding: 20,
-              font: { family: 'inherit', size: 12, weight: 'bold' }
+              font: { family: 'inherit', size: 11, weight: 'bold' }
             }
           },
           tooltip: {
             backgroundColor: '#1a1a2e',
             padding: 12,
             cornerRadius: 8,
-            titleFont: { size: 14, weight: 'bold' }
+            mode: 'index',
+            intersect: false,
+            titleFont: { size: 14, weight: 'bold' as any },
+            bodyFont: { size: 13 }
           }
+        },
+        scales: {
+          x: { stacked: true, display: false, grid: { display: false } },
+          y: { stacked: true, grid: { display: false }, ticks: { font: { family: 'inherit', weight: 'bold' as any } } }
         }
       }
     });

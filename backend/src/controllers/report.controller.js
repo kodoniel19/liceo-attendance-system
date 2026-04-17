@@ -228,7 +228,7 @@ exports.getDashboardStats = async (req, res, next) => {
         sectionPerformance
       };
     } else if (role === 'student') {
-      const [enrolled, attendanceStats] = await Promise.all([
+      const [enrolled, attendanceStats, subjectBreakdown] = await Promise.all([
         query('SELECT COUNT(*) as count FROM enrollments e INNER JOIN class_sections cl ON e.class_section_id = cl.id WHERE e.student_id = ? AND e.status = "active" AND cl.is_active = TRUE', [userId]),
         query(`SELECT 
                  SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present,
@@ -241,7 +241,21 @@ exports.getDashboardStats = async (req, res, next) => {
                FROM attendance a 
                JOIN class_sessions cs ON a.class_session_id = cs.id
                JOIN enrollments e ON e.class_section_id = cs.class_section_id AND e.student_id = a.student_id
-               WHERE a.student_id = ? AND e.status = "active" AND cs.status != "cancelled"`, [userId])
+               WHERE a.student_id = ? AND e.status = "active" AND cs.status != "cancelled"`, [userId]),
+        query(`SELECT 
+                 co.course_code as label,
+                 SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present,
+                 SUM(CASE WHEN a.status = 'late' THEN 1 ELSE 0 END) as late,
+                 SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent,
+                 SUM(CASE WHEN a.status = 'excused' THEN 1 ELSE 0 END) as excused
+               FROM attendance a
+               JOIN class_sessions cs ON a.class_session_id = cs.id
+               JOIN class_sections cl ON cs.class_section_id = cl.id
+               JOIN courses co ON cl.course_id = co.id
+               JOIN enrollments e ON e.class_section_id = cs.class_section_id AND e.student_id = a.student_id
+               WHERE a.student_id = ? AND e.status = "active" AND cs.status != "cancelled"
+               GROUP BY co.id
+               ORDER BY co.course_code`, [userId])
       ]);
 
       stats = {
@@ -252,7 +266,8 @@ exports.getDashboardStats = async (req, res, next) => {
           late: attendanceStats[0].late || 0,
           absent: attendanceStats[0].absent || 0,
           excused: attendanceStats[0].excused || 0
-        }
+        },
+        subjectBreakdown
       };
     } else if (role === 'admin') {
       const [users, students, instructors, activeSessions, weeklySessions] = await Promise.all([
