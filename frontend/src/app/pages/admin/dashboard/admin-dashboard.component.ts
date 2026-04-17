@@ -5,6 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../../core/services/api.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -165,9 +168,6 @@ import { ApiService } from '../../../core/services/api.service';
     .chart-header .material-icons { color: #8B1A1A; font-size: 1.5rem; }
   `]
 })
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
-
 export class AdminDashboardComponent implements OnInit, OnDestroy {
   api = inject(ApiService);
   stats = signal<any>(null);
@@ -244,11 +244,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           y: {
             beginAtZero: true,
             grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { weight: '600' }, stepSize: 1 }
+            ticks: { font: { weight: 'bold' }, stepSize: 1 }
           },
           x: {
             grid: { display: false },
-            ticks: { font: { weight: '600' } }
+            ticks: { font: { weight: 'bold' } }
           }
         }
       }

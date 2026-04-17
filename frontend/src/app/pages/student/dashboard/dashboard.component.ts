@@ -64,8 +64,6 @@ Chart.register(...registerables);
         <a mat-raised-button color="primary" routerLink="/student/scan">Scan Now</a>
       </div>
 
-      </div>
-
       <!-- Attendance Distribution Chart -->
       <div class="animate-fade-in-up mt-3" *ngIf="stats()?.distribution">
         <div class="glass-card">
@@ -304,7 +302,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
             labels: {
               usePointStyle: true,
               padding: 20,
-              font: { family: 'inherit', size: 12, weight: '600' }
+              font: { family: 'inherit', size: 12, weight: 'bold' }
             }
           },
           tooltip: {

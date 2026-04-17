@@ -290,11 +290,11 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
             beginAtZero: true,
             max: 100,
             grid: { display: true, color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { weight: '600' }, callback: (v) => v + '%' }
+            ticks: { font: { weight: 'bold' }, callback: (v) => v + '%' }
           },
           x: {
             grid: { display: false },
-            ticks: { font: { weight: '600' } }
+            ticks: { font: { weight: 'bold' } }
           }
         }
       }
