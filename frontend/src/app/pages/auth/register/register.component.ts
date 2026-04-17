@@ -184,6 +184,13 @@ import { ToastService } from '../../../core/services/toast.service';
       .auth-header p { font-size: 0.7rem !important; margin-bottom: 4px !important; }
       mat-form-field { margin-bottom: 4px; }
       .auth-submit-btn { height: 40px; margin-top: 4px; }
+      form { padding-bottom: 80px; } /* Space below the last element */
+    }
+
+    /* Hide scrollbar but allow scrolling */
+    ::ng-deep .auth-page__right {
+      scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
     }
   `]
 })

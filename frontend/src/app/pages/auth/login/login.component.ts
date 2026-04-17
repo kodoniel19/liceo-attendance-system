@@ -144,11 +144,18 @@ declare var google: any;
     }
     
     .google-btn-wrapper { display: flex; justify-content: center; height: 44px; margin-bottom: 8px; }
+    
+    /* Hide scrollbar but allow scrolling */
+    ::ng-deep .auth-page__right {
+      scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
+    }
+
     @media (max-width: 480px) {
       .auth-header h2 { font-size: 1.6rem; }
       .auth-header p { font-size: 0.8rem; margin-bottom: 20px; }
       .auth-badge { padding: 3px 10px; font-size: 0.65rem; }
-      .auth-form { gap: 4px; }
+      .auth-form { gap: 4px; padding-bottom: 60px; } /* Added bottom padding here */
       .auth-submit-btn { height: 46px; }
       .google-btn-wrapper { height: 40px; margin-bottom: 4px; }
       .auth-divider { margin: 12px 0 4px; }
