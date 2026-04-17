@@ -76,7 +76,7 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
       LEFT JOIN class_sessions cs ON cs.class_section_id = cl.id AND cs.status != 'cancelled'
       LEFT JOIN attendance a ON a.class_session_id = cs.id AND a.student_id = e.student_id
       WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
-      GROUP BY cl.id, co.id, u.id, cl.schedule_day, cl.schedule_time_start, cl.schedule_time_end, cl.room
+      GROUP BY cl.id, co.id, u.id, u.first_name, u.last_name, cl.schedule_day, cl.schedule_time_start, cl.schedule_time_end, cl.room
     `, [studentId]);
     console.log(`[BACKEND DEBUG] Attendance Summary for Student ${studentId}:`, JSON.stringify(summary, null, 2));
 

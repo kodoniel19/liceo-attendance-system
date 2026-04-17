@@ -13,7 +13,7 @@ import { ApiService } from '../../../core/services/api.service';
   standalone: true,
   imports: [
     CommonModule, RouterLink, MatButtonModule, MatIconModule, 
-    MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule
+    MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule, MatInputModule
   ],
   template: `
     <div class="page-container animate-fade-in-up">
@@ -28,9 +28,13 @@ import { ApiService } from '../../../core/services/api.service';
       <div class="filter-area animate-fade-in-up" *ngIf="notifications().length > 0">
         <mat-form-field appearance="outline" class="course-filter">
           <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)" placeholder="Filter by Source">
+            <div class="select-search-header">
+               <mat-icon>search</mat-icon>
+               <input matInput (input)="courseSearch.set($any($event.target).value)" (keydown)="$event.stopPropagation()" placeholder="Search course..." class="select-search-input">
+            </div>
             <mat-option [value]="'all'">All Notifications</mat-option>
             <mat-option [value]="'admin'">Admin/System</mat-option>
-            <mat-option *ngFor="let course of uniqueCourses()" [value]="course.code">
+            <mat-option *ngFor="let course of filteredUniqueCourses()" [value]="course.code">
               {{ course.label }}
             </mat-option>
           </mat-select>
@@ -141,6 +145,18 @@ import { ApiService } from '../../../core/services/api.service';
     .notif-card__body { font-size: 0.95rem; color: #4b5563; line-height: 1.6; }
     .notif-card__arrow { color: #cbd5e1; align-self: center; }
     .dot { color: #cbd5e1; }
+
+    /* Premium Select Search */
+    .select-search-header {
+      position: sticky; top: 0; background: white; z-index: 100;
+      display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: #94a3b8; margin-right: 8px; }
+    }
+    .select-search-input {
+      border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
+      &::placeholder { color: #94a3b8; font-weight: 500; }
+    }
+
     .empty-state { text-align: center; padding: 100px 20px; color: #94a3b8; mat-icon { font-size: 64px; width: 64px; height: 64px; margin-bottom: 20px; } }
   `]
 })
@@ -149,6 +165,7 @@ export class NotificationsComponent implements OnInit {
   notifications = signal<any[]>([]);
   loading = signal(true);
   selectedFilter = signal<string>('all');
+  courseSearch = signal('');
 
   uniqueCourses = computed(() => {
     const items = this.notifications()
@@ -164,6 +181,13 @@ export class NotificationsComponent implements OnInit {
     );
     
     return unique.sort((a,b) => a.code.localeCompare(b.code));
+  });
+
+  filteredUniqueCourses = computed(() => {
+    const q = this.courseSearch().toLowerCase().trim();
+    const courses = this.uniqueCourses();
+    if (!q) return courses;
+    return courses.filter(c => c.label.toLowerCase().includes(q) || c.code.toLowerCase().includes(q));
   });
 
   filteredNotifications = computed(() => {
