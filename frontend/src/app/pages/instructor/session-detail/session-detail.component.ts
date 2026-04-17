@@ -496,7 +496,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   generateQR(): void {
-    const seconds = this.pausedRemainingSeconds();
+    const isEnded = this.session()?.status === 'ended';
+    const seconds = isEnded ? null : this.pausedRemainingSeconds();
+    
+    this.qrLoading.set(true);
     this.api.generateQR(this.sessionId, seconds ? undefined : 15, seconds || undefined).subscribe({
       next: r => {
         this.qrData.set(r.data);
@@ -512,8 +515,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   reopenQR(): void {
+    const isEnded = this.session()?.status === 'ended';
+    const seconds = isEnded ? null : this.pausedRemainingSeconds();
+    
     this.qrLoading.set(true);
-    const seconds = this.pausedRemainingSeconds();
     this.api.reopenQR(this.sessionId, seconds ? undefined : 15, seconds || undefined).subscribe({
       next: r => {
         this.qrData.set(r.data);
