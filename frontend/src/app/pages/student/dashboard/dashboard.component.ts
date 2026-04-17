@@ -70,11 +70,18 @@ Chart.register(...registerables);
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
             <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--color-primary)">📊 Attendance Distribution</h3>
           </div>
-          <div style="height: 200px; display:flex; align-items:center; justify-content:center;">
+          <div *ngIf="(stats()?.distribution?.present + stats()?.distribution?.late + stats()?.distribution?.absent + stats()?.distribution?.excused) > 0; else emptyChart" style="height: 200px; display:flex; align-items:center; justify-content:center;">
              <div style="width: 100%; max-width: 400px; height: 100%;">
                 <canvas id="distributionChart"></canvas>
              </div>
           </div>
+          <ng-template #emptyChart>
+            <div style="height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted); text-align: center;">
+              <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">pie_chart_outline</span>
+              <p style="margin: 0; font-weight: 600;">No attendance records.</p>
+              <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.7;">Your graph will appear here<br>after your first scan.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
 

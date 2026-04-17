@@ -69,7 +69,7 @@ Chart.register(...registerables);
       </div>
 
       <!-- Weekly Trend Chart -->
-      <div class="chart-section animate-fade-in-up" *ngIf="stats()?.weeklySessions?.length">
+      <div class="chart-section animate-fade-in-up" *ngIf="!loading() && stats()">
         <div class="chart-container">
           <div class="chart-header">
             <h2>
@@ -77,9 +77,15 @@ Chart.register(...registerables);
               7-Day Session Activity
             </h2>
           </div>
-          <div style="height: 300px; position: relative;">
+          <div *ngIf="stats()?.weeklySessions?.length > 0; else emptyChart" style="height: 300px; position: relative;">
             <canvas id="weeklyChart"></canvas>
           </div>
+          <ng-template #emptyChart>
+            <div style="height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
+              <span class="material-icons" style="font-size: 48px; opacity: 0.2; margin-bottom: 16px;">show_chart</span>
+              <p style="margin: 0; font-weight: 600;">No session activity in the past 7 days.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
 

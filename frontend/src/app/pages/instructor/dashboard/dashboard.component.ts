@@ -65,7 +65,7 @@ Chart.register(...registerables);
       </div>
 
       <!-- Performance Chart -->
-      <div class="animate-fade-in-up mt-3" *ngIf="stats()?.sectionPerformance?.length">
+      <div class="animate-fade-in-up mt-3" *ngIf="!statsLoading() && stats()">
         <div class="chart-container">
           <div class="chart-header">
             <h2>
@@ -73,9 +73,16 @@ Chart.register(...registerables);
               Class Attendance Performance (%)
             </h2>
           </div>
-          <div style="height: 300px; position: relative;">
+          <div *ngIf="stats()?.sectionPerformance?.length > 0; else emptyChart" style="height: 300px; position: relative;">
             <canvas id="performanceChart"></canvas>
           </div>
+          <ng-template #emptyChart>
+            <div style="height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
+              <span class="material-icons" style="font-size: 48px; opacity: 0.2; margin-bottom: 16px;">query_stats</span>
+              <p style="margin: 0; font-weight: 600;">No attendance data available yet.</p>
+              <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.7;">Complete a session to generate insights.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
 
