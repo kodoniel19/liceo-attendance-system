@@ -81,11 +81,11 @@ export class ApiService {
   }
 
   // ── QR Code ────────────────────────────────────────────────
-  generateQR(sessionId: number, expirationMinutes = 15): Observable<ApiResponse<QRSession>> {
-    return this.post(`/qr/generate/${sessionId}`, { expirationMinutes });
+  generateQR(sessionId: number, expirationMinutes = 15, expirationSeconds?: number): Observable<ApiResponse<QRSession>> {
+    return this.post(`/qr/generate/${sessionId}`, { expirationMinutes, expirationSeconds });
   }
-  reopenQR(sessionId: number, expirationMinutes = 15): Observable<ApiResponse<QRSession>> {
-    return this.post(`/qr/reopen/${sessionId}`, { expirationMinutes });
+  reopenQR(sessionId: number, expirationMinutes = 15, expirationSeconds?: number): Observable<ApiResponse<QRSession>> {
+    return this.post(`/qr/reopen/${sessionId}`, { expirationMinutes, expirationSeconds });
   }
   scanQR(token: string, sessionId: number): Observable<ScanResult> {
     return this.http.post<ScanResult>(`${this.base}/qr/scan`, { token, sessionId });

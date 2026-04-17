@@ -16,7 +16,8 @@ const signQRToken = (token, sessionId, expiresAt) => {
 exports.generateQR = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const expirationMinutes = parseInt(req.body.expirationMinutes) || parseInt(process.env.QR_DEFAULT_EXPIRY_MINUTES) || 15;
+    const expirationMinutes = parseFloat(req.body.expirationMinutes) || parseInt(process.env.QR_DEFAULT_EXPIRY_MINUTES) || 15;
+    const expirationSeconds = parseInt(req.body.expirationSeconds) || (expirationMinutes * 60);
 
     // Verify session exists and belongs to this instructor
     const sessions = await query(
@@ -51,7 +52,7 @@ exports.generateQR = async (req, res, next) => {
 
     // Create new QR token
     const qrToken = uuidv4();
-    const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
+    const expiresAt = new Date(Date.now() + expirationSeconds * 1000);
     const secret = signQRToken(qrToken, sessionId, expiresAt.toISOString());
 
     // Build QR payload (what the QR code encodes)
@@ -312,7 +313,10 @@ exports.reopenQR = async (req, res, next) => {
     }
 
     const qrSession = qrSessions[0];
-    const newExpiry = new Date(Date.now() + expirationMinutes * 60 * 1000);
+    const expirationMinutes = parseFloat(req.body.expirationMinutes) || 15;
+    const expirationSeconds = parseInt(req.body.expirationSeconds) || (expirationMinutes * 60);
+    
+    const newExpiry = new Date(Date.now() + expirationSeconds * 1000);
     const newQrToken = crypto.randomUUID(); // Generate fresh token for the new QR record
 
     // Regenerate QR design with new expiration and NEW token

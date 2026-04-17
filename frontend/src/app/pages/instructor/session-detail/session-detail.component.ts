@@ -73,9 +73,18 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
             <mat-icon>fullscreen</mat-icon> Show Large QR
           </button>
 
-          <!-- Stop QR (currently active) -->
+          <!-- Stop (Pause) QR -->
           <button mat-raised-button color="warn" *ngIf="qrActive() && session()?.status === 'active'" (click)="stopQR()" [disabled]="qrLoading()">
-            <mat-icon>stop_circle</mat-icon> Stop QR
+            <mat-icon>pause_circle</mat-icon> Stop QR
+          </button>
+
+          <!-- End Session -->
+          <button mat-raised-button 
+            *ngIf="session()?.status === 'active'" 
+            (click)="endSession()" 
+            [disabled]="qrLoading()"
+            style="background-color: #1a1a2e; color: white;">
+            <mat-icon>event_available</mat-icon> End Session
           </button>
         </div>
       </div>
@@ -395,6 +404,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   qrImageUrl = signal<string | null>(null);
   qrLoading  = signal(false);
   showBigQR  = signal(false);
+  pausedRemainingSeconds = signal<number | null>(null);
   private qrPollInterval: any = null;
   now = signal(Date.now());
   private timerSub!: Subscription;
@@ -486,14 +496,15 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   generateQR(): void {
-    this.qrLoading.set(true);
-    this.api.generateQR(this.sessionId, 15).subscribe({
+    const seconds = this.pausedRemainingSeconds();
+    this.api.generateQR(this.sessionId, seconds ? undefined : 15, seconds || undefined).subscribe({
       next: r => {
         this.qrData.set(r.data);
         this.buildQRImage(r.data);
         this.startQRPoll();
         this.loadSessionData(); // IMPORTANT: Refresh session status (e.g. from 'ended' to 'active')
         this.qrLoading.set(false);
+        this.pausedRemainingSeconds.set(null); // Clear pause state
         this.toast.success('QR code generated! Students can now scan.');
       },
       error: e => { this.toast.error(e?.error?.message || 'Failed to generate QR.'); this.qrLoading.set(false); }
@@ -502,14 +513,16 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
 
   reopenQR(): void {
     this.qrLoading.set(true);
-    this.api.reopenQR(this.sessionId, 15).subscribe({
+    const seconds = this.pausedRemainingSeconds();
+    this.api.reopenQR(this.sessionId, seconds ? undefined : 15, seconds || undefined).subscribe({
       next: r => {
         this.qrData.set(r.data);
         this.buildQRImage(r.data);
         this.startQRPoll();
         this.loadSessionData(); // Sync session status
         this.qrLoading.set(false);
-        this.toast.success('QR code reopened! Existing students keep their status.');
+        this.pausedRemainingSeconds.set(null); // Clear pause state
+        this.toast.success('QR code reopened!');
       },
       error: e => { this.toast.error(e?.error?.message || 'Failed to reopen QR.'); this.qrLoading.set(false); }
     });
@@ -518,14 +531,40 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   stopQR(): void {
     const qr = this.qrData();
     if (!qr) return;
+
+    // Calculate remaining time relative to current session
+    const remaining = new Date(qr.expiresAt).getTime() - Date.now();
+    this.pausedRemainingSeconds.set(Math.max(0, Math.floor(remaining / 1000)));
+
     this.api.deactivateQR(qr.id || qr.qrSessionId).subscribe({
       next: () => {
         this.qrData.update(d => ({ ...d, isActive: false }));
         this.qrImageUrl.set(null);
         if (this.qrPollInterval) clearInterval(this.qrPollInterval);
-        this.toast.success('QR stopped. Students can no longer scan.');
+        this.toast.success('QR paused. Students can no longer scan.');
       },
       error: e => this.toast.error(e?.error?.message || 'Failed to stop QR.')
+    });
+  }
+
+  endSession(): void {
+    if (!confirm('Are you sure you want to end this attendance session? Students will no longer be able to scan or join.')) return;
+    
+    this.qrLoading.set(true);
+    this.api.updateSession(this.sessionId, { status: 'ended' }).subscribe({
+      next: () => {
+        // If QR is active, stop it too
+        if (this.qrActive()) {
+          this.stopQR();
+        }
+        this.loadSessionData();
+        this.qrLoading.set(false);
+        this.toast.success('Attendance session ended.');
+      },
+      error: e => {
+        this.toast.error(e?.error?.message || 'Failed to end session.');
+        this.qrLoading.set(false);
+      }
     });
   }
 
