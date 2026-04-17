@@ -144,8 +144,8 @@ Chart.register(...registerables);
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
             <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--color-primary)">📊 Subject Attendance Breakdown</h3>
           </div>
-          <div *ngIf="(stats()?.subjectBreakdown?.length) > 0 && hasChartData(); else emptyChart" style="height: 240px; display:flex; align-items:center; justify-content:center;">
-             <div style="width: 100%; height: 100%;">
+          <div *ngIf="(stats()?.subjectBreakdown?.length) > 0 && hasChartData(); else emptyChart" style="height: 300px; display:flex; align-items:center; justify-content:center; padding-top: 10px;">
+             <div style="width: 100%; height: 100%; position: relative;">
                 <canvas id="distributionChart"></canvas>
              </div>
           </div>
@@ -321,15 +321,14 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        indexAxis: 'y',
         plugins: {
           legend: {
-            position: 'bottom',
+            position: 'top',
             labels: {
               usePointStyle: true,
               boxWidth: 8,
-              padding: 20,
-              font: { family: 'inherit', size: 11, weight: 'bold' }
+              padding: 16,
+              font: { family: 'inherit', size: 10, weight: 'bold' }
             }
           },
           tooltip: {
@@ -338,13 +337,27 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
             cornerRadius: 8,
             mode: 'index',
             intersect: false,
-            titleFont: { size: 14, weight: 'bold' as any },
-            bodyFont: { size: 13 }
+            titleFont: { size: 13, weight: 'bold' as any },
+            bodyFont: { size: 12 }
           }
         },
         scales: {
-          x: { stacked: true, display: false, grid: { display: false } },
-          y: { stacked: true, grid: { display: false }, ticks: { font: { family: 'inherit', weight: 'bold' as any } } }
+          x: { 
+            stacked: true, 
+            grid: { display: false }, 
+            ticks: { 
+              autoSkip: false,
+              maxRotation: 45,
+              minRotation: 0,
+              font: { family: 'inherit', weight: 'bold' as any, size: 10 } 
+            } 
+          },
+          y: { 
+            stacked: true, 
+            border: { display: false },
+            grid: { color: '#f1f5f9' }, 
+            ticks: { stepSize: 1, precision: 0, font: { family: 'inherit', size: 10 } } 
+          }
         }
       }
     });
