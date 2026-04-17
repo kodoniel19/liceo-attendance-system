@@ -42,8 +42,13 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       <div class="filter-area animate-fade-in-up" *ngIf="sections().length > 0">
         <mat-form-field appearance="outline" class="course-filter">
           <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)" placeholder="Filter by Course">
+            <div class="select-search-header">
+              <mat-icon>search</mat-icon>
+              <input matInput (input)="filterSearch.set($any($event.target).value)" (keydown)="$event.stopPropagation()" placeholder="Search subject..." class="select-search-input">
+            </div>
+
             <mat-option [value]="null">All Sessions</mat-option>
-            <mat-option *ngFor="let sec of sections()" [value]="sec.id">
+            <mat-option *ngFor="let sec of filteredSections()" [value]="sec.id">
               {{ sec.courseName }} — {{ sec.sectionName }}
             </mat-option>
           </mat-select>
@@ -55,10 +60,14 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       <div class="create-panel animate-fade-in-up" *ngIf="showCreate()">
         <h3 style="color:var(--color-primary);margin-bottom:20px">📋 Create New Session</h3>
         <form [formGroup]="createForm" (ngSubmit)="createSession()" class="create-form">
-          <mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Class Section</mat-label>
-            <mat-select formControlName="classSectionId">
-              <mat-option *ngFor="let s of sections()" [value]="s.id">
+            <mat-select formControlName="classSectionId" placeholder="Select Subject">
+              <div class="select-search-header">
+                <mat-icon>search</mat-icon>
+                <input matInput (input)="formFilterSearch.set($any($event.target).value)" (keydown)="$event.stopPropagation()" placeholder="Search subject..." class="select-search-input">
+              </div>
+              <mat-option *ngFor="let s of filteredFormSections()" [value]="s.id">
                 {{ s.courseCode }} — {{ s.sectionName }} ({{ s.courseName }})
               </mat-option>
             </mat-select>
@@ -291,12 +300,23 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
         background-color: rgba(139, 26, 26, 0.05) !important;
       }
       
-      &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
         background-color: var(--color-primary) !important;
         .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
         mat-pseudo-checkbox { display: none; }
       }
-    }
+
+      /* Premium Select Search */
+      .select-search-header {
+        position: sticky; top: 0; background: white; z-index: 100;
+        display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+        mat-icon { font-size: 18px; width: 18px; height: 18px; color: #94a3b8; margin-right: 8px; }
+      }
+      .select-search-input {
+        border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
+        &::placeholder { color: #94a3b8; font-weight: 500; }
+      }
+    `]
     .session-item {
       background: white; border-radius: 20px;
       padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
@@ -386,6 +406,30 @@ export class SessionsComponent implements OnInit, OnDestroy {
   bigQRSession = signal<ClassSession | null>(null);
   now = signal(Date.now());
   selectedFilter = signal<number | null>(null);
+
+  // Search Signals
+  filterSearch = signal('');
+  formFilterSearch = signal('');
+
+  filteredSections = computed(() => {
+    const q = this.filterSearch().toLowerCase().trim();
+    if (!q) return this.sections();
+    return this.sections().filter(s => 
+      s.courseName?.toLowerCase().includes(q) || 
+      s.sectionName?.toLowerCase().includes(q) || 
+      s.courseCode?.toLowerCase().includes(q)
+    );
+  });
+
+  filteredFormSections = computed(() => {
+    const q = this.formFilterSearch().toLowerCase().trim();
+    if (!q) return this.sections();
+    return this.sections().filter(s => 
+      s.courseName?.toLowerCase().includes(q) || 
+      s.sectionName?.toLowerCase().includes(q) || 
+      s.courseCode?.toLowerCase().includes(q)
+    );
+  });
 
   groupedSessions = computed(() => {
     let sessions = this.sessions();

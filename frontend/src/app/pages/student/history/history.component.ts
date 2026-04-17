@@ -44,8 +44,12 @@ import { Attendance } from '../../../core/models';
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-select [formControl]="sectionFilter" placeholder="Filter by Subject">
+            <div class="select-search-header">
+              <mat-icon>search</mat-icon>
+              <input matInput (input)="subjectSearch.set($any($event.target).value)" (keydown)="$event.stopPropagation()" placeholder="Search subject..." class="select-search-input">
+            </div>
             <mat-option value="">All Subjects</mat-option>
-            <mat-option *ngFor="let s of enrollment()" [value]="s.id">
+            <mat-option *ngFor="let s of filteredEnrollment()" [value]="s.id">
               {{ s.courseName }} Instructor: {{ s.instructorLast }}
             </mat-option>
           </mat-select>
@@ -154,6 +158,17 @@ import { Attendance } from '../../../core/models';
       .mdc-list-item__primary-text { color: white !important; font-weight: 800 !important; }
     }
 
+    /* Premium Select Search */
+    .select-search-header {
+      position: sticky; top: 0; background: white; z-index: 100;
+      display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: #94a3b8; margin-right: 8px; }
+    }
+    .select-search-input {
+      border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
+      &::placeholder { color: #94a3b8; font-weight: 500; }
+    }
+
     .history-timeline { display: flex; flex-direction: column; gap: 32px; }
     .timeline-group { display: flex; flex-direction: column; gap: 16px; }
     
@@ -228,6 +243,16 @@ export class HistoryComponent implements OnInit {
   groupedAttendance = signal<{ date: string; records: Attendance[] }[]>([]);
   loading = signal(true);
   enrollment = signal<any[]>([]);
+
+  subjectSearch = signal('');
+  filteredEnrollment = computed(() => {
+    const q = this.subjectSearch().toLowerCase().trim();
+    if (!q) return this.enrollment();
+    return this.enrollment().filter(e => 
+      e.courseName?.toLowerCase().includes(q) || 
+      e.courseCode?.toLowerCase().includes(q)
+    );
+  });
 
   currentYear = new Date().getFullYear();
   years = Array.from({ length: this.currentYear - 2023 }, (_, i) => 2024 + i).reverse();
