@@ -119,11 +119,11 @@ Chart.register(...registerables);
             <div class="course-card__info">
               <div class="info-item">
                 <mat-icon>calendar_today</mat-icon>
-                <span class="info-text">{{ (s as any).schedule || 'TBA' }}</span>
+                <span class="info-text">{{ $any(s).schedule || 'TBA' }}</span>
               </div>
               <div class="info-item">
                 <mat-icon>location_on</mat-icon>
-                <span class="info-text">{{ (s as any).room || 'TBA' }}</span>
+                <span class="info-text">{{ $any(s).room || 'TBA' }}</span>
               </div>
             </div>
 
@@ -232,7 +232,7 @@ Chart.register(...registerables);
 
     @media (max-width: 600px) {
       .invitation-card { flex-direction: column; align-items: stretch; text-align: center; }
-      .inv_actions { justify-content: center; }
+      .inv-actions { justify-content: center; }
       
       .course-card { padding: 14px; }
       .course-rate { font-size: 1.3rem !important; }
