@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
@@ -76,51 +76,57 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       <div *ngIf="loading()" class="loading-spinner"><mat-spinner diameter="40"></mat-spinner></div>
 
       <div class="sessions-grid animate-fade-in-up" *ngIf="!loading()">
-        <div class="session-item" *ngFor="let s of sessions()" [class.is-active]="s.status === 'active'">
-          <div class="session-item__header">
-            <div>
-              <div class="session-item__meta">
-                {{ s.courseCode }} · {{ s.sectionName }} · {{ s.sessionDate || s.session_date | date:'MMM d, y' }}
-                <span *ngIf="auth.isAdmin()" class="instructor-tag">By {{ s.instructorFirst }} {{ s.instructorLast }}</span>
+        <!-- Grouped Sessions -->
+        <div *ngFor="let group of groupedSessions()" class="course-group">
+          <div class="course-divider">
+            <span class="course-divider__code">{{ group.courseCode }} — {{ group.sectionName }}</span>
+            <span class="course-divider__name">{{ group.courseName }}</span>
+            <div class="course-divider__line"></div>
+          </div>
+
+          <div class="session-item" *ngFor="let s of group.sessions" [class.is-active]="s.status === 'active'">
+            <div class="session-item__header">
+              <div>
+                <div class="session-item__meta">
+                  📅 {{ s.sessionDate || s.session_date | date:'MMM d, y' }}
+                  <span *ngIf="auth.isAdmin()" class="instructor-tag">By {{ s.instructorFirst }} {{ s.instructorLast }}</span>
+                </div>
+                <div class="session-item__topic" *ngIf="s.topic">📌 {{ s.topic }}</div>
               </div>
-              <div class="session-item__name">{{ s.courseName }}</div>
-              <div class="session-item__topic" *ngIf="s.topic">📌 {{ s.topic }}</div>
+              <span class="badge" [class]="'badge--' + s.status">{{ s.status | uppercase }}</span>
             </div>
-            <span class="badge" [class]="'badge--' + s.status">{{ s.status | uppercase }}</span>
-          </div>
 
-          <!-- Attendance Progress -->
-          <div class="session-item__progress" *ngIf="s.status !== 'cancelled'">
-            <div class="session-item__progress-labels">
-              <span>{{ s.presentCount || 0 }} / {{ s.enrolledCount || 0 }} present</span>
-              <span>{{ getRate(s) }}%</span>
+            <!-- Attendance Progress -->
+            <div class="session-item__progress" *ngIf="s.status !== 'cancelled'">
+              <div class="session-item__progress-labels">
+                <span>{{ s.presentCount || 0 }} / {{ s.enrolledCount || 0 }} present</span>
+                <span>{{ getRate(s) }}%</span>
+              </div>
+              <mat-progress-bar mode="determinate" [value]="getRate(s)" color="primary"></mat-progress-bar>
             </div>
-            <mat-progress-bar mode="determinate" [value]="getRate(s)" color="primary"></mat-progress-bar>
-          </div>
 
-          <!-- QR Section -->
-          <!-- QR Section -->
-          <div class="session-item__qr" *ngIf="s.status === 'active'">
-            <div class="qr-placeholder" *ngIf="activeQRs()[s.id]">
-              <mat-icon style="font-size:48px;width:48px;height:48px;color:var(--color-success)">qr_code_2</mat-icon>
-              <div class="qr-timer" [class.warning]="isQRWarning(s.id)" [class.expired]="isQRExpired(s.id)">
-                {{ getQRCountdown(s.id) }}
+            <!-- QR Section -->
+            <div class="session-item__qr" *ngIf="s.status === 'active'">
+              <div class="qr-placeholder" *ngIf="activeQRs()[s.id]">
+                <mat-icon style="font-size:48px;width:48px;height:48px;color:var(--color-success)">qr_code_2</mat-icon>
+                <div class="qr-timer" [class.warning]="isQRWarning(s.id)" [class.expired]="isQRExpired(s.id)">
+                  {{ getQRCountdown(s.id) }}
+                </div>
+              </div>
+
+              <div class="session-item__qr-actions">
+                <button mat-raised-button color="primary" (click)="generateQR(s)" [disabled]="generatingQR() === s.id">
+                  <mat-spinner *ngIf="generatingQR() === s.id" diameter="18"></mat-spinner>
+                  <mat-icon *ngIf="generatingQR() !== s.id">qr_code</mat-icon>
+                  {{ activeQRs()[s.id] ? 'Regenerate QR' : 'Generate QR' }}
+                </button>
+                <button mat-raised-button color="accent" *ngIf="activeQRs()[s.id]" (click)="openBigQR(s)">
+                  <mat-icon>fullscreen</mat-icon> Show Large QR
+                </button>
               </div>
             </div>
 
-            <div class="session-item__qr-actions">
-              <button mat-raised-button color="primary" (click)="generateQR(s)" [disabled]="generatingQR() === s.id">
-                <mat-spinner *ngIf="generatingQR() === s.id" diameter="18"></mat-spinner>
-                <mat-icon *ngIf="generatingQR() !== s.id">qr_code</mat-icon>
-                {{ activeQRs()[s.id] ? 'Regenerate QR' : 'Generate QR' }}
-              </button>
-              <button mat-raised-button color="accent" *ngIf="activeQRs()[s.id]" (click)="openBigQR(s)">
-                <mat-icon>fullscreen</mat-icon> Show Large QR
-              </button>
-            </div>
-          </div>
-
-          <!-- Actions -->
+            <!-- Actions -->
             <div class="session-item__actions">
               <a mat-button [routerLink]="'/instructor/sessions/' + s.id">
                 <mat-icon>people</mat-icon> Attendance
@@ -135,6 +141,7 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
                 <mat-icon>delete</mat-icon> Delete
               </button>
             </div>
+          </div>
         </div>
 
         <div class="empty-state" *ngIf="!sessions().length">
@@ -206,7 +213,25 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     .create-form mat-form-field:last-of-type { grid-column: 1 / -1; }
     .create-form__actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 12px; }
 
-    .sessions-grid { display: flex; flex-direction: column; gap: 16px; }
+    .course-group {
+      display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;
+    }
+    .course-divider {
+      display: flex; align-items: center; gap: 12px; margin: 12px 0 8px;
+      padding: 0 4px;
+    }
+    .course-divider__code {
+      font-size: 0.85rem; font-weight: 800; color: var(--color-primary);
+      text-transform: uppercase; white-space: nowrap;
+      background: rgba(139, 26, 26, 0.1); padding: 4px 12px; border-radius: 20px;
+    }
+    .course-divider__name {
+      font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .course-divider__line {
+      flex: 1; height: 1px; background: linear-gradient(to right, var(--color-border), transparent);
+    }
     .session-item {
       background: white; border-radius: var(--radius-lg);
       padding: 20px; box-shadow: var(--shadow-md);
@@ -276,6 +301,26 @@ export class SessionsComponent implements OnInit, OnDestroy {
   activeQRs = signal<{ [sessionId: number]: QRSession }>({});
   bigQRSession = signal<ClassSession | null>(null);
   now = signal(Date.now());
+
+  groupedSessions = computed(() => {
+    const sessions = this.sessions();
+    const groups: { [key: string]: { courseCode: string, courseName: string, sectionName: string, sessions: ClassSession[] } } = {};
+    
+    sessions.forEach(s => {
+      const key = `${s.courseCode}-${s.sectionName}`;
+      if (!groups[key]) {
+        groups[key] = {
+          courseCode: s.courseCode,
+          courseName: s.courseName,
+          sectionName: s.sectionName,
+          sessions: []
+        };
+      }
+      groups[key].sessions.push(s);
+    });
+
+    return Object.values(groups);
+  });
 
   private timerSub!: Subscription;
 
