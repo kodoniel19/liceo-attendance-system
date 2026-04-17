@@ -121,10 +121,10 @@ exports.createSession = async (req, res, next) => {
       [classSectionId, sessionDate, topic || null, notes || null, lateThresholdMinutes || 15, req.user.id]
     );
 
-    // Auto-create absent records for all enrolled students (including pending)
+    // Auto-create absent records for all enrolled students
     const enrolled = await query(
-      'SELECT student_id FROM enrollments WHERE class_section_id = ? AND status IN (?, ?)',
-      [classSectionId, 'active', 'pending']
+      'SELECT student_id FROM enrollments WHERE class_section_id = ? AND status = ?',
+      [classSectionId, 'active']
     );
 
     if (enrolled.length) {
