@@ -139,10 +139,11 @@ exports.register = async (req, res, next) => {
     const rounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
     const passwordHash = await bcrypt.hash(actualPassword, rounds);
 
+    const nowPHT = require('../utils/time').getPHTNow();
     const result = await query(
-      `INSERT INTO users (university_id, email, password_hash, first_name, last_name, middle_name, role, department)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [universityId, email, passwordHash, firstName, lastName, middleName || null, actualRole, department || null]
+      `INSERT INTO users (university_id, email, password_hash, first_name, last_name, middle_name, role, department, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [universityId, email, passwordHash, firstName, lastName, middleName || null, actualRole, department || null, nowPHT]
     );
 
     const newUsers = await query('SELECT * FROM users WHERE id = ? LIMIT 1', [result.insertId]);
