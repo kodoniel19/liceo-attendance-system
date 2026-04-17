@@ -218,16 +218,16 @@ import { ApiService } from '../../../core/services/api.service';
       z-index: 2000; 
       backdrop-filter: blur(12px); 
       overflow-y: auto;
-      padding: 20px;
+      display: flex; flex-direction: column; padding: 40px 20px;
     }
     .history-modal { 
-      background: white; border-radius: 24px; width: 100%; max-width: 680px; 
-      margin: 40px auto;
+      background: white; border-radius: 28px; width: 100%; max-width: 680px; 
+      min-height: 480px; margin: auto;
       display: flex; flex-direction: column; 
-      box-shadow: 0 40px 80px -15px rgba(0,0,0,0.3); 
+      box-shadow: 0 40px 120px -20px rgba(0,0,0,0.4); 
       overflow: hidden; border: none;
       animation: modalPopSoft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
+      position: relative; flex-shrink: 0;
     }
     @keyframes modalPopSoft {
       from { transform: scale(0.96) translateY(20px); opacity: 0; }
