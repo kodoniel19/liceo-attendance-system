@@ -90,7 +90,7 @@ import { ToastService } from '../../../core/services/toast.service';
               <mat-error *ngIf="form.get('email')?.errors && (form.get('email')?.dirty || form.get('email')?.touched)">
                 <span *ngIf="form.get('email')?.hasError('required')">Required</span>
                 <span *ngIf="!form.get('email')?.hasError('required') && form.get('email')?.value && (form.get('email')?.hasError('pattern') || form.get('email')?.hasError('email'))">
-                  Use liceo.edu.ph email only
+                  Only Liceo emails are accepted
                 </span>
               </mat-error>
             </mat-form-field>

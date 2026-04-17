@@ -58,7 +58,7 @@ exports.registerValidation = [
   body('universityId').notEmpty().trim().withMessage('University ID required'),
   body('email').isEmail().normalizeEmail()
     .custom(val => val.endsWith('@liceo.edu.ph'))
-    .withMessage('Use liceo.edu.ph email only'),
+    .withMessage('Only Liceo emails are accepted'),
   body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('firstName').notEmpty().trim().withMessage('First name required'),
   body('lastName').notEmpty().trim().withMessage('Last name required')

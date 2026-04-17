@@ -148,7 +148,7 @@ import { User } from '../../../core/models';
               <input matInput type="email" formControlName="email" autocomplete="off" placeholder="example@liceo.edu.ph" />
               <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
               <mat-error *ngIf="!userForm.get('email')?.hasError('required') && userForm.get('email')?.value && (userForm.get('email')?.hasError('pattern') || userForm.get('email')?.hasError('email'))">
-                Use liceo.edu.ph email only
+                Only Liceo emails are accepted
               </mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-w">
