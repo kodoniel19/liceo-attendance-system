@@ -257,23 +257,34 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       padding: 0 4px;
     }
     .course-filter {
-      width: 100%; max-width: 450px;
+      width: 100%; max-width: 320px;
       ::ng-deep .mat-mdc-text-field-wrapper { 
-        background: white; border-radius: 16px !important; 
+        background: white; border-radius: 12px !important; 
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(139, 26, 26, 0.1) !important;
       }
-      ::ng-deep .mat-mdc-form-field-focus-overlay { background-color: rgba(139, 26, 26, 0.02); }
       
-      &:hover ::ng-deep .mat-mdc-text-field-wrapper {
+      /* Target the Material Outline specifically to avoid double-border issues */
+      ::ng-deep .mdc-notched-outline__leading,
+      ::ng-deep .mdc-notched-outline__notch,
+      ::ng-deep .mdc-notched-outline__trailing {
+        border-color: rgba(139, 26, 26, 0.2) !important;
+      }
+
+      &:hover ::ng-deep .mdc-notched-outline__leading,
+      &:hover ::ng-deep .mdc-notched-outline__notch,
+      &:hover ::ng-deep .mdc-notched-outline__trailing {
         border-color: var(--color-primary) !important;
-        box-shadow: 0 4px 20px rgba(139, 26, 26, 0.12);
       }
       
-      &.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {
+      &.mat-focused ::ng-deep .mdc-notched-outline__leading,
+      &.mat-focused ::ng-deep .mdc-notched-outline__notch,
+      &.mat-focused ::ng-deep .mdc-notched-outline__trailing {
         border-color: var(--color-primary) !important;
         border-width: 2px !important;
       }
+
+      ::ng-deep .mat-mdc-select-value { font-size: 0.9rem; font-weight: 500; }
+      ::ng-deep .mat-mdc-form-field-label { color: var(--color-text-muted); font-size: 0.85rem; }
     }
 
     /* Premium Overlay Styling */
