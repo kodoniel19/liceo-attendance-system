@@ -53,7 +53,7 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
         co.course_name   AS courseName,
         cl.section_name  AS sectionName,
         cl.id            AS sectionId,
-        cl.schedule      AS schedule,
+        CONCAT(cl.schedule_day, " ", TIME_FORMAT(cl.schedule_time_start, "%h:%i %p"), " - ", TIME_FORMAT(cl.schedule_time_end, "%h:%i %p")) AS schedule,
         cl.room          AS room,
         COUNT(a.id) AS totalSessions,
         SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) AS presentCount,
@@ -74,7 +74,7 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
       LEFT JOIN class_sessions cs ON cs.class_section_id = cl.id AND cs.status != 'cancelled'
       LEFT JOIN attendance a ON a.class_session_id = cs.id AND a.student_id = e.student_id
       WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
-      GROUP BY cl.id, co.id, u.id, cl.schedule, cl.room
+      GROUP BY cl.id, co.id, u.id, cl.schedule_day, cl.schedule_time_start, cl.schedule_time_end, cl.room
     `, [studentId]);
 
     res.json({ success: true, data: summary });
