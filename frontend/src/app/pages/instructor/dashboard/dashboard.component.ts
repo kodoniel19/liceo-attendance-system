@@ -33,56 +33,59 @@ Chart.register(...registerables);
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-grid animate-fade-in-up" *ngIf="!statsLoading() && stats()">
-        <a class="stat-card clickable highlight-red" routerLink="/instructor/sections">
-          <div class="card-icon">🏫</div>
-          <div class="card-value">{{ stats()?.totalSections ?? 0 }}</div>
-          <div class="card-label">Active Classes</div>
-          <div class="card-footer">My Workload</div>
-        </a>
+      <!-- Top Row: Stats & Chart -->
+      <div class="dashboard-top-row animate-fade-in-up" *ngIf="!statsLoading() && stats()">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <a class="stat-card clickable highlight-red" routerLink="/instructor/sections">
+            <div class="card-icon">🏫</div>
+            <div class="card-value">{{ stats()?.totalSections ?? 0 }}</div>
+            <div class="card-label">Active Classes</div>
+            <div class="card-footer">My Workload</div>
+          </a>
 
-        <a class="stat-card clickable highlight-gold" routerLink="/instructor/sessions">
-          <div class="card-icon">⚡</div>
-          <div class="card-value">{{ stats()?.activeSessions ?? 0 }}</div>
-          <div class="card-label">Live Sessions</div>
-          <div class="card-footer status--active">Tracking Now</div>
-        </a>
+          <a class="stat-card clickable highlight-gold" routerLink="/instructor/sessions">
+            <div class="card-icon">⚡</div>
+            <div class="card-value">{{ stats()?.activeSessions ?? 0 }}</div>
+            <div class="card-label">Live Sessions</div>
+            <div class="card-footer status--active">Tracking Now</div>
+          </a>
 
-        <a class="stat-card clickable highlight-green" routerLink="/instructor/reports">
-          <div class="card-icon">✅</div>
-          <div class="card-value">{{ stats()?.todayStats?.present ?? 0 }}</div>
-          <div class="card-label">Present Today</div>
-          <div class="card-footer">System Verified</div>
-        </a>
+          <a class="stat-card clickable highlight-green" routerLink="/instructor/reports">
+            <div class="card-icon">✅</div>
+            <div class="card-value">{{ stats()?.todayStats?.present ?? 0 }}</div>
+            <div class="card-label">Present Today</div>
+            <div class="card-footer">System Verified</div>
+          </a>
 
-        <a class="stat-card clickable highlight-orange" routerLink="/instructor/reports">
-          <div class="card-icon">👥</div>
-          <div class="card-value">{{ stats()?.todayStats?.total ?? 0 }}</div>
-          <div class="card-label">Expected Students</div>
-          <div class="card-footer">Daily Total</div>
-        </a>
-      </div>
+          <a class="stat-card clickable highlight-orange" routerLink="/instructor/reports">
+            <div class="card-icon">👥</div>
+            <div class="card-value">{{ stats()?.todayStats?.total ?? 0 }}</div>
+            <div class="card-label">Expected Students</div>
+            <div class="card-footer">Daily Total</div>
+          </a>
+        </div>
 
-      <!-- Performance Chart -->
-      <div class="animate-fade-in-up mt-3" *ngIf="!statsLoading() && stats()">
-        <div class="chart-container">
-          <div class="chart-header">
-            <h2>
-              <span class="material-icons">bar_chart</span>
-              Class Attendance Performance (%)
-            </h2>
-          </div>
-          <div *ngIf="stats()?.sectionPerformance?.length > 0; else emptyChart" style="height: 300px; position: relative;">
-            <canvas id="performanceChart"></canvas>
-          </div>
-          <ng-template #emptyChart>
-            <div style="height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
-              <span class="material-icons" style="font-size: 48px; opacity: 0.2; margin-bottom: 16px;">query_stats</span>
-              <p style="margin: 0; font-weight: 600;">No attendance data available yet.</p>
-              <p style="margin: 4px 0 0; font-size: 0.85rem; opacity: 0.7;">Complete a session to generate insights.</p>
+        <!-- Performance Chart -->
+        <div class="chart-wrapper">
+          <div class="chart-container">
+            <div class="chart-header">
+              <h2>
+                <span class="material-icons">bar_chart</span>
+                Class Attendance (%)
+              </h2>
             </div>
-          </ng-template>
+            <div *ngIf="stats()?.sectionPerformance?.length > 0; else emptyChart" style="height: 220px; position: relative;">
+              <canvas id="performanceChart"></canvas>
+            </div>
+            <ng-template #emptyChart>
+              <div style="height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">query_stats</span>
+                <p style="margin: 0; font-weight: 600;">No data yet.</p>
+                <p style="margin: 4px 0 0; font-size: 0.8rem; opacity: 0.7;">Complete a session to generate insights.</p>
+              </div>
+            </ng-template>
+          </div>
         </div>
       </div>
 
@@ -141,34 +144,40 @@ Chart.register(...registerables);
   `,
   styles: [`
     .page-container { padding: 16px 20px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+
+    .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+    @media (min-width: 1024px) {
+      .dashboard-top-row { grid-template-columns: 1.1fr 1fr; } 
+    }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .stat-card {
-      background: white !important; border-radius: 20px !important; padding: 24px !important;
+      background: white !important; border-radius: 16px !important; padding: 16px !important;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
       display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important;
       transition: all 0.3s ease !important;
       text-decoration: none !important; position: relative !important; overflow: hidden !important;
       border: 1px solid #eee !important;
     }
-    .stat-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+    .stat-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
     .highlight-red::before    { background: #8B1A1A; }
     .highlight-gold::before   { background: #C9A227; }
     .highlight-green::before  { background: #10b981; }
     .highlight-orange::before { background: #f59e0b; }
 
     .stat-card.clickable:hover { 
-      transform: translateY(-5px) !important; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+      transform: translateY(-3px) !important; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06) !important;
     }
     
-    .card-icon { font-size: 28px; margin-bottom: 8px; height: 32px; display: flex; align-items: center; justify-content: center; }
-    .card-value { font-size: 2.25rem !important; font-weight: 800 !important; color: #1a1a2e !important; line-height: 1 !important; margin-bottom: 2px !important; }
+    .card-icon { font-size: 26px; margin-bottom: 6px; height: 30px; display: flex; align-items: center; justify-content: center; }
+    .card-value { font-size: 1.8rem !important; font-weight: 800 !important; color: #1a1a2e !important; line-height: 1 !important; margin-bottom: 2px !important; }
     .card-label { font-size: 0.65rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
     
     .card-footer { 
       margin-top: 10px; padding-top: 8px; border-top: 1px solid #f8fafc; width: 100%; 
       display: flex; flex-direction: column; align-items: center; gap: 2px; 
-      font-size: 0.68rem !important; font-weight: 600 !important; color: #94a3b8 !important; 
+      font-size: 0.65rem !important; font-weight: 600 !important; color: #94a3b8 !important; 
     }
     .status--active { color: #10b981 !important; font-weight: 700 !important; }
 
@@ -190,10 +199,11 @@ Chart.register(...registerables);
     
     .empty-state { padding: 32px 20px; }
     
+    .chart-wrapper { height: 100%; display: flex; flex-direction: column; }
     .chart-container {
-      background: white; border-radius: 20px; padding: 24px;
+      background: white; border-radius: 20px; padding: 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;
-      margin-bottom: 24px;
+      flex: 1; display: flex; flex-direction: column; margin-bottom: 0px;
     }
     .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .chart-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0; }
