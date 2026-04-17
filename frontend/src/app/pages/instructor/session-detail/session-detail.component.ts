@@ -168,12 +168,6 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="override">
-            <th mat-header-cell *matHeaderCellDef>Override</th>
-            <td mat-cell *matCellDef="let a">
-              <span *ngIf="a.override_reason" class="badge badge--info" style="font-size:0.7rem">Manual</span>
-            </td>
-          </ng-container>
 
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Change</th>
@@ -184,8 +178,8 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="['student', 'status', 'time', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['student', 'status', 'time', 'actions'];"></tr>
         </table>
 
         <div class="empty-state" *ngIf="!filteredAttendance().length">
@@ -427,7 +421,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   searchingStudents = signal(false);
   private studentSearchDebounce: any = null;
 
-  displayedColumns  = ['student', 'status', 'time', 'override', 'actions'];
+  displayedColumns  = ['student', 'status', 'time', 'actions'];
   filteredAttendance = signal<Attendance[]>([]);
   counts = signal({ present: 0, late: 0, absent: 0, excused: 0 });
 
