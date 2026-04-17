@@ -120,7 +120,7 @@ export const routes: Routes = [
       },
       {
         path: 'notifications',
-        loadComponent: () => import('./pages/instructor/notifications/notifications').then(m => m.InstructorNotificationsComponent),
+        loadComponent: () => import('./pages/instructor/notifications/notifications.component').then(m => m.InstructorNotificationsComponent),
         title: 'Announcements – Liceo Attendance'
       },
       {
@@ -160,7 +160,7 @@ export const routes: Routes = [
       },
       {
         path: 'notifications',
-        loadComponent: () => import('./pages/student/notifications/notifications').then(m => m.NotificationsComponent),
+        loadComponent: () => import('./pages/student/notifications/notifications.component').then(m => m.NotificationsComponent),
         title: 'Recent Notifications – Liceo Attendance'
       },
       {

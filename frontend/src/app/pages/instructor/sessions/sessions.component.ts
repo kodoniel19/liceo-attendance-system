@@ -494,7 +494,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
         data.forEach((s: any) => {
           if (s.activeQR) {
             let qr = s.activeQR;
-            if (typeof qr === 'string') try { qr = JSON.parse(qr); } catch(e) {}
+            if (typeof qr === 'string') try { qr = JSON.parse(qr); } catch(e: any) {}
             if (qr && qr.isActive) qrMap[s.id] = qr;
           }
         });
