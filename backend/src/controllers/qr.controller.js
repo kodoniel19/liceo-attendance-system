@@ -36,7 +36,7 @@ exports.generateQR = async (req, res, next) => {
 
     // Auto-resume session if it was ended
     if (session.status === 'ended') {
-      await query('UPDATE class_sessions SET status = "active" WHERE id = ?', [sessionId]);
+      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
       logger.info(`Session ${sessionId} auto-resumed by QR generation`);
     }
 
@@ -188,14 +188,8 @@ exports.scanQR = async (req, res, next) => {
     const now = new Date();
     const scanTime = now;
     
-    // Check if this is a "Reopened" or "Secondary" QR session (Instructor regenerated it)
-    const qrStatsQueryResult = await query(
-      'SELECT COUNT(*) as count FROM qr_sessions WHERE class_session_id = ? AND id < ?',
-      [sessionId, qrSession.id]
-    );
-    const isSecondaryQR = qrStatsQueryResult[0].count > 0;
-
     const lateThreshold = classSession[0].late_threshold_minutes || 15;
+    const isResumed = classSession[0].is_resumed === 1;
     
     // Check if enough time has passed to be marked late (using DB time comparison)
     const timeCheckQueryResult = await query(
@@ -205,7 +199,8 @@ exports.scanQR = async (req, res, next) => {
     const minutesElapsed = timeCheckQueryResult[0].minutesElapsed;
     
     let status = 'present';
-    if (minutesElapsed >= lateThreshold || isSecondaryQR) {
+    // Logic: Mark late if timer expired OR if the instructor resumed this class from an "Ended" state
+    if (minutesElapsed >= lateThreshold || isResumed) {
       status = 'late';
     }
 
@@ -300,6 +295,12 @@ exports.deactivateQR = async (req, res, next) => {
 exports.reopenQR = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
+
+    // Check if session needs auto-resuming
+    const sessionQueryResult = await query('SELECT status FROM class_sessions WHERE id = ?', [sessionId]);
+    if (sessionQueryResult.length && sessionQueryResult[0].status === 'ended') {
+      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+    }
 
     // Find the most recent QR for this session
     const qrSessions = await query(
