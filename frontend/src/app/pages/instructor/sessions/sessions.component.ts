@@ -258,33 +258,43 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     }
     .course-filter {
       width: 100%; max-width: 320px;
-      ::ng-deep .mat-mdc-text-field-wrapper { 
-        background: white; border-radius: 12px !important; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
+      margin: 0;
       
-      /* Target the Material Outline specifically to avoid double-border issues */
+      ::ng-deep .mat-mdc-text-field-wrapper { 
+        background: white !important; 
+        border-radius: 12px !important;
+        padding-top: 8px !important;
+      }
+
+      /* Solid Maroon Border */
       ::ng-deep .mdc-notched-outline__leading,
       ::ng-deep .mdc-notched-outline__notch,
       ::ng-deep .mdc-notched-outline__trailing {
-        border-color: rgba(139, 26, 26, 0.2) !important;
+        border-color: var(--color-primary) !important;
+        border-width: 1px !important;
       }
 
       &:hover ::ng-deep .mdc-notched-outline__leading,
       &:hover ::ng-deep .mdc-notched-outline__notch,
       &:hover ::ng-deep .mdc-notched-outline__trailing {
-        border-color: var(--color-primary) !important;
-      }
-      
-      &.mat-focused ::ng-deep .mdc-notched-outline__leading,
-      &.mat-focused ::ng-deep .mdc-notched-outline__notch,
-      &.mat-focused ::ng-deep .mdc-notched-outline__trailing {
-        border-color: var(--color-primary) !important;
         border-width: 2px !important;
       }
 
-      ::ng-deep .mat-mdc-select-value { font-size: 0.9rem; font-weight: 500; }
-      ::ng-deep .mat-mdc-form-field-label { color: var(--color-text-muted); font-size: 0.85rem; }
+      &.mat-focused ::ng-deep .mdc-notched-outline__leading,
+      &.mat-focused ::ng-deep .mdc-notched-outline__notch,
+      &.mat-focused ::ng-deep .mdc-notched-outline__trailing {
+        border-width: 2px !important;
+      }
+
+      ::ng-deep .mat-mdc-select-value { 
+        font-size: 0.95rem; font-weight: 600; color: #333;
+        padding-left: 4px;
+      }
+      ::ng-deep .mat-mdc-form-field-label { 
+        color: var(--color-primary) !important; 
+        font-weight: 700 !important;
+      }
+      ::ng-deep .mat-icon { color: var(--color-primary); margin-right: 8px; }
     }
 
     /* Premium Overlay Styling */
