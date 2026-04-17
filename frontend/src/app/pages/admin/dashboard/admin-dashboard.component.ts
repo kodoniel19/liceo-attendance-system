@@ -120,7 +120,7 @@ Chart.register(...registerables);
     .admin-page p { color: #64748b; font-size: 0.875rem; margin: 0 0 16px; }
 
     .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
-    @media (min-width: 1200px) {
+    @media (min-width: 1024px) {
       .dashboard-top-row { grid-template-columns: 1.2fr 1fr; }
     }
 
