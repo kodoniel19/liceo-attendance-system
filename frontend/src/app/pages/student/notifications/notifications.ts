@@ -1,15 +1,20 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule, RouterLink, MatButtonModule, MatIconModule, 
+    MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule
+  ],
   template: `
     <div class="page-container animate-fade-in-up">
       <div class="page-header">
@@ -19,12 +24,26 @@ import { ApiService } from '../../../core/services/api.service';
         </div>
       </div>
 
+      <!-- Filter Area -->
+      <div class="filter-area animate-fade-in-up" *ngIf="notifications().length > 0">
+        <mat-form-field appearance="outline" class="course-filter">
+          <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)" placeholder="Filter by Source">
+            <mat-option [value]="'all'">All Notifications</mat-option>
+            <mat-option [value]="'admin'">Admin/System</mat-option>
+            <mat-option *ngFor="let course of uniqueCourses()" [value]="course">
+              {{ course }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+      </div>
+
       <div *ngIf="loading()" class="loading-spinner">
         <mat-spinner diameter="40"></mat-spinner>
       </div>
 
       <div class="notif-grid" *ngIf="!loading()">
-        <div class="notif-card" *ngFor="let n of notifications()">
+        <div class="notif-card" *ngFor="let n of filteredNotifications()">
           <div class="notif-card__icon">
             <mat-icon>campaign</mat-icon>
           </div>
@@ -50,6 +69,44 @@ import { ApiService } from '../../../core/services/api.service';
     </div>
   `,
   styles: [`
+    .filter-area { margin-bottom: 24px; display: flex; justify-content: flex-start; }
+    .course-filter {
+      width: 100%; max-width: 260px;
+      margin: 0;
+      ::ng-deep .mat-mdc-text-field-wrapper { background: white !important; border-radius: 12px !important; height: 48px !important; display: flex; align-items: center; }
+      ::ng-deep .mdc-notched-outline__leading,
+      ::ng-deep .mdc-notched-outline__notch,
+      ::ng-deep .mdc-notched-outline__trailing { border-color: var(--color-primary) !important; }
+      ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 600; color: #444; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; margin-right: 8px; }
+    }
+
+    /* Premium Overlay Styling */
+    ::ng-deep .mat-mdc-select-panel {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px);
+      border-radius: 12px !important;
+      padding: 8px !important;
+      box-shadow: 0 10px 40px rgba(139, 26, 26, 0.15) !important;
+      border: 1px solid rgba(139, 26, 26, 0.1) !important;
+    }
+
+    ::ng-deep .mat-mdc-option {
+      border-radius: 8px !important;
+      margin-bottom: 2px;
+      transition: all 0.2s ease;
+      .mdc-list-item__primary-text { font-size: 0.85rem !important; font-weight: 500; }
+    }
+
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background: var(--color-primary) !important;
+      .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
+    }
+
+    ::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--selected) {
+      background: rgba(139, 26, 26, 0.05) !important;
+    }
+
     .notif-grid { display: flex; flex-direction: column; gap: 16px; max-width: 800px; }
     .notif-card {
       background: white; border-radius: 16px; padding: 20px;
@@ -82,6 +139,23 @@ export class NotificationsComponent implements OnInit {
   api = inject(ApiService);
   notifications = signal<any[]>([]);
   loading = signal(true);
+  selectedFilter = signal<string>('all');
+
+  uniqueCourses = computed(() => {
+    const courses = this.notifications()
+      .filter(n => !n.isGlobal && n.courseCode)
+      .map(n => n.courseCode);
+    return Array.from(new Set(courses)).sort();
+  });
+
+  filteredNotifications = computed(() => {
+    const filter = this.selectedFilter();
+    const all = this.notifications();
+    
+    if (filter === 'all') return all;
+    if (filter === 'admin') return all.filter(n => n.isGlobal);
+    return all.filter(n => n.courseCode === filter);
+  });
 
   ngOnInit(): void {
     this.api.getMyAnnouncements().subscribe({
