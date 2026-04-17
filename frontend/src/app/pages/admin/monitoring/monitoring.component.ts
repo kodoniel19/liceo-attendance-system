@@ -95,26 +95,30 @@ import { ApiService } from '../../../core/services/api.service';
       </div>
 
       <!-- History Modal -->
-      <div class="modal-overlay" *ngIf="showHistoryModal()">
-        <div class="history-modal animate-fade-in-up">
-           <div class="modal-header">
+      <div class="modal-overlay" *ngIf="showHistoryModal()" 
+           style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; backdrop-filter: blur(12px); overflow: auto;">
+        
+        <div class="history-modal animate-fade-in-up" 
+             style="background: white; border-radius: 28px; width: 100%; max-width: 680px; min-height: 520px; display: flex; flex-direction: column; box-shadow: 0 40px 120px -20px rgba(0,0,0,0.4); overflow: hidden; border: none; position: relative; flex-shrink: 0;">
+           
+           <div class="modal-header" style="flex-shrink: 0;">
              <div class="header-content">
                <div class="avatar-large">{{ selectedStudent()?.lastName?.[0] || '?' }}{{ selectedStudent()?.firstName?.[0] || '' }}</div>
                <div class="profile-details">
                  <div class="university-pill">{{ selectedStudent()?.universityId || 'ID UNKNOWN' }}</div>
                  <h3>{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
                  <span class="attendance-avg-badge">
-                   <mat-icon>analytics</mat-icon>
+                   <mat-icon style="font-size: 16px; width: 16px; height: 16px;">analytics</mat-icon>
                    Overall: {{ selectedStudent()?.overallRate | number:'1.0-1' }}%
                  </span>
                </div>
              </div>
-             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn" title="Close">
+             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn" title="Close" style="color: #94a3b8;">
                <mat-icon>close</mat-icon>
              </button>
            </div>
            
-           <div class="modal-body">
+           <div class="modal-body" style="flex: 1; overflow-y: auto;">
               <div *ngIf="historyLoading()" class="loading-state-modal">
                 <mat-spinner diameter="40"></mat-spinner>
                 <p>Retrieving academic records...</p>
@@ -160,7 +164,7 @@ import { ApiService } from '../../../core/services/api.service';
               </div>
            </div>
            
-           <div class="modal-footer">
+           <div class="modal-footer" style="flex-shrink: 0;">
              <button mat-button (click)="closeHistoryModal()">Dismiss</button>
            </div>
         </div>
