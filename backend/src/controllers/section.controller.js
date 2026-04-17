@@ -392,7 +392,7 @@ exports.getMyAnnouncements = async (req, res, next) => {
       SELECT a.id, a.title, a.content, 
              DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
              cl.id as sectionId, cl.section_name as sectionName,
-             co.course_code as courseCode,
+             co.course_code as courseCode, co.course_name as courseName,
              u.first_name as instructorFirst, u.last_name as instructorLast,
              a.is_global as isGlobal
       FROM announcements a
