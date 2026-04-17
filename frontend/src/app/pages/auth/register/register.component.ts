@@ -59,14 +59,14 @@ import { ToastService } from '../../../core/services/toast.service';
               </div>
             </div>
             <div class="register-grid">
-              <mat-form-field subscriptSizing="dynamic">
+              <mat-form-field>
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="firstName">
                 <mat-icon matPrefix>person</mat-icon>
                 <mat-error>Required</mat-error>
               </mat-form-field>
 
-              <mat-form-field subscriptSizing="dynamic">
+              <mat-form-field>
                 <mat-label>Last Name</mat-label>
                 <input matInput formControlName="lastName">
                 <mat-icon matPrefix>person</mat-icon>
@@ -141,7 +141,7 @@ import { ToastService } from '../../../core/services/toast.service';
     .auth-header h2 { font-size: 1.4rem !important; margin: 0 0 2px !important; color: var(--color-primary); }
     .auth-header p { font-size: 0.75rem !important; margin: 0 0 8px !important; color: var(--color-text-muted); }
     
-    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: flex-start; }
     .auth-submit-btn { width: 100%; height: 42px; font-size: 0.9rem !important; margin-top: 2px; }
     
     .google-banner {
