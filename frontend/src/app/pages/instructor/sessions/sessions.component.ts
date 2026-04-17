@@ -317,7 +317,6 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
       &::placeholder { color: #94a3b8; font-weight: 500; }
     }
-  `]
     .session-item {
       background: white; border-radius: 20px;
       padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
