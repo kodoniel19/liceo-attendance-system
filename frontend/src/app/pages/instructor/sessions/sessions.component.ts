@@ -337,18 +337,40 @@ export class SessionsComponent implements OnInit, OnDestroy {
       topic: v.topic || undefined,
       lateThresholdMinutes: v.lateThresholdMinutes
     }).subscribe({
-      next: () => { this.creating.set(false); this.showCreate.set(false); this.loadSessions(); this.toast.success('Session created!'); },
+      next: (r) => { 
+        this.creating.set(false); 
+        this.showCreate.set(false); 
+        // Force refresh session list without explicit heavy loading if possible
+        this.loadSessions(); 
+        this.toast.success('Session created!'); 
+      },
       error: (err) => { this.creating.set(false); this.toast.error(this.toast.extractError(err)); }
     });
   }
 
   generateQR(session: ClassSession): void {
+    const active = this.activeQRs()[session.id];
+    let seconds: number | undefined;
+    
+    // Logic: If session is ended, it's a "Resume" -> Reset to 15 min.
+    // If session is active and has a QR, it's a "Regenerate" -> Preserve time.
+    const isEnded = session.status === 'ended';
+    if (!isEnded && active && active.isActive) {
+      const remaining = new Date(active.expiresAt).getTime() - this.now();
+      seconds = Math.max(0, Math.floor(remaining / 1000));
+    }
+
     this.generatingQR.set(session.id);
-    this.api.generateQR(session.id).subscribe({
+    this.api.generateQR(session.id, seconds ? undefined : 15, seconds).subscribe({
       next: (r) => {
         this.generatingQR.set(null);
         this.activeQRs.update(v => ({ ...v, [session.id]: r.data! }));
-        this.loadSessions(); 
+        
+        // Optimistically update session status to active without full reload
+        this.sessions.update(list => 
+          list.map(x => x.id === session.id ? { ...x, status: 'active' as any } : x)
+        );
+
         this.toast.success('QR Code generated! ✅');
       },
       error: (err) => { this.generatingQR.set(null); this.toast.error(this.toast.extractError(err)); }
@@ -370,13 +392,16 @@ export class SessionsComponent implements OnInit, OnDestroy {
   endSession(session: ClassSession): void {
     this.api.updateSession(session.id, { status: 'ended' }).subscribe({
       next: () => {
+        // Optimistically update session status
+        this.sessions.update(list => 
+          list.map(x => x.id === session.id ? { ...x, status: 'ended' as any } : x)
+        );
         // Clear active QR for this session locally
         this.activeQRs.update(v => {
           const next = { ...v };
           delete next[session.id];
           return next;
         });
-        this.loadSessions();
         this.toast.info('Session ended.');
       },
       error: (err) => this.toast.error(this.toast.extractError(err))
@@ -467,15 +492,15 @@ export class SessionsComponent implements OnInit, OnDestroy {
   }
 
   executeDeleteSession(): void {
-    console.log('>>> executeDeleteSession triggered');
     const s = this.sessionToDelete();
     if (!s) return;
     
     this.api.deleteSession(s.id).subscribe({
       next: () => {
+        // Optimistically remove from list
+        this.sessions.update(list => list.filter(x => x.id !== s.id));
         this.toast.success('Session deleted!');
         this.cancelDelete();
-        this.loadSessions();
       },
       error: (err) => {
         this.toast.error(this.toast.extractError(err));
