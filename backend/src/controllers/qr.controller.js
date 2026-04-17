@@ -36,7 +36,7 @@ exports.generateQR = async (req, res, next) => {
 
     // Auto-resume session if it was ended
     if (session.status === 'ended') {
-      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      await query('UPDATE class_sessions SET status = "active" WHERE id = ?', [sessionId]);
       logger.info(`Session ${sessionId} auto-resumed by QR generation`);
     }
 
@@ -189,7 +189,7 @@ exports.scanQR = async (req, res, next) => {
     const scanTime = now;
     
     const lateThreshold = classSession[0].late_threshold_minutes || 15;
-    const isResumed = classSession[0].is_resumed === 1;
+    const isResumed = classSession[0]?.is_resumed === 1;
     
     // Check if enough time has passed to be marked late (using DB time comparison)
     const timeCheckQueryResult = await query(
@@ -299,7 +299,7 @@ exports.reopenQR = async (req, res, next) => {
     // Check if session needs auto-resuming
     const sessionQueryResult = await query('SELECT status FROM class_sessions WHERE id = ?', [sessionId]);
     if (sessionQueryResult.length && sessionQueryResult[0].status === 'ended') {
-      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      await query('UPDATE class_sessions SET status = "active" WHERE id = ?', [sessionId]);
     }
 
     // Find the most recent QR for this session
