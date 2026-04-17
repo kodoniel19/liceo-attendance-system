@@ -146,7 +146,7 @@ export class NotificationsComponent implements OnInit {
       .filter(n => !n.isGlobal && n.courseCode)
       .map(n => ({
         code: n.courseCode,
-        label: `${n.courseName || n.courseCode} — ${n.instructorLast || 'Instructor'}`
+        label: `${n.courseName || n.courseCode} Instructor: ${n.instructorLast || 'Instructor'}`
       }));
     
     // Get unique entries based on courseCode
