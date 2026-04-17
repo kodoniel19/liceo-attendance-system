@@ -37,6 +37,21 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
           <mat-icon>add</mat-icon> New Session
         </button>
       </div>
+      
+      <!-- Filter Bar -->
+      <div class="filter-bar animate-fade-in-up" *ngIf="sections().length > 0">
+        <button class="filter-chip" [class.active]="!selectedFilter()" (click)="selectedFilter.set(null)">
+          All Sessions
+        </button>
+        <button 
+          *ngFor="let sec of sections()" 
+          class="filter-chip" 
+          [class.active]="selectedFilter() === sec.id"
+          (click)="selectedFilter.set(sec.id)"
+        >
+          {{ sec.courseCode }} — {{ sec.sectionName }}
+        </button>
+      </div>
 
       <!-- Create Form -->
       <div class="create-panel animate-fade-in-up" *ngIf="showCreate()">
@@ -232,6 +247,23 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     .course-divider__line {
       flex: 1; height: 1px; background: linear-gradient(to right, var(--color-border), transparent);
     }
+
+    .filter-bar {
+      display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto;
+      padding: 4px 0 12px; scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
+    }
+    .filter-chip {
+      white-space: nowrap; padding: 8px 16px; border-radius: 100px;
+      border: 1px solid var(--color-border); background: white;
+      font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);
+      cursor: pointer; transition: all 0.2s;
+      &:hover { background: #f8fafc; border-color: var(--color-primary); }
+      &.active {
+        background: var(--color-primary); color: white; border-color: var(--color-primary);
+        box-shadow: 0 4px 12px rgba(139, 26, 26, 0.2);
+      }
+    }
     .session-item {
       background: white; border-radius: var(--radius-lg);
       padding: 20px; box-shadow: var(--shadow-md);
@@ -301,9 +333,17 @@ export class SessionsComponent implements OnInit, OnDestroy {
   activeQRs = signal<{ [sessionId: number]: QRSession }>({});
   bigQRSession = signal<ClassSession | null>(null);
   now = signal(Date.now());
+  selectedFilter = signal<number | null>(null);
 
   groupedSessions = computed(() => {
-    const sessions = this.sessions();
+    let sessions = this.sessions();
+    const filterId = this.selectedFilter();
+    
+    // Apply filter if one is selected
+    if (filterId) {
+      sessions = sessions.filter(s => s.classSectionId === filterId || (s as any).class_section_id === filterId);
+    }
+
     const groups: { [key: string]: { courseCode: string, courseName: string, sectionName: string, sessions: ClassSession[] } } = {};
     
     sessions.forEach(s => {
