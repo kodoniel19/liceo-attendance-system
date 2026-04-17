@@ -47,33 +47,27 @@ import { AuthService } from '../../../core/services/auth.service';
                 <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
                   <div class="form-row">
                     <mat-form-field appearance="outline">
-                      <mat-label>First Name</mat-label>
-                      <input matInput formControlName="firstName" />
+                      <input matInput formControlName="firstName" placeholder="First Name" />
                       <mat-error>Required</mat-error>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
-                      <mat-label>Last Name</mat-label>
-                      <input matInput formControlName="lastName" />
+                      <input matInput formControlName="lastName" placeholder="Last Name" />
                       <mat-error>Required</mat-error>
                     </mat-form-field>
                   </div>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Middle Name (optional)</mat-label>
-                    <input matInput formControlName="middleName" />
+                    <input matInput formControlName="middleName" placeholder="Middle Name (optional)" />
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>University ID</mat-label>
-                    <input matInput formControlName="universityId" placeholder="e.g. STU-2024-001" />
+                    <input matInput formControlName="universityId" placeholder="University ID (e.g. STU-2024-001)" />
                     <mat-icon matSuffix>badge</mat-icon>
                     <mat-error>Required</mat-error>
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Department</mat-label>
-                    <input matInput formControlName="department" placeholder="e.g. College of Engineering" />
+                    <input matInput formControlName="department" placeholder="Department (e.g. College of Engineering)" />
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Email (read-only)</mat-label>
-                    <input matInput [value]="auth.user()?.email || ''" readonly />
+                    <input matInput [value]="auth.user()?.email || ''" readonly placeholder="Email (read-only)" />
                     <mat-icon matSuffix>lock</mat-icon>
                   </mat-form-field>
                   <div class="form-actions">
@@ -94,26 +88,23 @@ import { AuthService } from '../../../core/services/auth.service';
                 <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
                   
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Current Password</mat-label>
-                    <input matInput [type]="hideCurrent() ? 'password' : 'text'" formControlName="currentPassword" />
+                    <input matInput [type]="hideCurrent() ? 'password' : 'text'" formControlName="currentPassword" placeholder="Current Password" />
                     <button type="button" mat-icon-button matSuffix (click)="hideCurrent.set(!hideCurrent())" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrent()">
                       <mat-icon>{{hideCurrent() ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error>Required</mat-error>
                   </mat-form-field>
-
+ 
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>New Password</mat-label>
-                    <input matInput [type]="hideNew() ? 'password' : 'text'" formControlName="newPassword" />
+                    <input matInput [type]="hideNew() ? 'password' : 'text'" formControlName="newPassword" placeholder="New Password" />
                     <button type="button" mat-icon-button matSuffix (click)="hideNew.set(!hideNew())" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNew()">
                       <mat-icon>{{hideNew() ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">At least 8 characters</mat-error>
                   </mat-form-field>
-
+ 
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Confirm New Password</mat-label>
-                    <input matInput [type]="hideConfirm() ? 'password' : 'text'" formControlName="confirmPassword" />
+                    <input matInput [type]="hideConfirm() ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm New Password" />
                     <button type="button" mat-icon-button matSuffix (click)="hideConfirm.set(!hideConfirm())" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirm()">
                       <mat-icon>{{hideConfirm() ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
@@ -230,9 +221,35 @@ import { AuthService } from '../../../core/services/auth.service';
       overflow: hidden; 
     }
     
-    ::ng-deep .mat-mdc-tab-group.profile-tabs .mat-mdc-tab-label-container { padding: 0 16px; border-bottom: 1px solid #f1f5f9; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mat-mdc-tab-label-container { padding: 0 !important; border-bottom: 1px solid #f1f5f9; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mat-mdc-tab-header { --mdc-tab-row-item-spacing: 0; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mdc-tab { flex-grow: 1 !important; max-width: none !important; min-width: 0 !important; padding: 0 12px !important; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mat-mdc-tab-header-pagination { display: none !important; }
+
     ::ng-deep .mat-mdc-tab-group.profile-tabs .mdc-tab-indicator__content--underline { border-top-width: 3px !important; border-color: #8B1A1A !important; }
-    ::ng-deep .mat-mdc-tab-group.profile-tabs .mdc-tab__text-label { font-weight: 700 !important; font-size: 0.9rem !important; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mdc-tab__text-label { font-weight: 800 !important; font-size: 0.85rem !important; color: #64748b !important; }
+    ::ng-deep .mat-mdc-tab-group.profile-tabs .mdc-tab--active .mdc-tab__text-label { color: #8B1A1A !important; }
+
+    /* Harmonized Text Fields */
+    mat-form-field {
+      width: 100%;
+      margin-bottom: 12px;
+      ::ng-deep .mat-mdc-text-field-wrapper { 
+        background: white !important; 
+        border: 1px solid #8B1A1A !important; 
+        border-radius: 12px !important; 
+        padding: 0 16px !important;
+        height: 52px !important;
+        display: flex;
+        align-items: center;
+      }
+      ::ng-deep .mdc-notched-outline { display: none !important; }
+      ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; }
+      ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
+      ::ng-deep input { font-size: 0.9rem !important; font-weight: 600 !important; color: #1e293b !important; }
+      ::ng-deep .mat-icon { color: #8B1A1A !important; font-size: 20px; width: 20px; height: 20px; }
+      ::ng-deep .mat-mdc-form-field-error-wrapper { padding: 0 !important; margin-top: 4px; }
+    }
 
     .tab-content { padding: 32px; }
     @media (max-width: 600px) { 
