@@ -328,10 +328,6 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       &.is-active { 
         border: 2px solid var(--color-primary); 
         background: linear-gradient(to bottom, #fff, #fffafa);
-        &::after {
-          content: '● Active Now'; position: absolute; top: 12px; right: 12px;
-          color: var(--color-success); font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-        }
       }
     }
     .session-item__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
