@@ -295,7 +295,11 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       } 
     });
     this.api.getMyAttendanceSummary().subscribe({
-      next: r => { this.summary.set(r.data || []); this.summaryLoading.set(false); },
+      next: r => { 
+        console.log('STUDENT SUMMARY DATA:', r.data);
+        this.summary.set(r.data || []); 
+        this.summaryLoading.set(false); 
+      },
       error: () => this.summaryLoading.set(false)
     });
     this.api.getMyEnrollments().subscribe({
@@ -308,28 +312,34 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   getFormattedSchedule(s: any): string[] {
     try {
-      const dayData = s.scheduleDay || '';
-      if (!dayData) return ['TBA'];
+      const dayData = (s.scheduleDay || '').trim();
+      if (!dayData || dayData === 'TBA') return ['TBA'];
       
-      // If it looks like JSON
-      if (dayData.startsWith('[')) {
-        const parsed = JSON.parse(dayData);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(item => {
-            const formatTime = (t: string) => {
-              if (!t) return '';
-              const [h, m] = t.split(':');
-              let hour = parseInt(h, 10);
-              const ampm = hour >= 12 ? 'PM' : 'AM';
-              hour = hour % 12 || 12;
-              return `${hour}:${m} ${ampm}`;
-            };
-            return `${item.day.slice(0,3)} ${formatTime(item.start)} - ${formatTime(item.end)}`;
-          });
+      // If it looks like JSON anywhere in the string
+      if (dayData.includes('[')) {
+        const jsonStart = dayData.indexOf('[');
+        const jsonEnd = dayData.lastIndexOf(']');
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          const jsonStr = dayData.substring(jsonStart, jsonEnd + 1);
+          const parsed = JSON.parse(jsonStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map(item => {
+              const formatTime = (t: string) => {
+                if (!t) return '';
+                const parts = t.split(':');
+                if (parts.length < 2) return t;
+                let hour = parseInt(parts[0], 10);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12 || 12;
+                return `${hour}:${parts[1]} ${ampm}`;
+              };
+              return `${item.day ? item.day.slice(0,3) : '?'} ${formatTime(item.start)} - ${formatTime(item.end)}`;
+            });
+          }
         }
       }
     } catch (e) {
-      console.error('Schedule parse error:', e);
+      console.error('Schedule parse error for:', s.courseCode, e);
     }
     
     // Legacy fallback

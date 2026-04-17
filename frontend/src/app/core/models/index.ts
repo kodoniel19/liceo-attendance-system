@@ -176,6 +176,10 @@ export interface AttendanceSummary {
   attendanceRate?: number;
   instructorFirst?: string;
   instructorLast?: string;
+  scheduleDay?: string;
+  scheduleTimeStart?: string;
+  scheduleTimeEnd?: string;
+  room?: string;
 }
 
 // ─── Report & Dashboard Models ─────────────────────────────────
