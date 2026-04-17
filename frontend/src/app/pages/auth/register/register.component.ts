@@ -10,6 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { map, startWith } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
@@ -74,9 +76,10 @@ import { ToastService } from '../../../core/services/toast.service';
 
             <mat-form-field>
               <mat-label>University ID</mat-label>
-              <input matInput formControlName="universityId" placeholder="STU-2024-001">
+              <input matInput formControlName="universityId" placeholder="e.g. 20240010022">
               <mat-icon matPrefix>badge</mat-icon>
-              <mat-error>University ID is required</mat-error>
+              <mat-error *ngIf="form.get('universityId')?.hasError('required')">University ID is required</mat-error>
+              <mat-error *ngIf="form.get('universityId')?.hasError('pattern')">ID must be exactly 11 characters</mat-error>
             </mat-form-field>
 
             <mat-form-field>
@@ -95,7 +98,7 @@ import { ToastService } from '../../../core/services/toast.service';
                      placeholder="Type or select department">
               <mat-icon matPrefix>business</mat-icon>
               <mat-autocomplete #deptAuto="matAutocomplete">
-                <mat-optgroup *ngFor="let college of departmentGroups" [label]="college.college">
+                <mat-optgroup *ngFor="let college of filteredDepartmentGroups()" [label]="college.college">
                   <mat-option *ngFor="let dept of college.departments" [value]="dept">{{ dept }}</mat-option>
                 </mat-optgroup>
               </mat-autocomplete>
@@ -148,7 +151,18 @@ import { ToastService } from '../../../core/services/toast.service';
       p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
     
-    mat-form-field { margin-bottom: -10px; width: 100%; transform: scale(0.95); transform-origin: top left; }
+    mat-form-field { margin-bottom: 24px; width: 100%; }
+    
+    ::ng-deep .mat-mdc-form-field-error {
+      margin-top: 4px !important;
+      display: block !important;
+      font-size: 0.75rem !important;
+      font-weight: 500 !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-error-wrapper {
+      padding-top: 4px !important;
+    }
     
     @media (max-width: 480px) { 
       .register-grid { grid-template-columns: 1fr; } 
@@ -214,11 +228,27 @@ export class RegisterComponent implements OnInit {
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    universityId: ['', Validators.required],
+    universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
     email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
     department: [''],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
+
+  filteredDepartmentGroups = toSignal(
+    this.form.get('department')!.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterDepartments(value || ''))
+    ),
+    { initialValue: this.departmentGroups }
+  );
+
+  private _filterDepartments(value: string): any[] {
+    const filterValue = value.toLowerCase();
+    return this.departmentGroups.map(group => ({
+      college: group.college,
+      departments: group.departments.filter(dept => dept.toLowerCase().includes(filterValue))
+    })).filter(group => group.departments.length > 0);
+  }
 
   ngOnInit(): void {
     // Check for Google pre-fill query params (redirected from login page)
