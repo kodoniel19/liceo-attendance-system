@@ -21,7 +21,7 @@ exports.getSections = async (req, res, next) => {
              co.units as units,
              u.first_name as instructorFirst,
              u.last_name as instructorLast,
-             (SELECT COUNT(*) FROM enrollments e WHERE e.class_section_id = cl.id AND e.status = 'active') as enrolledCount
+             (SELECT COUNT(*) FROM enrollments e WHERE e.class_section_id = cl.id AND e.status IN ('active', 'pending')) as enrolledCount
       FROM class_sections cl
       JOIN courses co ON cl.course_id = co.id
       JOIN users u ON cl.instructor_id = u.id
@@ -129,6 +129,16 @@ exports.enrollStudent = async (req, res, next) => {
     const { sectionId } = req.params;
     const { studentId } = req.body;
 
+    // Check capacity
+    const [section] = await query(
+      'SELECT max_students, (SELECT COUNT(*) FROM enrollments WHERE class_section_id = ? AND status IN ("active", "pending")) as currentEnrolled FROM class_sections WHERE id = ?',
+      [sectionId, sectionId]
+    );
+
+    if (section && section.currentEnrolled >= section.max_students) {
+      return res.status(400).json({ success: false, message: `Class is full (${section.max_students} students max).` });
+    }
+
     const existing = await query(
       'SELECT id, status FROM enrollments WHERE student_id = ? AND class_section_id = ?',
       [studentId, sectionId]
@@ -167,6 +177,16 @@ exports.respondToEnrollment = async (req, res, next) => {
 
     const status = action === 'accept' ? 'active' : 'declined';
     
+    if (status === 'active') {
+      const [section] = await query(
+        'SELECT max_students, (SELECT COUNT(*) FROM enrollments WHERE class_section_id = ? AND status = "active") as currentEnrolled FROM class_sections WHERE id = ?',
+        [sectionId, sectionId]
+      );
+      if (section && section.currentEnrolled >= section.max_students) {
+        return res.status(400).json({ success: false, message: 'Cannot accept: Class is already full.' });
+      }
+    }
+
     const result = await query(
       "UPDATE enrollments SET status = ? WHERE student_id = ? AND class_section_id = ? AND status = 'pending'",
       [status, studentId, sectionId]
