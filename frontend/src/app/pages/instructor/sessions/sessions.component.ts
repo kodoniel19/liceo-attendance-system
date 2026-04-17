@@ -307,12 +307,16 @@ export class SessionsComponent implements OnInit, OnDestroy {
     const groups: { [key: string]: { courseCode: string, courseName: string, sectionName: string, sessions: ClassSession[] } } = {};
     
     sessions.forEach(s => {
-      const key = `${s.courseCode}-${s.sectionName}`;
+      const cCode = s.courseCode || 'N/A';
+      const sName = s.sectionName || 'N/A';
+      const cName = s.courseName || 'Unknown Course';
+      const key = `${cCode}-${sName}`;
+
       if (!groups[key]) {
         groups[key] = {
-          courseCode: s.courseCode,
-          courseName: s.courseName,
-          sectionName: s.sectionName,
+          courseCode: cCode,
+          courseName: cName,
+          sectionName: sName,
           sessions: []
         };
       }
