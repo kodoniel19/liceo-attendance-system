@@ -463,8 +463,8 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     clearTimeout(this.studentSearchDebounce);
   }
 
-  loadAttendance(): void {
-    this.loading.set(true);
+  loadAttendance(silent = false): void {
+    if (!silent) this.loading.set(true);
     this.api.getSessionAttendance(this.sessionId).subscribe({
       next: r => {
         const data = r.data || [];
@@ -476,9 +476,9 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
           absent:  data.filter(a => a.status === 'absent').length,
           excused: data.filter(a => a.status === 'excused').length,
         });
-        this.loading.set(false);
+        if (!silent) this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => { if (!silent) this.loading.set(false); }
     });
   }
 
@@ -611,7 +611,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
             this.qrPollInterval = null;
             this.qrImageUrl.set(null);
           }
-          this.loadAttendance();
+          this.loadAttendance(true); // SILENT REFRESH
         }
       });
     }, 5000); // 5s is fine if interval is stable
