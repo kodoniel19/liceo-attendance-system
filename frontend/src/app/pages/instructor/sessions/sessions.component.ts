@@ -38,19 +38,18 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
         </button>
       </div>
       
-      <!-- Filter Bar -->
-      <div class="filter-bar animate-fade-in-up" *ngIf="sections().length > 0">
-        <button class="filter-chip" [class.active]="!selectedFilter()" (click)="selectedFilter.set(null)">
-          All Sessions
-        </button>
-        <button 
-          *ngFor="let sec of sections()" 
-          class="filter-chip" 
-          [class.active]="selectedFilter() === sec.id"
-          (click)="selectedFilter.set(sec.id)"
-        >
-          {{ sec.courseName }} — {{ sec.sectionName }}
-        </button>
+      <!-- Filter Dropdown -->
+      <div class="filter-area animate-fade-in-up" *ngIf="sections().length > 0">
+        <mat-form-field appearance="outline" class="course-filter">
+          <mat-label>Filter by Course</mat-label>
+          <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)">
+            <mat-option [value]="null">All Sessions</mat-option>
+            <mat-option *ngFor="let sec of sections()" [value]="sec.id">
+              {{ sec.courseName }} — {{ sec.sectionName }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
       </div>
 
       <!-- Create Form -->
@@ -251,20 +250,13 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       flex: 1; height: 1px; background: linear-gradient(to right, var(--color-border), transparent);
     }
 
-    .filter-bar {
-      display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
-      padding: 4px 0 12px;
+    .filter-area {
+      margin-bottom: 24px;
+      display: flex; justify-content: flex-start;
     }
-    .filter-chip {
-      white-space: nowrap; padding: 8px 16px; border-radius: 100px;
-      border: 1px solid var(--color-border); background: white;
-      font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);
-      cursor: pointer; transition: all 0.2s;
-      &:hover { background: #f8fafc; border-color: var(--color-primary); }
-      &.active {
-        background: var(--color-primary); color: white; border-color: var(--color-primary);
-        box-shadow: 0 4px 12px rgba(139, 26, 26, 0.2);
-      }
+    .course-filter {
+      width: 100%; max-width: 400px;
+      ::ng-deep .mat-mdc-text-field-wrapper { background: white; border-radius: 12px; }
     }
     .session-item {
       background: white; border-radius: var(--radius-lg);
