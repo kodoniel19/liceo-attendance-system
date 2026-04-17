@@ -91,8 +91,8 @@ import { ClassSession } from '../../../core/models';
               <span class="session-stat__label">Enrolled</span>
             </div>
             <div class="session-stat">
-              <span class="session-stat__value" style="color:var(--color-error)">{{ Math.max(0, (s.enrolledCount || 0) - (s.presentCount || 0)) }}</span>
-              <span class="session-stat__label">Absent</span>
+              <span class="session-stat__value" [style.color]="s.status === 'active' ? '#64748b' : 'var(--color-error)'">{{ Math.max(0, (s.enrolledCount || 0) - (s.presentCount || 0)) }}</span>
+              <span class="session-stat__label">{{ s.status === 'active' ? 'To Scan' : 'Absent' }}</span>
             </div>
           </div>
           <div class="session-card__footer">

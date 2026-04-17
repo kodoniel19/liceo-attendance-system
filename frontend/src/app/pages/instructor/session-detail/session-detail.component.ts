@@ -102,9 +102,11 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
           <div class="stat-card__label">Late</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__icon" style="background:rgba(231,76,60,.1);color:var(--color-error)"><span class="material-icons">cancel</span></div>
-          <div class="stat-card__value text-error">{{ counts().absent }}</div>
-          <div class="stat-card__label">Absent</div>
+          <div class="stat-card__icon" [style.background]="session()?.status === 'active' ? 'rgba(100,116,139,.1)' : 'rgba(231,76,60,.1)'" [style.color]="session()?.status === 'active' ? '#64748b' : 'var(--color-error)'">
+            <span class="material-icons">{{ session()?.status === 'active' ? 'hourglass_empty' : 'cancel' }}</span>
+          </div>
+          <div class="stat-card__value" [style.color]="session()?.status === 'active' ? '#64748b' : 'var(--color-error)'">{{ counts().absent }}</div>
+          <div class="stat-card__label">{{ session()?.status === 'active' ? 'To Scan' : 'Absent' }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__icon" style="background:rgba(52,152,219,.1);color:#3498db"><span class="material-icons">assignment</span></div>
@@ -147,7 +149,12 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let a">
-              <span class="badge" [class]="'badge--' + a.status">{{ a.status }}</span>
+              <span class="badge" 
+                [class]="'badge--' + a.status"
+                [style.background-color]="(a.status === 'absent' && session()?.status === 'active') ? '#e2e8f0' : null"
+                [style.color]="(a.status === 'absent' && session()?.status === 'active') ? '#64748b' : null">
+                {{ (a.status === 'absent' && session()?.status === 'active') ? 'To Scan' : a.status }}
+              </span>
             </td>
           </ng-container>
 
