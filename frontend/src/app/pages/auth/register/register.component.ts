@@ -35,7 +35,7 @@ import { ToastService } from '../../../core/services/toast.service';
       </div>
 
       <div class="auth-page__right animate-fade-in-up">
-        <div style="width:100%;max-width:400px">
+        <div style="width:100%;max-width:480px">
           <!-- Mobile Branding -->
           <div class="mobile-branding-header">
              <img src="assets/images/logo.png" alt="LDCU Logo" class="mobile-logo">
@@ -84,7 +84,7 @@ import { ToastService } from '../../../core/services/toast.service';
 
             <mat-form-field>
               <mat-label>University Email</mat-label>
-              <input matInput formControlName="email" type="email" placeholder="you@liceo.edu.ph" [readonly]="isGoogleSignUp()">
+              <input matInput formControlName="email" type="email" placeholder="you@example.com" [readonly]="isGoogleSignUp()">
               <mat-icon matPrefix>email</mat-icon>
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.hasError('required')">Required</mat-error>
@@ -153,15 +153,25 @@ import { ToastService } from '../../../core/services/toast.service';
     
     mat-form-field { margin-bottom: 24px; width: 100%; }
     
-    ::ng-deep .mat-mdc-form-field-error {
-      margin-top: 4px !important;
-      display: block !important;
-      font-size: 0.75rem !important;
-      font-weight: 500 !important;
-    }
+    ::ng-deep {
+      .mat-mdc-form-field-error {
+        margin-top: 4px !important;
+        display: block !important;
+        font-size: 0.8rem !important;
+        font-weight: 500 !important;
+      }
 
-    ::ng-deep .mat-mdc-form-field-error-wrapper {
-      padding-top: 4px !important;
+      .mat-mdc-form-field-error-wrapper {
+        padding-top: 4px !important;
+      }
+
+      input.mat-mdc-input-element {
+        font-size: 16px !important; /* Prevents auto-zoom on mobile */
+      }
+
+      .mat-mdc-text-field-wrapper {
+        min-height: 56px !important;
+      }
     }
     
     @media (max-width: 480px) { 
@@ -229,7 +239,7 @@ export class RegisterComponent implements OnInit {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
-    email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
+    email: ['', [Validators.required, Validators.email]],
     department: [''],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
