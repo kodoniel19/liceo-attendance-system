@@ -41,8 +41,7 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       <!-- Filter Dropdown -->
       <div class="filter-area animate-fade-in-up" *ngIf="sections().length > 0">
         <mat-form-field appearance="outline" class="course-filter">
-          <mat-label>Filter by Course</mat-label>
-          <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)">
+          <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)" placeholder="Filter by Course">
             <mat-option [value]="null">All Sessions</mat-option>
             <mat-option *ngFor="let sec of sections()" [value]="sec.id">
               {{ sec.courseName }} — {{ sec.sectionName }}
@@ -257,44 +256,26 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       padding: 0 4px;
     }
     .course-filter {
-      width: 100%; max-width: 320px;
+      width: 100%; max-width: 240px;
       margin: 0;
       
       ::ng-deep .mat-mdc-text-field-wrapper { 
         background: white !important; 
         border-radius: 12px !important;
-        padding-top: 8px !important;
+        height: 48px !important;
+        display: flex; align-items: center;
       }
 
-      /* Solid Maroon Border */
       ::ng-deep .mdc-notched-outline__leading,
       ::ng-deep .mdc-notched-outline__notch,
       ::ng-deep .mdc-notched-outline__trailing {
         border-color: var(--color-primary) !important;
-        border-width: 1px !important;
-      }
-
-      &:hover ::ng-deep .mdc-notched-outline__leading,
-      &:hover ::ng-deep .mdc-notched-outline__notch,
-      &:hover ::ng-deep .mdc-notched-outline__trailing {
-        border-width: 2px !important;
-      }
-
-      &.mat-focused ::ng-deep .mdc-notched-outline__leading,
-      &.mat-focused ::ng-deep .mdc-notched-outline__notch,
-      &.mat-focused ::ng-deep .mdc-notched-outline__trailing {
-        border-width: 2px !important;
       }
 
       ::ng-deep .mat-mdc-select-value { 
-        font-size: 0.95rem; font-weight: 600; color: #333;
-        padding-left: 4px;
+        font-size: 0.85rem; font-weight: 600; color: #444;
       }
-      ::ng-deep .mat-mdc-form-field-label { 
-        color: var(--color-primary) !important; 
-        font-weight: 700 !important;
-      }
-      ::ng-deep .mat-icon { color: var(--color-primary); margin-right: 8px; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; }
     }
 
     /* Premium Overlay Styling */
