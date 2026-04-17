@@ -159,10 +159,14 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
           </div>
         </div>
 
-        <div class="empty-state" *ngIf="!sessions().length">
-          <span class="material-icons">event</span>
-          <h3>No Sessions Yet</h3>
-          <p>Create your first session to start taking attendance.</p>
+        <!-- Empty State (No sessions found for filter or overall) -->
+        <div class="empty-state animate-fade-in-up" *ngIf="groupedSessions().length === 0">
+          <div class="empty-state__icon">📭</div>
+          <h3>{{ selectedFilter() ? 'No sessions found for this course' : 'No sessions yet' }}</h3>
+          <p>{{ selectedFilter() ? 'Try selecting a different filter or generate a new session.' : 'Create your first session to start taking attendance.' }}</p>
+          <button mat-button color="primary" *ngIf="selectedFilter()" (click)="selectedFilter.set(null)">
+            Show All Sessions
+          </button>
         </div>
       </div>
       <!-- ══════════ DELETE CONFIRM MODAL ══════════ -->
@@ -316,6 +320,14 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     }
     .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     @keyframes scaleIn { from { transform:scale(0.8); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      background: white; border-radius: 24px; border: 2px dashed var(--color-border);
+      .empty-state__icon { font-size: 64px; margin-bottom: 20px; }
+      h3 { font-size: 1.5rem; color: var(--color-primary); margin-bottom: 8px; font-weight: 800; }
+      p { color: var(--color-text-muted); margin-bottom: 24px; }
+    }
   `]
 })
 export class SessionsComponent implements OnInit, OnDestroy {
