@@ -46,10 +46,10 @@ import { Attendance } from '../../../core/models';
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>By Subject</mat-label>
-          <mat-select [formControl]="sectionFilter">
+          <mat-select [formControl]="sectionFilter" placeholder="All Subjects">
             <mat-option value="">All Subjects</mat-option>
             <mat-option *ngFor="let s of enrollment()" [value]="s.id">
-              {{ s.courseCode }} — {{ s.sectionName }}
+              {{ s.courseName }} Instructor: {{ s.instructorLast }}
             </mat-option>
           </mat-select>
           <mat-icon matPrefix>book</mat-icon>
@@ -114,8 +114,40 @@ import { Attendance } from '../../../core/models';
   `,
   styles: [`
     .history-filter { margin-bottom: 24px; display: flex; gap: 12px; }
-    .filters-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-    .filter-field { flex: 1; min-width: 200px; }
+    .filters-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .filter-field { 
+      flex: 1; min-width: 140px;
+      margin: 0;
+      ::ng-deep .mat-mdc-text-field-wrapper { background: white !important; border-radius: 12px !important; height: 44px !important; display: flex; align-items: center; border: 1px solid var(--color-primary); }
+      ::ng-deep .mdc-notched-outline__leading,
+      ::ng-deep .mdc-notched-outline__notch,
+      ::ng-deep .mdc-notched-outline__trailing { display: none !important; }
+      ::ng-deep .mat-mdc-select-value { font-size: 0.8rem; font-weight: 600; color: #444; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 18px; width: 18px; height: 18px; margin-right: 4px; }
+      ::ng-deep .mat-mdc-form-field-infix { padding-top: 0 !important; border-top: 0 !important; }
+    }
+
+    /* Premium Overlay Styling */
+    ::ng-deep .mat-mdc-select-panel {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px);
+      border-radius: 12px !important;
+      padding: 8px !important;
+      box-shadow: 0 10px 40px rgba(139, 26, 26, 0.15) !important;
+      border: 1px solid rgba(139, 26, 26, 0.1) !important;
+    }
+
+    ::ng-deep .mat-mdc-option {
+      border-radius: 8px !important;
+      margin-bottom: 2px;
+      transition: all 0.2s ease;
+      .mdc-list-item__primary-text { font-size: 0.8rem !important; font-weight: 500; }
+    }
+
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background: var(--color-primary) !important;
+      .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
+    }
 
     .history-timeline { display: flex; flex-direction: column; gap: 32px; }
     .timeline-group { display: flex; flex-direction: column; gap: 16px; }
