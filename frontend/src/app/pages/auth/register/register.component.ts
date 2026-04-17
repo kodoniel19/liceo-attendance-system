@@ -102,9 +102,9 @@ import { ToastService } from '../../../core/services/toast.service';
                      placeholder="Type or select department">
               <mat-icon matPrefix>business</mat-icon>
               <mat-autocomplete #deptAuto="matAutocomplete">
-                <mat-optgroup *ngFor="let college of filteredDepartmentGroups()" [label]="college.college">
-                  <mat-option *ngFor="let dept of college.departments" [value]="dept">{{ dept }}</mat-option>
-                </mat-optgroup>
+                <mat-option *ngFor="let dept of filteredDepartments()" [value]="dept">
+                  {{ dept }}
+                </mat-option>
               </mat-autocomplete>
             </mat-form-field>
 
@@ -194,49 +194,20 @@ export class RegisterComponent implements OnInit {
   showPass = signal(false);
   isGoogleSignUp = signal(false);
 
-  departmentGroups = [
-    {
-      college: 'College of Engineering', departments: [
-        'Department of Civil Engineering', 'Department of Electrical Engineering',
-        'Department of Mechanical Engineering', 'Department of Computer Engineering'
-      ]
-    },
-    { college: 'College of Law', departments: ['Law Department (Juris Doctor Program)'] },
-    {
-      college: 'College of Arts and Sciences', departments: [
-        'Department of English', 'Department of History', 'Department of Political Science',
-        'Department of Psychology', 'Department of Sociology', 'Department of Mathematics', 'Department of Biology'
-      ]
-    },
-    {
-      college: 'College of Business and Accountancy', departments: [
-        'Department of Accountancy', 'Department of Business Administration',
-        'Department of Hospitality Management', 'Department of Marketing'
-      ]
-    },
-    {
-      college: 'College of Education', departments: [
-        'Department of Elementary Education', 'Department of Secondary Education',
-        'Department of Special Education', 'Department of Graduate Studies'
-      ]
-    },
-    { college: 'College of Nursing', departments: ['Department of Nursing'] },
-    { college: 'College of Criminal Justice Education', departments: ['Department of Criminology'] },
-    {
-      college: 'College of Computer Studies', departments: [
-        'Department of Information Technology', 'Department of Computer Science', 'Department of Digital Arts'
-      ]
-    },
-    {
-      college: 'College of Allied Health Sciences', departments: [
-        'Department of Pharmacy', 'Department of Physical Therapy', 'Department of Radiologic Technology'
-      ]
-    },
-    {
-      college: 'College of Engineering and Technology', departments: [
-        'Department of Industrial Engineering', 'Department of Information Systems'
-      ]
-    }
+  departments = [
+    'Department of Civil Engineering', 'Department of Electrical Engineering',
+    'Department of Mechanical Engineering', 'Department of Computer Engineering',
+    'Law Department (Juris Doctor Program)',
+    'Department of English', 'Department of History', 'Department of Political Science',
+    'Department of Psychology', 'Department of Sociology', 'Department of Mathematics', 'Department of Biology',
+    'Department of Accountancy', 'Department of Business Administration',
+    'Department of Hospitality Management', 'Department of Marketing',
+    'Department of Elementary Education', 'Department of Secondary Education',
+    'Department of Special Education', 'Department of Graduate Studies',
+    'Department of Nursing', 'Department of Criminology',
+    'Department of Information Technology', 'Department of Computer Science', 'Department of Digital Arts',
+    'Department of Pharmacy', 'Department of Physical Therapy', 'Department of Radiologic Technology',
+    'Department of Industrial Engineering', 'Department of Information Systems'
   ];
 
   form = this.fb.group({
@@ -251,20 +222,17 @@ export class RegisterComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
 
-  filteredDepartmentGroups = toSignal(
+  filteredDepartments = toSignal(
     this.form.get('department')!.valueChanges.pipe(
       startWith(''),
       map(value => this._filterDepartments(value || ''))
     ),
-    { initialValue: this.departmentGroups }
+    { initialValue: this.departments }
   );
 
-  private _filterDepartments(value: string): any[] {
+  private _filterDepartments(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.departmentGroups.map(group => ({
-      college: group.college,
-      departments: group.departments.filter(dept => dept.toLowerCase().includes(filterValue))
-    })).filter(group => group.departments.length > 0);
+    return this.departments.filter(dept => dept.toLowerCase().includes(filterValue));
   }
 
   ngOnInit(): void {
