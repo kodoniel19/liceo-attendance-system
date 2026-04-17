@@ -214,16 +214,16 @@ import { ApiService } from '../../../core/services/api.service';
     /* Balanced Professional Modal */
     .modal-overlay { 
       position: fixed; inset: 0; 
-      background: rgba(255, 255, 255, 0.6); 
+      background: rgba(15, 23, 42, 0.4); 
       display: flex; justify-content: center; align-items: center; 
-      z-index: 1000; padding: 20px; 
-      backdrop-filter: blur(18px); 
+      z-index: 2000; padding: 24px; 
+      backdrop-filter: blur(12px); 
     }
     .history-modal { 
-      background: white; border-radius: 28px; width: 92%; max-width: 720px; 
-      max-height: 78vh;
+      background: white; border-radius: 32px; width: 92%; max-width: 680px; 
+      max-height: 72vh; margin-top: 60px;
       display: flex; flex-direction: column; 
-      box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15); 
+      box-shadow: 0 50px 100px -20px rgba(0,0,0,0.25); 
       overflow: hidden; border: none;
       animation: modalPopSoft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }

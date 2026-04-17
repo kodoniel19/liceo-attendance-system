@@ -14,8 +14,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { ClassSection } from '../../core/models';
-import { Subscription, timer, of } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+import { Subscription, timer } from 'rxjs';
 
 interface NavItem {
   icon: string;
