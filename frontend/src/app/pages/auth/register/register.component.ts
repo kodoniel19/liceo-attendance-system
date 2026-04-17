@@ -84,7 +84,7 @@ import { ToastService } from '../../../core/services/toast.service';
 
             <mat-form-field>
               <mat-label>University Email</mat-label>
-              <input matInput formControlName="email" type="email" placeholder="you@example.com" [readonly]="isGoogleSignUp()">
+              <input matInput formControlName="email" type="email" placeholder="example@liceo.edu.ph" [readonly]="isGoogleSignUp()">
               <mat-icon matPrefix>email</mat-icon>
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.errors && (form.get('email')?.dirty || form.get('email')?.touched)">
@@ -159,7 +159,7 @@ import { ToastService } from '../../../core/services/toast.service';
     
     ::ng-deep {
       .mat-mdc-form-field-error {
-        margin-top: 1px !important;
+        margin-top: -6px !important;
         display: block !important;
         font-size: 0.6rem !important;
         font-weight: 500 !important;
