@@ -299,24 +299,25 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
       &:hover:not(.mdc-list-item--disabled) {
         background-color: rgba(139, 26, 26, 0.05) !important;
       }
-      
-      ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-        background-color: var(--color-primary) !important;
-        .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
-        mat-pseudo-checkbox { display: none; }
-      }
+    }
+    
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background-color: var(--color-primary) !important;
+      .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
+      mat-pseudo-checkbox { display: none; }
+    }
 
-      /* Premium Select Search */
-      .select-search-header {
-        position: sticky; top: 0; background: white; z-index: 100;
-        display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
-        mat-icon { font-size: 18px; width: 18px; height: 18px; color: #94a3b8; margin-right: 8px; }
-      }
-      .select-search-input {
-        border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
-        &::placeholder { color: #94a3b8; font-weight: 500; }
-      }
-    `]
+    /* Premium Select Search */
+    .select-search-header {
+      position: sticky; top: 0; background: white; z-index: 100;
+      display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: #94a3b8; margin-right: 8px; }
+    }
+    .select-search-input {
+      border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: #1e293b; width: 100%;
+      &::placeholder { color: #94a3b8; font-weight: 500; }
+    }
+  `]
     .session-item {
       background: white; border-radius: 20px;
       padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
