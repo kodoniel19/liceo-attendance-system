@@ -275,6 +275,14 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
 
     if (this.chart) this.chart.destroy();
 
+    const canvasCtx = ctx.getContext('2d');
+    let gradientFill;
+    if (canvasCtx) {
+      gradientFill = canvasCtx.createLinearGradient(0, 0, 0, 300);
+      gradientFill.addColorStop(0, 'rgba(139, 26, 26, 0.8)');
+      gradientFill.addColorStop(1, 'rgba(139, 26, 26, 0.2)');
+    }
+
     this.chart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -282,11 +290,12 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
         datasets: [{
           label: 'Attendance %',
           data: perfData.map((d: any) => d.rate),
-          backgroundColor: 'rgba(139, 26, 26, 0.7)',
+          backgroundColor: gradientFill || 'rgba(139, 26, 26, 0.7)',
           borderColor: '#8B1A1A',
-          borderWidth: 1,
-          borderRadius: 8,
-          barThickness: 40
+          borderWidth: 1.5,
+          borderRadius: 12,
+          borderSkipped: false,
+          barThickness: 32
         }]
       },
       options: {
@@ -295,11 +304,12 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1a1a2e',
-            titleFont: { size: 14, weight: 'bold' },
-            bodyFont: { size: 13 },
+            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+            titleFont: { family: 'inherit', size: 14, weight: 'bold' as any },
+            bodyFont: { family: 'inherit', size: 13 },
             padding: 12,
             cornerRadius: 8,
+            displayColors: false,
             callbacks: {
               label: (ctx) => ` Performance: ${ctx.raw}%`
             }
@@ -309,12 +319,17 @@ export class InstructorDashboardComponent implements OnInit, OnDestroy {
           y: {
             beginAtZero: true,
             max: 100,
-            grid: { display: true, color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { weight: 'bold' }, callback: (v) => v + '%' }
+            border: { display: false },
+            grid: { color: 'rgba(0,0,0,0.04)', drawTicks: false },
+            ticks: { 
+              font: { family: 'inherit', weight: 'bold' as any, size: 11 }, 
+              padding: 10,
+              callback: (v) => v + '%' 
+            }
           },
           x: {
             grid: { display: false },
-            ticks: { font: { weight: 'bold' } }
+            ticks: { font: { family: 'inherit', weight: 'bold' as any, size: 11 }, padding: 10 }
           }
         }
       }

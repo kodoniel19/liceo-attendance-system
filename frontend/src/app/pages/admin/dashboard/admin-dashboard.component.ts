@@ -223,6 +223,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     if (this.chart) this.chart.destroy();
 
+    const canvasCtx = ctx.getContext('2d');
+    let gradientFill;
+    if (canvasCtx) {
+      gradientFill = canvasCtx.createLinearGradient(0, 0, 0, 300);
+      gradientFill.addColorStop(0, 'rgba(139, 26, 26, 0.4)');
+      gradientFill.addColorStop(1, 'rgba(139, 26, 26, 0.0)');
+    }
+
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -231,15 +239,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           label: 'Total Sessions',
           data: weeklyData.map((d: any) => d.count),
           borderColor: '#8B1A1A',
-          backgroundColor: 'rgba(139, 26, 26, 0.1)',
+          backgroundColor: gradientFill || 'rgba(139, 26, 26, 0.1)',
           borderWidth: 3,
           pointBackgroundColor: '#C9A227',
-          pointBorderColor: '#fff',
+          pointBorderColor: '#ffffff',
           pointBorderWidth: 2,
           pointRadius: 5,
-          pointHoverRadius: 7,
+          pointHoverRadius: 8,
+          pointHoverBorderWidth: 3,
+          pointHoverBackgroundColor: '#8B1A1A',
           fill: true,
-          tension: 0.4
+          tension: 0.45
         }]
       },
       options: {
@@ -248,23 +258,27 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1a1a2e',
-            titleFont: { size: 14, weight: 'bold' },
-            bodyFont: { size: 13 },
+            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+            titleFont: { family: 'inherit', size: 14, weight: 'bold' as any },
+            bodyFont: { family: 'inherit', size: 13 },
             padding: 12,
             cornerRadius: 8,
-            displayColors: false
+            displayColors: false,
+            callbacks: {
+              label: (ctooltip) => ` ${ctooltip.raw} Active Sessions`
+            }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { weight: 'bold' }, stepSize: 1 }
+            border: { display: false },
+            grid: { color: 'rgba(0,0,0,0.04)', drawTicks: false },
+            ticks: { font: { family: 'inherit', weight: 'bold' as any, size: 11 }, padding: 10, stepSize: 1 }
           },
           x: {
             grid: { display: false },
-            ticks: { font: { weight: 'bold' } }
+            ticks: { font: { family: 'inherit', weight: 'bold' as any, size: 11 }, padding: 10 }
           }
         }
       }
