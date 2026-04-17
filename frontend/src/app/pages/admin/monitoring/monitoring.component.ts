@@ -221,7 +221,7 @@ import { ApiService } from '../../../core/services/api.service';
     }
     .history-modal { 
       background: white; border-radius: 32px; width: 92%; max-width: 680px; 
-      max-height: 72vh; margin-top: 60px;
+      max-height: 85vh;
       display: flex; flex-direction: column; 
       box-shadow: 0 50px 100px -20px rgba(0,0,0,0.25); 
       overflow: hidden; border: none;
@@ -283,6 +283,18 @@ import { ApiService } from '../../../core/services/api.service';
 
     .modal-footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; }
     .close-btn { color: #94a3b8; }
+
+    @media (max-width: 600px) {
+      .history-modal { width: 96%; border-radius: 20px; }
+      .modal-header { padding: 16px 20px; }
+      .avatar-large { width: 56px; height: 56px; font-size: 1.2rem; border-radius: 12px; }
+      .profile-details h3 { font-size: 1.1rem; }
+      .header-content { gap: 12px; }
+      .history-premium-table th, .history-premium-table td { padding: 12px 16px; }
+      .cell-date { width: 100px; }
+      .date-primary { font-size: 0.8rem; }
+      .subject-name { font-size: 0.85rem; }
+    }
   `]
 })
 export class AdminMonitoringComponent implements OnInit {

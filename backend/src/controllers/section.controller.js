@@ -198,15 +198,28 @@ exports.getSectionStudents = async (req, res, next) => {
 exports.getAnnouncements = async (req, res, next) => {
   try {
     const { sectionId } = req.params;
-    const announcements = await query(
-      `SELECT a.*, DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at, 
+    let sql = `
+       SELECT a.*, DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at, 
               u.first_name, u.last_name 
        FROM announcements a 
        JOIN users u ON a.instructor_id = u.id 
-       WHERE a.class_section_id = ? 
-       ORDER BY a.created_at DESC`,
-      [sectionId]
-    );
+    `;
+    const params = [sectionId];
+
+    if (req.user.role === 'student') {
+        // Only show announcements created after the student enrolled
+        sql += `
+           JOIN enrollments e ON e.class_section_id = a.class_section_id
+           WHERE a.class_section_id = ? AND e.student_id = ? AND e.status = 'active'
+           AND a.created_at >= e.created_at
+        `;
+        params.push(req.user.id);
+    } else {
+        sql += `WHERE a.class_section_id = ?`;
+    }
+
+    sql += ' ORDER BY a.created_at DESC';
+    const announcements = await query(sql, params);
     res.json({ success: true, data: announcements });
   } catch (err) { next(err); }
 };
@@ -343,7 +356,9 @@ exports.getMyAnnouncements = async (req, res, next) => {
     res.setHeader('Expires', '0');
     const studentId = req.user.id;
     
-    // Updated query to include global announcements
+    // Filter announcements:
+    // 1. For sections: only those created AFTER the student enrolled
+    // 2. Global: only those created AFTER the student registered
     const announcements = await query(`
       SELECT a.id, a.title, a.content, 
              DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
@@ -355,16 +370,14 @@ exports.getMyAnnouncements = async (req, res, next) => {
       LEFT JOIN class_sections cl ON a.class_section_id = cl.id
       LEFT JOIN courses co ON cl.course_id = co.id
       INNER JOIN users u ON a.instructor_id = u.id
+      LEFT JOIN enrollments e ON e.class_section_id = a.class_section_id AND e.student_id = ? AND e.status = 'active'
       WHERE (
-        a.class_section_id IN (
-          SELECT e.class_section_id FROM enrollments e
-          JOIN class_sections cl ON e.class_section_id = cl.id
-          WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
-        )
-        OR (a.is_global = TRUE AND a.target_role IN ('all', 'student'))
+        (a.is_global = FALSE AND e.student_id IS NOT NULL AND cl.is_active = TRUE AND a.created_at >= e.created_at)
+        OR (a.is_global = TRUE AND a.target_role IN ('all', 'student') 
+            AND a.created_at >= (SELECT created_at FROM users WHERE id = ?))
       )
       ORDER BY a.created_at DESC
-    `, [studentId]);
+    `, [studentId, studentId]);
 
     res.json({ success: true, data: announcements });
   } catch (err) { next(err); }
