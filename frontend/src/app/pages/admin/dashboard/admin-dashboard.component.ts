@@ -79,12 +79,12 @@ Chart.register(...registerables);
                 7-Day Activity
               </h2>
             </div>
-            <div *ngIf="stats()?.weeklySessions?.length > 0; else emptyChart" style="height: 220px; position: relative;">
+            <div *ngIf="stats()?.weeklySessions?.length > 0; else emptyChart" style="height: 180px; position: relative;">
               <canvas id="weeklyChart"></canvas>
             </div>
             <ng-template #emptyChart>
-              <div style="height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
-                <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">show_chart</span>
+              <div style="height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                <span class="material-icons" style="font-size: 36px; opacity: 0.2; margin-bottom: 8px;">show_chart</span>
                 <p style="margin: 0; font-weight: 600;">No session activity in the past 7 days.</p>
               </div>
             </ng-template>
@@ -117,9 +117,9 @@ Chart.register(...registerables);
   `,
   styles: [`
     .admin-page h1 { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; margin: 0 0 4px; }
-    .admin-page p { color: #64748b; font-size: 0.875rem; margin: 0 0 24px; }
+    .admin-page p { color: #64748b; font-size: 0.875rem; margin: 0 0 16px; }
 
-    .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+    .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
     @media (min-width: 1200px) {
       .dashboard-top-row { grid-template-columns: 1.2fr 1fr; }
     }

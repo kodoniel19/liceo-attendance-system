@@ -75,14 +75,14 @@ Chart.register(...registerables);
                 Class Attendance (%)
               </h2>
             </div>
-            <div *ngIf="stats()?.sectionPerformance?.length > 0; else emptyChart" style="height: 220px; position: relative;">
+            <div *ngIf="stats()?.sectionPerformance?.length > 0; else emptyChart" style="height: 180px; position: relative;">
               <canvas id="performanceChart"></canvas>
             </div>
             <ng-template #emptyChart>
-              <div style="height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
-                <span class="material-icons" style="font-size: 40px; opacity: 0.2; margin-bottom: 12px;">query_stats</span>
+              <div style="height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                <span class="material-icons" style="font-size: 36px; opacity: 0.2; margin-bottom: 8px;">query_stats</span>
                 <p style="margin: 0; font-weight: 600;">No data yet.</p>
-                <p style="margin: 4px 0 0; font-size: 0.8rem; opacity: 0.7;">Complete a session to generate insights.</p>
+                <p style="margin: 4px 0 0; font-size: 0.75rem; opacity: 0.7;">Complete a session to generate insights.</p>
               </div>
             </ng-template>
           </div>
@@ -145,7 +145,7 @@ Chart.register(...registerables);
   styles: [`
     .page-container { padding: 16px 20px; }
 
-    .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+    .dashboard-top-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
     @media (min-width: 1024px) {
       .dashboard-top-row { grid-template-columns: 1.1fr 1fr; } 
     }
@@ -197,15 +197,18 @@ Chart.register(...registerables);
     .session-stat__label { font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
     .session-card__footer { display: flex; justify-content: flex-end; }
     
-    .empty-state { padding: 32px 20px; }
+    .empty-state { padding: 16px 20px; text-align: center; }
+    .empty-state .material-icons { font-size: 48px; opacity: 0.2; margin-bottom: 8px; }
+    .empty-state h3 { margin-bottom: 4px; font-size: 1.1rem; }
+    .empty-state p { font-size: 0.85rem; margin-bottom: 12px; }
     
     .chart-wrapper { height: 100%; display: flex; flex-direction: column; }
     .chart-container {
-      background: white; border-radius: 20px; padding: 20px;
+      background: white; border-radius: 20px; padding: 16px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;
       flex: 1; display: flex; flex-direction: column; margin-bottom: 0px;
     }
-    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .chart-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0; }
     .chart-header .material-icons { font-size: 1.4rem; color: var(--color-primary); }
 
