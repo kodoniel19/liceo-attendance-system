@@ -28,8 +28,7 @@ import { Attendance } from '../../../core/models';
       <!-- Filters Row -->
       <div class="filters-row animate-fade-in-up">
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Month</mat-label>
-          <mat-select [formControl]="monthCtrl">
+          <mat-select [formControl]="monthCtrl" placeholder="Filter by Month">
             <mat-option value="">All Months</mat-option>
             <mat-option *ngFor="let m of months" [value]="m.value">{{ m.label }}</mat-option>
           </mat-select>
@@ -37,16 +36,14 @@ import { Attendance } from '../../../core/models';
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Year</mat-label>
-          <mat-select [formControl]="yearCtrl">
+          <mat-select [formControl]="yearCtrl" placeholder="Filter by Year">
             <mat-option *ngFor="let y of years" [value]="y">{{ y === currentYear ? y + ' - Present' : y }}</mat-option>
           </mat-select>
           <mat-icon matPrefix>event</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>By Subject</mat-label>
-          <mat-select [formControl]="sectionFilter" placeholder="All Subjects">
+          <mat-select [formControl]="sectionFilter" placeholder="Filter by Subject">
             <mat-option value="">All Subjects</mat-option>
             <mat-option *ngFor="let s of enrollment()" [value]="s.id">
               {{ s.courseName }} Instructor: {{ s.instructorLast }}
@@ -114,9 +111,9 @@ import { Attendance } from '../../../core/models';
   `,
   styles: [`
     .history-filter { margin-bottom: 24px; display: flex; gap: 12px; }
-    .filters-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+    .filters-row { display: flex; gap: 8px; margin-bottom: 24px; flex-direction: column; }
     .filter-field { 
-      flex: 1; min-width: 140px;
+      width: 100%;
       margin: 0;
       ::ng-deep .mat-mdc-text-field-wrapper { 
         background: white !important; 
@@ -129,7 +126,7 @@ import { Attendance } from '../../../core/models';
       }
       ::ng-deep .mdc-notched-outline { display: none !important; }
       ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 700; color: #444; }
-      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; margin-right: 8px; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 18px; width: 18px; height: 18px; margin-right: 8px; }
       ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
       ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
       ::ng-deep .mat-mdc-select-arrow svg { color: var(--color-primary) !important; }
