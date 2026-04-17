@@ -110,9 +110,21 @@ Chart.register(...registerables);
             </div>
 
             <div class="course-card__stats">
-              <div class="mini-stat present">✅ {{ s.presentCount ?? 0 }} Present</div>
-              <div class="mini-stat late">⏰ {{ s.lateCount ?? 0 }} Late</div>
-              <div class="mini-stat absent">❌ {{ s.absentCount ?? 0 }} Absent</div>
+              <div class="mini-stat present">✅ {{ s.presentCount ?? 0 }}</div>
+              <div class="mini-stat late">⏰ {{ s.lateCount ?? 0 }}</div>
+              <div class="mini-stat absent">❌ {{ s.absentCount ?? 0 }}</div>
+            </div>
+
+            <!-- Schedule & Room -->
+            <div class="course-card__info">
+              <div class="info-item">
+                <mat-icon>calendar_today</mat-icon>
+                <span class="info-text">{{ (s as any).schedule || 'TBA' }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon>location_on</mat-icon>
+                <span class="info-text">{{ (s as any).room || 'TBA' }}</span>
+              </div>
             </div>
 
             <!-- Progress bar -->
@@ -186,10 +198,18 @@ Chart.register(...registerables);
     .mini-stat.late    { background: rgba(230,126,34,0.1); color: #b55e14; }
     .mini-stat.absent  { background: rgba(231,76,60,0.1);  color: #c0392b; }
     .course-card__footer { 
-      margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--color-border);
+      margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--color-border);
       display: flex; align-items: center; justify-content: space-between;
-      color: var(--color-primary); font-size: 0.8rem; font-weight: 600;
+      color: var(--color-primary); font-size: 0.75rem; font-weight: 600;
     }
+
+    .course-card__info {
+       margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.03);
+       display: flex; flex-direction: column; gap: 6px;
+    }
+    .info-item { display: flex; align-items: flex-start; gap: 6px; color: #64748b; }
+    .info-item mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--color-primary); margin-top: 1px; }
+    .info-text { font-size: 0.75rem; font-weight: 600; line-height: 1.3; white-space: pre-line; }
 
     .invitations-section { margin-top: 24px; }
     .invitation-card {
@@ -212,7 +232,14 @@ Chart.register(...registerables);
 
     @media (max-width: 600px) {
       .invitation-card { flex-direction: column; align-items: stretch; text-align: center; }
-      .inv-actions { justify-content: center; }
+      .inv_actions { justify-content: center; }
+      
+      .course-card { padding: 14px; }
+      .course-rate { font-size: 1.3rem !important; }
+      .course-card__name { font-size: 0.85rem !important; line-height: 1.2; }
+      .course-card__code { font-size: 0.65rem !important; }
+      .mini-stat { font-size: 0.7rem !important; padding: 2px 8px !important; }
+      .info-text { font-size: 0.7rem !important; }
     }
   `]
 })

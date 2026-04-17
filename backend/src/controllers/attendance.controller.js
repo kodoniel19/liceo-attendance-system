@@ -53,6 +53,8 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
         co.course_name   AS courseName,
         cl.section_name  AS sectionName,
         cl.id            AS sectionId,
+        cl.schedule      AS schedule,
+        cl.room          AS room,
         COUNT(a.id) AS totalSessions,
         SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) AS presentCount,
         SUM(CASE WHEN a.status = 'late'    THEN 1 ELSE 0 END) AS lateCount,
