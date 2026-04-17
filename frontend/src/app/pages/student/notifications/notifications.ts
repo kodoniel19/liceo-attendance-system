@@ -77,15 +77,16 @@ import { ApiService } from '../../../core/services/api.service';
         background: white !important; 
         border: 1px solid var(--color-primary) !important; 
         border-radius: 12px !important; 
-        height: 42px !important; 
+        height: 48px !important; 
         display: flex; 
         align-items: center; 
         padding: 0 12px !important;
       }
       ::ng-deep .mdc-notched-outline { display: none !important; }
       ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 700; color: #444; }
-      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 18px; width: 18px; height: 18px; margin-right: 8px; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; margin-right: 8px; }
       ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
+      ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
       ::ng-deep .mat-mdc-select-arrow svg { color: var(--color-primary) !important; }
     }
 

@@ -116,20 +116,20 @@ import { Attendance } from '../../../core/models';
     .history-filter { margin-bottom: 24px; display: flex; gap: 12px; }
     .filters-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
     .filter-field { 
-      flex: 1; min-width: 130px;
+      flex: 1; min-width: 140px;
       margin: 0;
       ::ng-deep .mat-mdc-text-field-wrapper { 
         background: white !important; 
         border: 1px solid var(--color-primary) !important; 
         border-radius: 12px !important; 
-        height: 42px !important; 
+        height: 48px !important; 
         display: flex; 
         align-items: center; 
-        padding: 0 10px !important;
+        padding: 0 12px !important;
       }
       ::ng-deep .mdc-notched-outline { display: none !important; }
-      ::ng-deep .mat-mdc-select-value { font-size: 0.8rem; font-weight: 700; color: #444; }
-      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 16px; width: 16px; height: 16px; margin-right: 4px; }
+      ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 700; color: #444; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; margin-right: 8px; }
       ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
       ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
       ::ng-deep .mat-mdc-select-arrow svg { color: var(--color-primary) !important; }
