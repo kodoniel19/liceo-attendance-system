@@ -56,7 +56,7 @@ import { Subscription, forkJoin } from 'rxjs';
 
         <mat-tab-group class="modern-tabs" [selectedIndex]="selectedTabIndex()">
           <!-- Attendance History Tab -->
-          <mat-tab label="My Attendance">
+          <mat-tab label="Attendance">
              <div class="tab-content">
                 <div class="history-timeline" *ngIf="attendance().length">
                    <div class="history-card shadow-premium" *ngFor="let a of attendance()">
@@ -284,12 +284,13 @@ import { Subscription, forkJoin } from 'rxjs';
     .shadow-premium { box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
     .empty-state { text-align: center; padding: 40px; color: #94a3b8; mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 12px; } }
     
-    ::ng-deep .modern-tabs .mat-mdc-tab-labels { background: white; border-radius: 12px; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); justify-content: space-around; }
-    ::ng-deep .modern-tabs .mat-mdc-tab { color: #64748b; min-width: 0 !important; padding: 0 10px !important; }
-    ::ng-deep .modern-tabs .mdc-tab__text-label { font-size: 0.8rem !important; }
+    ::ng-deep .modern-tabs .mat-mdc-tab-labels { background: white; border-radius: 12px; padding: 2px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); justify-content: space-around; }
+    ::ng-deep .modern-tabs .mat-mdc-tab { color: #64748b; min-width: 0 !important; padding: 0 4px !important; flex: 1; }
+    ::ng-deep .modern-tabs .mdc-tab__text-label { font-size: 0.75rem !important; letter-spacing: -0.02em; }
     ::ng-deep .modern-tabs .mdc-tab--active .mdc-tab__text-label { color: var(--color-primary); font-weight: 800; }
     ::ng-deep .modern-tabs .mat-mdc-tab-label-container { border-bottom: none; }
-    ::ng-deep .modern-tabs .mat-mdc-tab-header-pagination { display: none !important; } /* Hide the arrow buttons */
+    ::ng-deep .modern-tabs .mat-mdc-tab-header-pagination { display: none !important; width: 0 !important; } /* Hard-hide the arrow buttons */
+    ::ng-deep .modern-tabs .mat-mdc-tab-list { transform: none !important; }
   `]
 })
 export class SubjectDetailComponent implements OnInit {
