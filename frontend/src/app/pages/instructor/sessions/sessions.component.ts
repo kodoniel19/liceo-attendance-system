@@ -252,25 +252,50 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     }
 
     .filter-area {
-      margin-bottom: 24px;
+      margin-bottom: 32px;
       display: flex; justify-content: flex-start;
+      padding: 0 4px;
     }
     .course-filter {
-      width: 100%; max-width: 400px;
+      width: 100%; max-width: 450px;
       ::ng-deep .mat-mdc-text-field-wrapper { 
         background: white; border-radius: 16px !important; 
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(139, 26, 26, 0.1) !important;
       }
+      ::ng-deep .mat-mdc-form-field-focus-overlay { background-color: rgba(139, 26, 26, 0.02); }
+      
       &:hover ::ng-deep .mat-mdc-text-field-wrapper {
-        background: #fffafa; box-shadow: 0 4px 12px rgba(139, 26, 26, 0.1);
+        border-color: var(--color-primary) !important;
+        box-shadow: 0 4px 20px rgba(139, 26, 26, 0.12);
+      }
+      
+      &.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {
+        border-color: var(--color-primary) !important;
+        border-width: 2px !important;
       }
     }
 
-    /* Liceo Themed Dropdown Items */
-    ::ng-deep .mat-mdc-option:hover { background-color: rgba(139, 26, 26, 0.05) !important; }
-    ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-      background-color: rgba(139, 26, 26, 0.1) !important;
-      .mdc-list-item__primary-text { color: var(--color-primary); font-weight: 700; }
+    /* Premium Overlay Styling */
+    ::ng-deep .mat-mdc-select-panel {
+      border-radius: 16px !important;
+      padding: 8px !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+    }
+    ::ng-deep .mat-mdc-option {
+      border-radius: 8px !important;
+      margin-bottom: 4px !important;
+      transition: all 0.2s ease !important;
+      
+      &:hover:not(.mdc-list-item--disabled) {
+        background-color: rgba(139, 26, 26, 0.05) !important;
+      }
+      
+      &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        background-color: var(--color-primary) !important;
+        .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
+        mat-pseudo-checkbox { display: none; }
+      }
     }
     .session-item {
       background: white; border-radius: 20px;
