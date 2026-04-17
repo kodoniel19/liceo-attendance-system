@@ -111,7 +111,7 @@ import { Attendance } from '../../../core/models';
   `,
   styles: [`
     .history-filter { margin-bottom: 24px; display: flex; gap: 12px; }
-    .filters-row { display: flex; gap: 8px; margin-bottom: 24px; flex-direction: column; }
+    .filters-row { display: flex; gap: 10px; margin-bottom: 24px; flex-direction: column; }
     .filter-field { 
       width: 100%;
       margin: 0;
@@ -124,21 +124,21 @@ import { Attendance } from '../../../core/models';
         align-items: center; 
         padding: 0 12px !important;
       }
-      ::ng-deep .mdc-notched-outline { display: none !important; }
-      ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 700; color: #444; }
-      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 18px; width: 18px; height: 18px; margin-right: 8px; }
-      ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
+      ::ng-deep .mdc-notched-outline { display: none !important; visibility: hidden !important; }
       ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
+      ::ng-deep .mat-mdc-select-value { font-size: 0.85rem; font-weight: 700; color: #444; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 20px; width: 20px; height: 20px; margin-right: 8px; }
+      ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
       ::ng-deep .mat-mdc-select-arrow svg { color: var(--color-primary) !important; }
     }
 
     /* Premium Overlay Styling */
     ::ng-deep .mat-mdc-select-panel {
-      background: rgba(255, 255, 255, 0.95) !important;
+      background: rgba(255, 255, 255, 0.98) !important;
       backdrop-filter: blur(10px);
       border-radius: 12px !important;
       padding: 8px !important;
-      box-shadow: 0 10px 40px rgba(139, 26, 26, 0.15) !important;
+      box-shadow: 0 10px 40px rgba(139, 26, 26, 0.2) !important;
       border: 1px solid rgba(139, 26, 26, 0.1) !important;
     }
 
@@ -146,12 +146,12 @@ import { Attendance } from '../../../core/models';
       border-radius: 8px !important;
       margin-bottom: 2px;
       transition: all 0.2s ease;
-      .mdc-list-item__primary-text { font-size: 0.8rem !important; font-weight: 500; }
+      .mdc-list-item__primary-text { font-size: 0.85rem !important; font-weight: 600 !important; }
     }
 
     ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
       background: var(--color-primary) !important;
-      .mdc-list-item__primary-text { color: white !important; font-weight: 700 !important; }
+      .mdc-list-item__primary-text { color: white !important; font-weight: 800 !important; }
     }
 
     .history-timeline { display: flex; flex-direction: column; gap: 32px; }
