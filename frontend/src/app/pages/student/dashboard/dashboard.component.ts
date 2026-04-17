@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,9 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AttendanceSummary, ClassSection } from '../../../core/models';
 import { ToastService } from '../../../core/services/toast.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-student-dashboard',
@@ -59,6 +62,22 @@ import { ToastService } from '../../../core/services/toast.service';
           <div style="font-size:0.8rem;color:var(--color-text-muted)">Tap to record your attendance</div>
         </div>
         <a mat-raised-button color="primary" routerLink="/student/scan">Scan Now</a>
+      </div>
+
+      </div>
+
+      <!-- Attendance Distribution Chart -->
+      <div class="animate-fade-in-up mt-3" *ngIf="stats()?.distribution">
+        <div class="glass-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
+            <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--color-primary)">📊 Attendance Distribution</h3>
+          </div>
+          <div style="height: 200px; display:flex; align-items:center; justify-content:center;">
+             <div style="width: 100%; max-width: 400px; height: 100%;">
+                <canvas id="distributionChart"></canvas>
+             </div>
+          </div>
+        </div>
       </div>
 
       <!-- Pending Invitations -->
@@ -176,13 +195,22 @@ import { ToastService } from '../../../core/services/toast.service';
     .inv-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; margin: 4px 0; }
     .inv-instructor { font-size: 0.8rem; color: #64748b; font-weight: 600; }
     .inv-actions { display: flex; gap: 8px; }
+    .inv-actions { display: flex; gap: 8px; }
+    
+    .glass-card {
+      background: white; border-radius: var(--radius-lg);
+      padding: 24px; box-shadow: var(--shadow-lg);
+      border: 1px solid var(--color-border);
+      margin-bottom: 24px;
+    }
+
     @media (max-width: 600px) {
       .invitation-card { flex-direction: column; align-items: stretch; text-align: center; }
       .inv-actions { justify-content: center; }
     }
   `]
 })
-export class StudentDashboardComponent implements OnInit {
+export class StudentDashboardComponent implements OnInit, OnDestroy {
   api = inject(ApiService);
   auth = inject(AuthService);
   toast = inject(ToastService);
@@ -192,6 +220,7 @@ export class StudentDashboardComponent implements OnInit {
   invitations = signal<ClassSection[]>([]);
   summaryLoading = signal(true);
   processing = signal(false);
+  private chart: Chart | null = null;
 
   today = new Date().toLocaleDateString('en-PH', { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -215,10 +244,19 @@ export class StudentDashboardComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.chart) this.chart.destroy();
+  }
+
 
   refreshDashboard(silent = false): void {
     if (!silent) this.summaryLoading.set(true);
-    this.api.getDashboardStats().subscribe({ next: r => this.stats.set(r.data) });
+    this.api.getDashboardStats().subscribe({ 
+      next: r => { 
+        this.stats.set(r.data); 
+        setTimeout(() => this.initChart(), 0);
+      } 
+    });
     this.api.getMyAttendanceSummary().subscribe({
       next: r => { this.summary.set(r.data || []); this.summaryLoading.set(false); },
       error: () => this.summaryLoading.set(false)
@@ -227,6 +265,55 @@ export class StudentDashboardComponent implements OnInit {
       next: r => {
         const all = r.data || [];
         this.invitations.set(all.filter(e => e.enrollmentStatus === 'pending'));
+      }
+    });
+  }
+
+  private initChart(): void {
+    const data = this.stats()?.distribution;
+    if (!data) return;
+
+    const ctx = document.getElementById('distributionChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.chart) this.chart.destroy();
+
+    this.chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Present', 'Late', 'Absent', 'Excused'],
+        datasets: [{
+          data: [data.present, data.late, data.absent, data.excused],
+          backgroundColor: [
+            '#27ae60', // Present
+            '#f1c40f', // Late
+            '#e74c3c', // Absent
+            '#3498db'  // Excused
+          ],
+          borderWidth: 0,
+          weight: 0.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: { family: 'inherit', size: 12, weight: '600' }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1a1a2e',
+            padding: 12,
+            cornerRadius: 8,
+            titleFont: { size: 14, weight: 'bold' }
+          }
+        }
       }
     });
   }

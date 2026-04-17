@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -65,7 +65,22 @@ import { ApiService } from '../../../core/services/api.service';
         </a>
       </div>
 
-      <div class="quick-actions">
+      <!-- Weekly Trend Chart -->
+      <div class="chart-section animate-fade-in-up" *ngIf="stats()?.weeklySessions?.length">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h2>
+              <span class="material-icons">trending_up</span>
+              7-Day Session Activity
+            </h2>
+          </div>
+          <div style="height: 300px; position: relative;">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-actions animate-fade-in-up">
         <h2>Quick Actions</h2>
         <div class="actions-grid">
           <a routerLink="/admin/users" class="action-card">
@@ -139,12 +154,25 @@ import { ApiService } from '../../../core/services/api.service';
       &.highlight-info .material-icons { color: #6366f1; }
       &.highlight-info:hover { color: #6366f1; }
     }
+
+    .chart-section { margin-bottom: 40px; }
+    .chart-container {
+      background: white; border-radius: 24px; padding: 32px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;
+    }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .chart-header h2 { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .chart-header .material-icons { color: #8B1A1A; font-size: 1.5rem; }
   `]
 })
-export class AdminDashboardComponent implements OnInit {
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   api = inject(ApiService);
   stats = signal<any>(null);
   loading = signal(true);
+  private chart: Chart | null = null;
 
   ngOnInit(): void {
     this.load();
@@ -157,8 +185,73 @@ export class AdminDashboardComponent implements OnInit {
   load(silent = false): void {
     if (!silent) this.loading.set(true);
     this.api.getSystemStats().subscribe({
-      next: r => { this.stats.set(r.data); this.loading.set(false); },
+      next: r => { 
+        this.stats.set(r.data); 
+        this.loading.set(false); 
+        setTimeout(() => this.initChart(), 0);
+      },
       error: () => this.loading.set(false)
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) this.chart.destroy();
+  }
+
+  private initChart(): void {
+    const weeklyData = this.stats()?.weeklySessions;
+    if (!weeklyData?.length) return;
+
+    const ctx = document.getElementById('weeklyChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.chart) this.chart.destroy();
+
+    this.chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: weeklyData.map((d: any) => d.label),
+        datasets: [{
+          label: 'Total Sessions',
+          data: weeklyData.map((d: any) => d.count),
+          borderColor: '#8B1A1A',
+          backgroundColor: 'rgba(139, 26, 26, 0.1)',
+          borderWidth: 3,
+          pointBackgroundColor: '#C9A227',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a1a2e',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { weight: '600' }, stepSize: 1 }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { weight: '600' } }
+          }
+        }
+      }
     });
   }
 }

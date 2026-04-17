@@ -195,7 +195,7 @@ exports.getDashboardStats = async (req, res, next) => {
     let stats = {};
 
     if (role === 'instructor') {
-      const [sections, sessions, todayAttendance] = await Promise.all([
+      const [sections, sessions, todayAttendance, sectionPerformance] = await Promise.all([
         query('SELECT COUNT(*) as count FROM class_sections WHERE instructor_id = ? AND is_active = TRUE', [userId]),
         query(`SELECT COUNT(*) as count FROM class_sessions cs
                JOIN class_sections cl ON cs.class_section_id = cl.id
@@ -208,18 +208,33 @@ exports.getDashboardStats = async (req, res, next) => {
                FROM attendance a
                JOIN class_sessions cs ON a.class_session_id = cs.id
                JOIN class_sections cl ON cs.class_section_id = cl.id
-               WHERE cl.instructor_id = ? AND cs.session_date = CURDATE()`, [userId])
+               WHERE cl.instructor_id = ? AND cs.session_date = CURDATE()`, [userId]),
+        query(`SELECT 
+                 co.course_code as label,
+                 ROUND((SUM(CASE WHEN a.status IN ('present', 'late') THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 1) as rate
+               FROM class_sections cl
+               JOIN courses co ON cl.course_id = co.id
+               JOIN class_sessions cs ON cs.class_section_id = cl.id
+               JOIN attendance a ON a.class_session_id = cs.id
+               WHERE cl.instructor_id = ? AND cs.status = 'ended'
+               GROUP BY cl.id
+               LIMIT 10`, [userId])
       ]);
 
       stats = {
         totalSections: sections[0].count,
         activeSessions: sessions[0].count,
-        todayStats: todayAttendance[0]
+        todayStats: todayAttendance[0],
+        sectionPerformance
       };
     } else if (role === 'student') {
-      const [enrolled, attendanceRate] = await Promise.all([
+      const [enrolled, attendanceStats] = await Promise.all([
         query('SELECT COUNT(*) as count FROM enrollments e INNER JOIN class_sections cl ON e.class_section_id = cl.id WHERE e.student_id = ? AND e.status = "active" AND cl.is_active = TRUE', [userId]),
         query(`SELECT 
+                 SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present,
+                 SUM(CASE WHEN a.status = 'late' THEN 1 ELSE 0 END) as late,
+                 SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent,
+                 SUM(CASE WHEN a.status = 'excused' THEN 1 ELSE 0 END) as excused,
                  ROUND(
                    (SUM(CASE WHEN a.status IN ('present','late') THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 2
                  ) as rate
@@ -231,21 +246,33 @@ exports.getDashboardStats = async (req, res, next) => {
 
       stats = {
         enrolledCourses: enrolled[0].count,
-        attendanceRate: attendanceRate[0].rate || 0
+        attendanceRate: attendanceStats[0].rate || 0,
+        distribution: {
+          present: attendanceStats[0].present || 0,
+          late: attendanceStats[0].late || 0,
+          absent: attendanceStats[0].absent || 0,
+          excused: attendanceStats[0].excused || 0
+        }
       };
     } else if (role === 'admin') {
-      const [users, students, instructors, activeSessions] = await Promise.all([
+      const [users, students, instructors, activeSessions, weeklySessions] = await Promise.all([
         query('SELECT COUNT(*) as count FROM users WHERE is_active = TRUE'),
         query('SELECT COUNT(*) as count FROM users WHERE role = "student" AND is_active = TRUE'),
         query('SELECT COUNT(*) as count FROM users WHERE role = "instructor" AND is_active = TRUE'),
-        query('SELECT COUNT(*) as count FROM class_sessions WHERE status = "active"')
+        query('SELECT COUNT(*) as count FROM class_sessions WHERE status = "active"'),
+        query(`SELECT DATE_FORMAT(session_date, '%m-%d') as label, COUNT(*) as count 
+               FROM class_sessions 
+               WHERE session_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+               GROUP BY session_date
+               ORDER BY session_date ASC`)
       ]);
 
       stats = {
         totalUsers: users[0].count,
         totalStudents: students[0].count,
         totalInstructors: instructors[0].count,
-        activeSessions: activeSessions[0].count
+        activeSessions: activeSessions[0].count,
+        weeklySessions
       };
     }
 

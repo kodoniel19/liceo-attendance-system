@@ -126,8 +126,17 @@ exports.getSystemStats = async (req, res, next) => {
     const [sections] = await query('SELECT COUNT(*) as total FROM class_sections WHERE is_active=1');
     const [sessions] = await query('SELECT COUNT(*) as total, SUM(status="active") as active FROM class_sessions');
     const [attend]   = await query('SELECT COUNT(*) as total FROM attendance');
+    
+    // Add weekly session trend
+    const weeklySessions = await query(`
+      SELECT DATE_FORMAT(session_date, '%m-%d') as label, COUNT(*) as count 
+      FROM class_sessions 
+      WHERE session_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+      GROUP BY session_date
+      ORDER BY session_date ASC
+    `);
 
-    res.json({ success: true, data: { users, courses, sections, sessions, attend } });
+    res.json({ success: true, data: { users, courses, sections, sessions, attend, weeklySessions } });
   } catch (err) { next(err); }
 };
 

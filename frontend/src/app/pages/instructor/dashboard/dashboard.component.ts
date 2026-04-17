@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,9 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ClassSession } from '../../../core/models';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-instructor-dashboard',
@@ -59,6 +62,21 @@ import { ClassSession } from '../../../core/models';
           <div class="card-label">Expected Students</div>
           <div class="card-footer">Daily Total</div>
         </a>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="animate-fade-in-up mt-3" *ngIf="stats()?.sectionPerformance?.length">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h2>
+              <span class="material-icons">bar_chart</span>
+              Class Attendance Performance (%)
+            </h2>
+          </div>
+          <div style="height: 300px; position: relative;">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
       </div>
 
       <!-- Active Sessions -->
@@ -165,6 +183,15 @@ import { ClassSession } from '../../../core/models';
     
     .empty-state { padding: 32px 20px; }
     
+    .chart-container {
+      background: white; border-radius: 20px; padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;
+      margin-bottom: 24px;
+    }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .chart-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0; }
+    .chart-header .material-icons { font-size: 1.4rem; color: var(--color-primary); }
+
     .btn-premium {
       background: linear-gradient(135deg, #8B1A1A 0%, #B91C1C 100%) !important;
       color: white !important; border-radius: 30px !important; padding: 0 24px !important; height: 48px !important;
@@ -179,7 +206,7 @@ import { ClassSession } from '../../../core/models';
     }
   `]
 })
-export class InstructorDashboardComponent implements OnInit {
+export class InstructorDashboardComponent implements OnInit, OnDestroy {
   api = inject(ApiService);
   auth = inject(AuthService);
   toast = inject(ToastService);
@@ -193,19 +220,84 @@ export class InstructorDashboardComponent implements OnInit {
   today = new Date().toLocaleDateString('en-PH', { weekday: 'long', month: 'long', day: 'numeric' });
 
   greeting = signal('morning');
+  private chart: Chart | null = null;
 
   ngOnInit(): void {
     const h = new Date().getHours();
     this.greeting.set(h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening');
 
     this.api.getDashboardStats().subscribe({
-      next: (r) => { this.stats.set(r.data); this.statsLoading.set(false); },
+      next: (r) => { 
+        this.stats.set(r.data); 
+        this.statsLoading.set(false); 
+        // Small delay to ensure canvas is ready
+        setTimeout(() => this.initChart(), 0);
+      },
       error: () => this.statsLoading.set(false)
     });
 
     this.api.getSessions({ status: 'active' }).subscribe({
       next: (r) => { this.activeSessions.set(r.data || []); this.sessionsLoading.set(false); },
       error: () => this.sessionsLoading.set(false)
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.chart) this.chart.destroy();
+  }
+
+  private initChart(): void {
+    const perfData = this.stats()?.sectionPerformance;
+    if (!perfData || !perfData.length) return;
+
+    const ctx = document.getElementById('performanceChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.chart) this.chart.destroy();
+
+    this.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: perfData.map((d: any) => d.label),
+        datasets: [{
+          label: 'Attendance %',
+          data: perfData.map((d: any) => d.rate),
+          backgroundColor: 'rgba(139, 26, 26, 0.7)',
+          borderColor: '#8B1A1A',
+          borderWidth: 1,
+          borderRadius: 8,
+          barThickness: 40
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a1a2e',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+              label: (ctx) => ` Performance: ${ctx.raw}%`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: { display: true, color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { weight: '600' }, callback: (v) => v + '%' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { weight: '600' } }
+          }
+        }
+      }
     });
   }
 }
