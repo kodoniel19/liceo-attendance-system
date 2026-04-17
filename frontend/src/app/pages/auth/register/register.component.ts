@@ -59,14 +59,14 @@ import { ToastService } from '../../../core/services/toast.service';
               </div>
             </div>
             <div class="register-grid">
-              <mat-form-field>
+              <mat-form-field subscriptSizing="dynamic">
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="firstName">
                 <mat-icon matPrefix>person</mat-icon>
                 <mat-error>Required</mat-error>
               </mat-form-field>
 
-              <mat-form-field>
+              <mat-form-field subscriptSizing="dynamic">
                 <mat-label>Last Name</mat-label>
                 <input matInput formControlName="lastName">
                 <mat-icon matPrefix>person</mat-icon>
@@ -74,7 +74,7 @@ import { ToastService } from '../../../core/services/toast.service';
               </mat-form-field>
             </div>
 
-            <mat-form-field>
+            <mat-form-field subscriptSizing="dynamic">
               <mat-label>University ID</mat-label>
               <input matInput formControlName="universityId" placeholder="e.g. 20240010022">
               <mat-icon matPrefix>badge</mat-icon>
@@ -82,16 +82,16 @@ import { ToastService } from '../../../core/services/toast.service';
               <mat-error *ngIf="form.get('universityId')?.hasError('pattern')">ID must be exactly 11 characters</mat-error>
             </mat-form-field>
 
-            <mat-form-field>
+            <mat-form-field subscriptSizing="dynamic">
               <mat-label>University Email</mat-label>
               <input matInput formControlName="email" type="email" placeholder="you@example.com" [readonly]="isGoogleSignUp()">
               <mat-icon matPrefix>email</mat-icon>
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.hasError('required')">Required</mat-error>
-              <mat-error *ngIf="form.get('email')?.hasError('email')">Valid email required</mat-error>
+              <mat-error *ngIf="form.get('email')?.hasError('email') || form.get('email')?.hasError('pattern')">Use liceo.edu.ph email only</mat-error>
             </mat-form-field>
 
-            <mat-form-field style="width:100%">
+            <mat-form-field style="width:100%" subscriptSizing="dynamic">
               <mat-label>Department</mat-label>
               <input matInput formControlName="department" 
                      [matAutocomplete]="deptAuto" 
@@ -104,7 +104,7 @@ import { ToastService } from '../../../core/services/toast.service';
               </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field>
+            <mat-form-field subscriptSizing="dynamic">
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" [type]="showPass() ? 'text' : 'password'">
               <mat-icon matPrefix>lock</mat-icon>
@@ -151,7 +151,7 @@ import { ToastService } from '../../../core/services/toast.service';
       p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
     
-    mat-form-field { margin-bottom: 24px; width: 100%; }
+    mat-form-field { margin-bottom: 2px; width: 100%; transform: scale(0.98); transform-origin: top left; }
     
     ::ng-deep {
       .mat-mdc-form-field-error {
@@ -239,7 +239,7 @@ export class RegisterComponent implements OnInit {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
     department: [''],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });

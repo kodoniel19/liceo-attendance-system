@@ -56,7 +56,9 @@ exports.loginValidation = [
 
 exports.registerValidation = [
   body('universityId').notEmpty().trim().withMessage('University ID required'),
-  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('email').isEmail().normalizeEmail()
+    .custom(val => val.endsWith('@liceo.edu.ph'))
+    .withMessage('Use liceo.edu.ph email only'),
   body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('firstName').notEmpty().trim().withMessage('First name required'),
   body('lastName').notEmpty().trim().withMessage('Last name required')
@@ -226,6 +228,10 @@ exports.googleLogin = async (req, res, next) => {
     }
     if (!payload.email || !payload.email_verified) {
       return res.status(401).json({ success: false, message: 'Email not verified by Google' });
+    }
+
+    if (!payload.email.endsWith('@liceo.edu.ph')) {
+      return res.status(403).json({ success: false, message: 'Use liceo.edu.ph email only' });
     }
 
     const email = payload.email;
