@@ -146,7 +146,7 @@ import { ToastService } from '../../../core/services/toast.service';
     .auth-header p { font-size: 0.75rem !important; margin: 0 0 8px !important; color: var(--color-text-muted); }
     
     .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: flex-start; }
-    .auth-submit-btn { width: 100%; height: 42px; font-size: 0.95rem !important; margin-top: 2px; color: white !important; font-weight: 800 !important; }
+    .auth-submit-btn { width: 100%; height: 42px; font-size: 0.9rem !important; margin-top: 2px; }
     
     .google-banner {
       display: flex; align-items: center; gap: 8px; padding: 6px 12px;
@@ -179,23 +179,25 @@ import { ToastService } from '../../../core/services/toast.service';
     }
     
     @media (max-width: 900px) { 
-      .register-grid { grid-template-columns: 1fr; gap: 0px; } 
-      .auth-header h2 { font-size: 1rem !important; }
-      .auth-header p { font-size: 0.6rem !important; margin-bottom: 0px !important; }
-      .auth-badge { margin-bottom: 2px; }
-      mat-form-field { margin-bottom: 0px; }
-      ::ng-deep .mat-mdc-text-field-wrapper { min-height: 48px !important; padding-top: 0 !important; }
-      .auth-submit-btn { height: 36px; font-size: 0.8rem !important; }
+      .register-grid { grid-template-columns: 1fr; gap: 4px; } 
+      .auth-header h2 { font-size: 1.1rem !important; }
+      .auth-header p { font-size: 0.65rem !important; margin-bottom: 2px !important; }
+      .auth-badge { margin-bottom: 4px; }
+      mat-form-field { margin-bottom: 2px; }
+      .auth-submit-btn { height: 38px; margin-top: 2px; }
     }
 
-    /* Hard-disable scroll */
+    /* Prevent scrolling if possible and hide scrollbar */
     ::ng-deep .auth-page__right {
-      overflow: hidden !important;
+      scrollbar-width: none;
+      &::-webkit-scrollbar { display: none; }
+      overflow-y: auto !important;
     }
     
-    @media (max-height: 750px) {
-       ::ng-deep .mobile-branding-header { display: none; }
-       ::ng-deep .auth-header { margin-bottom: 4px; }
+    @media (max-height: 700px) {
+       ::ng-deep .mobile-branding-header { margin-bottom: 8px; }
+       ::ng-deep .mobile-logo { width: 40px; }
+       ::ng-deep .auth-header h2 { font-size: 1rem !important; }
     }
   `]
 })

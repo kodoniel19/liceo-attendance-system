@@ -153,10 +153,8 @@ a:hover { color: var(--color-primary-dark); }
 
 .mat-mdc-raised-button.mat-primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%) !important;
-  color: white !important; /* Ensure text is visible */
   box-shadow: 0 4px 15px rgba(139,26,26,0.4) !important;
   &:hover { box-shadow: 0 6px 20px rgba(139,26,26,0.5) !important; transform: translateY(-1px); }
-  &:disabled { background: #ccc !important; color: #666 !important; box-shadow: none !important; }
 }
 
 .mat-mdc-form-field {
@@ -481,9 +479,8 @@ a:hover { color: var(--color-primary-dark); }
 
     @media (max-width: 900px) { 
         width: 100%; 
-        padding: 24px 20px;
-        justify-content: flex-start;
-        overflow: hidden !important; /* Hard-disable scroll */
+        padding: 24px 20px 60px; /* Added bottom padding for better clearance */
+        justify-content: flex-start; /* Ensure scrolling starts from top on mobile */
     }
   }
 }

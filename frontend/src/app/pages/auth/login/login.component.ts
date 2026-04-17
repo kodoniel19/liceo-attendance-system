@@ -120,8 +120,8 @@ declare var google: any;
     .auth-form { display: flex; flex-direction: column; gap: 8px; }
     .auth-row { display: flex; justify-content: flex-end; margin-top: -4px; }
     .auth-link { font-size: 0.8rem; color: var(--color-primary); font-weight: 500; }
-    .auth-submit-btn { height: 50px; font-size: 1.1rem !important; margin-top: 8px; width: 100%; color: white !important; font-weight: 800 !important; }
-    .auth-register-btn { width: 100%; height: 46px; display: flex; align-items: center; justify-content: center; font-weight: 700 !important; }
+    .auth-submit-btn { height: 50px; font-size: 1rem !important; margin-top: 8px; width: 100%; }
+    .auth-register-btn { width: 100%; height: 46px; display: flex; align-items: center; justify-content: center; }
     .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; color: #aaa; font-size: 0.8rem;
       &::before, &::after { content: ''; flex: 1; height: 1px; background: var(--color-border); } }
 
@@ -152,21 +152,18 @@ declare var google: any;
     }
 
     @media (max-width: 900px) {
-      .auth-header h2 { font-size: 1.3rem; }
-      .auth-header p { font-size: 0.7rem; margin-bottom: 8px; }
-      .auth-badge { padding: 2px 8px; font-size: 0.6rem; margin-bottom: 2px; }
-      .auth-form { gap: 0px; }
-      mat-form-field { margin-bottom: 0px; }
-      .auth-submit-btn { height: 40px; font-size: 0.9rem !important; }
-      .google-btn-wrapper { height: 36px; margin-bottom: 0px; }
-      .auth-divider { margin: 4px 0 0px; font-size: 0.7rem; }
-      .auth-register-btn { height: 40px; font-size: 0.8rem !important; }
+      .auth-header h2 { font-size: 1.5rem; }
+      .auth-header p { font-size: 0.75rem; margin-bottom: 12px; }
+      .auth-badge { padding: 2px 10px; font-size: 0.6rem; margin-bottom: 4px; }
+      .auth-form { gap: 2px; }
+      mat-form-field { margin-bottom: 4px; }
+      .auth-submit-btn { height: 44px; }
+      .google-btn-wrapper { height: 40px; margin-bottom: 2px; }
+      .auth-divider { margin: 8px 0 2px; }
     }
     
-    ::ng-deep .auth-page__right { overflow: hidden !important; }
-    
-    @media (max-height: 650px) {
-      ::ng-deep .mobile-branding-header { transform: scale(0.8); margin-bottom: 0; }
+    @media (max-height: 600px) {
+      ::ng-deep .mobile-branding-header { display: none; }
     }
   `]
 })
