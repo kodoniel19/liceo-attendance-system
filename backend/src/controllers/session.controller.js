@@ -11,7 +11,7 @@ exports.getSessions = async (req, res, next) => {
              co.course_code as courseCode, co.course_name as courseName,
              u.first_name as instructorFirst, u.last_name as instructorLast,
              (SELECT COUNT(*) FROM attendance a WHERE a.class_session_id = cs.id AND a.status != 'absent') as presentCount,
-             (SELECT COUNT(*) FROM enrollments e WHERE e.class_section_id = cs.class_section_id AND e.status = 'active') as enrolledCount,
+             (SELECT COUNT(*) FROM enrollments e WHERE e.class_section_id = cs.class_section_id AND e.status IN ('active', 'pending')) as enrolledCount,
              (SELECT JSON_OBJECT('id', id, 'qrDataUrl', qr_data_url, 'expiresAt', expires_at, 'isActive', is_active) 
               FROM qr_sessions qrs 
               WHERE qrs.class_session_id = cs.id 

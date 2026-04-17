@@ -91,7 +91,7 @@ import { ClassSession } from '../../../core/models';
               <span class="session-stat__label">Enrolled</span>
             </div>
             <div class="session-stat">
-              <span class="session-stat__value" style="color:var(--color-error)">{{ (s.enrolledCount || 0) - (s.presentCount || 0) }}</span>
+              <span class="session-stat__value" style="color:var(--color-error)">{{ Math.max(0, (s.enrolledCount || 0) - (s.presentCount || 0)) }}</span>
               <span class="session-stat__label">Absent</span>
             </div>
           </div>
@@ -183,6 +183,7 @@ export class InstructorDashboardComponent implements OnInit {
   api = inject(ApiService);
   auth = inject(AuthService);
   toast = inject(ToastService);
+  protected Math = Math;
 
   stats = signal<any>(null);
   activeSessions = signal<ClassSession[]>([]);
