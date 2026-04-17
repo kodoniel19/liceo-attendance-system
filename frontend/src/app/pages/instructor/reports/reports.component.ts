@@ -89,6 +89,10 @@ import { ClassSection } from '../../../core/models';
               <th mat-header-cell *matHeaderCellDef>Absent</th>
               <td mat-cell *matCellDef="let s"><span style="color:var(--color-error);font-weight:700">{{ s.absentCount }}</span></td>
             </ng-container>
+            <ng-container matColumnDef="excused">
+              <th mat-header-cell *matHeaderCellDef>Excused</th>
+              <td mat-cell *matCellDef="let s"><span style="color:var(--color-primary);font-weight:700">{{ s.excusedCount }}</span></td>
+            </ng-container>
             <ng-container matColumnDef="rate">
               <th mat-header-cell *matHeaderCellDef>Rate</th>
               <td mat-cell *matCellDef="let s">
@@ -138,7 +142,7 @@ export class ReportsComponent implements OnInit {
   sectionStats = signal<any[]>([]);
   loading = signal(false);
 
-  statColumns = ['student', 'present', 'late', 'absent', 'rate'];
+  statColumns = ['student', 'present', 'late', 'absent', 'excused', 'rate'];
 
   filterForm = this.fb.group({
     sectionId: [null],
