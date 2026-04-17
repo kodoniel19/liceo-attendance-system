@@ -87,9 +87,10 @@ import { ToastService } from '../../../core/services/toast.service';
               <input matInput formControlName="email" type="email" placeholder="you@example.com" [readonly]="isGoogleSignUp()">
               <mat-icon matPrefix>email</mat-icon>
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
-              <mat-error *ngIf="form.get('email')?.hasError('required')">Required</mat-error>
-              <mat-error *ngIf="form.get('email')?.invalid && (form.get('email')?.dirty || form.get('email')?.touched)">
-                {{ form.get('email')?.hasError('pattern') ? 'Use liceo.edu.ph email only' : 'Enter a valid email' }}
+              <mat-error *ngIf="form.get('email')?.errors && (form.get('email')?.dirty || form.get('email')?.touched)">
+                <span *ngIf="form.get('email')?.hasError('required')">Required</span>
+                <span *ngIf="!form.get('email')?.hasError('required') && form.get('email')?.hasError('pattern')">Use liceo.edu.ph email only</span>
+                <span *ngIf="!form.get('email')?.hasError('required') && !form.get('email')?.hasError('pattern') && form.get('email')?.hasError('email')">Enter a valid email</span>
               </mat-error>
             </mat-form-field>
 
@@ -153,13 +154,13 @@ import { ToastService } from '../../../core/services/toast.service';
       p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
     
-    mat-form-field { margin-bottom: 12px; width: 100%; }
+    mat-form-field { margin-bottom: 18px; width: 100%; }
     
     ::ng-deep {
       .mat-mdc-form-field-error {
         margin-top: 2px !important;
         display: block !important;
-        font-size: 0.65rem !important;
+        font-size: 0.75rem !important;
         font-weight: 500 !important;
       }
 
