@@ -357,13 +357,18 @@ export class InstructorLayoutComponent implements OnInit, OnDestroy {
   }
 
   onRouteActivate(): void {
-    if (this.mainContent?.nativeElement) {
-      this.mainContent.nativeElement.scrollTop = 0;
-    }
-    const scrollContainer = document.querySelector('.main-content');
-    if (scrollContainer) {
-      scrollContainer.scrollTop = 0;
-    }
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.body.scrollTo(0, 0);
+      document.documentElement.scrollTo(0, 0);
+
+      const matContent = document.querySelector('mat-sidenav-content');
+      if (matContent) matContent.scrollTop = 0;
+
+      if (this.mainContent?.nativeElement) {
+        this.mainContent.nativeElement.scrollTop = 0;
+      }
+    }, 100);
   }
 
   confirmLogout(): void {

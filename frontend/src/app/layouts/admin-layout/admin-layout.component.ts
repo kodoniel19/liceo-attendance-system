@@ -320,13 +320,18 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   onRouteActivate(): void {
-    if (this.adminContent?.nativeElement) {
-      this.adminContent.nativeElement.scrollTop = 0;
-    }
-    const scrollContainer = document.querySelector('.admin-content');
-    if (scrollContainer) {
-      scrollContainer.scrollTop = 0;
-    }
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.body.scrollTo(0, 0);
+      document.documentElement.scrollTo(0, 0);
+
+      const mainEl = document.querySelector('.admin-content');
+      if (mainEl) mainEl.scrollTop = 0;
+
+      if (this.adminContent?.nativeElement) {
+        this.adminContent.nativeElement.scrollTop = 0;
+      }
+    }, 100);
   }
 
   toggleSidebar(): void { this.sidebarCollapsed.update(v => !v); }

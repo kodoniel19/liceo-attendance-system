@@ -487,14 +487,20 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
   }
 
   onRouteActivate(): void {
-    if (this.mainContent?.nativeElement) {
-      this.mainContent.nativeElement.scrollTop = 0;
-    }
-    // Also scroll the parentsidenav-content if it's the one actually scrolling
-    const scrollContainer = document.querySelector('.main-content');
-    if (scrollContainer) {
-      scrollContainer.scrollTop = 0;
-    }
+    // Shotgun approach for mobile: reset everything with a small delay to beat the rendering lifecycle
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.body.scrollTo(0, 0);
+      document.documentElement.scrollTo(0, 0);
+
+      // Target the Material container specifically
+      const matContent = document.querySelector('mat-sidenav-content');
+      if (matContent) matContent.scrollTop = 0;
+
+      if (this.mainContent?.nativeElement) {
+        this.mainContent.nativeElement.scrollTop = 0;
+      }
+    }, 100);
   }
 
   confirmLogout(): void {
