@@ -240,14 +240,15 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     .course-divider__code {
       font-size: 0.85rem; font-weight: 800; color: var(--color-primary);
       text-transform: uppercase; white-space: nowrap;
-      background: rgba(139, 26, 26, 0.1); padding: 4px 12px; border-radius: 20px;
+      background: rgba(139, 26, 26, 0.08); padding: 6px 14px; border-radius: 12px;
+      border: 1px solid rgba(139, 26, 26, 0.1);
     }
     .course-divider__name {
-      font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);
+      font-size: 0.9rem; font-weight: 700; color: #444;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .course-divider__line {
-      flex: 1; height: 1px; background: linear-gradient(to right, var(--color-border), transparent);
+      flex: 1; height: 1px; background: linear-gradient(to right, rgba(139, 26, 26, 0.2), transparent);
     }
 
     .filter-area {
@@ -256,13 +257,37 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     }
     .course-filter {
       width: 100%; max-width: 400px;
-      ::ng-deep .mat-mdc-text-field-wrapper { background: white; border-radius: 12px; }
+      ::ng-deep .mat-mdc-text-field-wrapper { 
+        background: white; border-radius: 16px !important; 
+        transition: all 0.3s ease;
+      }
+      &:hover ::ng-deep .mat-mdc-text-field-wrapper {
+        background: #fffafa; box-shadow: 0 4px 12px rgba(139, 26, 26, 0.1);
+      }
+    }
+
+    /* Liceo Themed Dropdown Items */
+    ::ng-deep .mat-mdc-option:hover { background-color: rgba(139, 26, 26, 0.05) !important; }
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background-color: rgba(139, 26, 26, 0.1) !important;
+      .mdc-list-item__primary-text { color: var(--color-primary); font-weight: 700; }
     }
     .session-item {
-      background: white; border-radius: var(--radius-lg);
-      padding: 20px; box-shadow: var(--shadow-md);
-      border: 1px solid var(--color-border);
-      &.is-active { border-color: var(--color-primary); border-width: 2px; }
+      background: white; border-radius: 20px;
+      padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+      border: 1px solid rgba(139, 26, 26, 0.08);
+      transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      
+      &:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(139, 26, 26, 0.08); border-color: rgba(139, 26, 26, 0.2); }
+      &.is-active { 
+        border: 2px solid var(--color-primary); 
+        background: linear-gradient(to bottom, #fff, #fffafa);
+        &::after {
+          content: '● Active Now'; position: absolute; top: 12px; right: 12px;
+          color: var(--color-success); font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+        }
+      }
     }
     .session-item__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
     .session-item__meta { font-size: 0.72rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
