@@ -952,7 +952,12 @@ export class SectionsComponent implements OnInit {
       next: () => {
         this.toast.success(`${s.first_name || s.firstName} enrolled!`);
         this.loadEnrolled(sec.id);
-        this.loadSections();
+        
+        // Seamlessly update background count without a full reload spinner
+        this.rawSections.update(list => 
+          list.map(x => x.id === sec.id ? { ...x, enrolledCount: (x.enrolledCount || 0) + 1 } : x)
+        );
+
         this.api.triggerRefresh('sections');
         // Refresh available students list
         this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
@@ -969,8 +974,15 @@ export class SectionsComponent implements OnInit {
       next: () => {
         this.toast.success(`${s.first_name || s.firstName} ${s.last_name || s.lastName} removed.`);
         this.loadEnrolled(sec.id);
-        this.loadSections();
+        
+        // Seamlessly update background count without a full reload spinner
+        this.rawSections.update(list => 
+          list.map(x => x.id === sec.id ? { ...x, enrolledCount: Math.max(0, (x.enrolledCount || 0) - 1) } : x)
+        );
+
         this.api.triggerRefresh('sections');
+        // Refresh available students list so removed student can be found again
+        this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
       },
       error: e => this.toast.error(e?.error?.message || 'Failed to remove student.')
     });
