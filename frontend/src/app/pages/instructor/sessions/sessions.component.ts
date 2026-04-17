@@ -49,7 +49,7 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
           [class.active]="selectedFilter() === sec.id"
           (click)="selectedFilter.set(sec.id)"
         >
-          {{ sec.courseCode }} — {{ sec.sectionName }}
+          {{ sec.courseName }} — {{ sec.sectionName }}
         </button>
       </div>
 
