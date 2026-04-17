@@ -30,8 +30,8 @@ import { ApiService } from '../../../core/services/api.service';
           <mat-select [value]="selectedFilter()" (selectionChange)="selectedFilter.set($event.value)" placeholder="Filter by Source">
             <mat-option [value]="'all'">All Notifications</mat-option>
             <mat-option [value]="'admin'">Admin/System</mat-option>
-            <mat-option *ngFor="let course of uniqueCourses()" [value]="course">
-              {{ course }}
+            <mat-option *ngFor="let course of uniqueCourses()" [value]="course.code">
+              {{ course.label }}
             </mat-option>
           </mat-select>
           <mat-icon matPrefix>filter_list</mat-icon>
@@ -142,10 +142,19 @@ export class NotificationsComponent implements OnInit {
   selectedFilter = signal<string>('all');
 
   uniqueCourses = computed(() => {
-    const courses = this.notifications()
+    const items = this.notifications()
       .filter(n => !n.isGlobal && n.courseCode)
-      .map(n => n.courseCode);
-    return Array.from(new Set(courses)).sort();
+      .map(n => ({
+        code: n.courseCode,
+        label: `${n.courseCode} — ${n.instructorLast || 'Instructor'}`
+      }));
+    
+    // Get unique entries based on courseCode
+    const unique = Array.from(
+      new Map(items.map(item => [item['code'], item])).values()
+    );
+    
+    return unique.sort((a,b) => a.code.localeCompare(b.code));
   });
 
   filteredNotifications = computed(() => {
