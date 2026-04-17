@@ -163,7 +163,6 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
         <div class="empty-state animate-fade-in-up" *ngIf="groupedSessions().length === 0">
           <div class="empty-state__icon">📭</div>
           <h3>{{ selectedFilter() ? 'No sessions found for this course' : 'No sessions yet' }}</h3>
-          <p>{{ selectedFilter() ? 'Try selecting a different filter or generate a new session.' : 'Create your first session to start taking attendance.' }}</p>
           <button mat-button color="primary" *ngIf="selectedFilter()" (click)="selectedFilter.set(null)">
             Show All Sessions
           </button>
@@ -253,9 +252,8 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     }
 
     .filter-bar {
-      display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto;
-      padding: 4px 0 12px; scrollbar-width: none;
-      &::-webkit-scrollbar { display: none; }
+      display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+      padding: 4px 0 12px;
     }
     .filter-chip {
       white-space: nowrap; padding: 8px 16px; border-radius: 100px;
