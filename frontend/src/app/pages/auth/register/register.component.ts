@@ -151,7 +151,7 @@ import { ToastService } from '../../../core/services/toast.service';
       p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
     
-    mat-form-field { margin-bottom: 2px; width: 100%; transform: scale(0.98); transform-origin: top left; }
+    mat-form-field { margin-bottom: 12px; width: 100%; }
     
     ::ng-deep {
       .mat-mdc-form-field-error {
