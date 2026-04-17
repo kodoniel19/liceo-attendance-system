@@ -115,7 +115,8 @@ import { ClassSession } from '../../../core/models';
     </div>
   `,
   styles: [`
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .page-container { padding: 16px 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
     .stat-card {
       background: white !important; border-radius: 20px !important; padding: 24px !important;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
@@ -135,14 +136,14 @@ import { ClassSession } from '../../../core/models';
       box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
     }
     
-    .card-icon { font-size: 32px; margin-bottom: 12px; height: 40px; display: flex; align-items: center; justify-content: center; }
-    .card-value { font-size: 2.75rem !important; font-weight: 800 !important; color: #1a1a2e !important; line-height: 1 !important; margin-bottom: 4px !important; }
-    .card-label { font-size: 0.7rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
+    .card-icon { font-size: 28px; margin-bottom: 8px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .card-value { font-size: 2.25rem !important; font-weight: 800 !important; color: #1a1a2e !important; line-height: 1 !important; margin-bottom: 2px !important; }
+    .card-label { font-size: 0.65rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
     
     .card-footer { 
-      margin-top: 16px; padding-top: 12px; border-top: 1px solid #f8fafc; width: 100%; 
-      display: flex; flex-direction: column; align-items: center; gap: 4px; 
-      font-size: 0.72rem !important; font-weight: 600 !important; color: #94a3b8 !important; 
+      margin-top: 10px; padding-top: 8px; border-top: 1px solid #f8fafc; width: 100%; 
+      display: flex; flex-direction: column; align-items: center; gap: 2px; 
+      font-size: 0.68rem !important; font-weight: 600 !important; color: #94a3b8 !important; 
     }
     .status--active { color: #10b981 !important; font-weight: 700 !important; }
 
@@ -161,6 +162,8 @@ import { ClassSession } from '../../../core/models';
     .session-stat__value { display: block; font-size: 1.5rem; font-weight: 800; }
     .session-stat__label { font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
     .session-card__footer { display: flex; justify-content: flex-end; }
+    
+    .empty-state { padding: 32px 20px; }
     
     .btn-premium {
       background: linear-gradient(135deg, #8B1A1A 0%, #B91C1C 100%) !important;
