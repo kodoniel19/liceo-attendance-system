@@ -215,19 +215,19 @@ import { ApiService } from '../../../core/services/api.service';
     .modal-overlay { 
       position: fixed; inset: 0; 
       background: rgba(15, 23, 42, 0.4); 
-      display: flex; justify-content: center; align-items: flex-start; 
-      z-index: 2000; padding: 60px 24px; 
+      z-index: 2000; 
       backdrop-filter: blur(12px); 
       overflow-y: auto;
+      padding: 20px;
     }
     .history-modal { 
-      background: white; border-radius: 32px; width: 92%; max-width: 680px; 
-      max-height: none; min-height: 200px;
-      margin-bottom: 60px;
+      background: white; border-radius: 24px; width: 100%; max-width: 680px; 
+      margin: 40px auto;
       display: flex; flex-direction: column; 
-      box-shadow: 0 50px 100px -20px rgba(0,0,0,0.25); 
+      box-shadow: 0 40px 80px -15px rgba(0,0,0,0.3); 
       overflow: hidden; border: none;
       animation: modalPopSoft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
     }
     @keyframes modalPopSoft {
       from { transform: scale(0.96) translateY(20px); opacity: 0; }
@@ -235,13 +235,13 @@ import { ApiService } from '../../../core/services/api.service';
     }
     
     .modal-header { 
-      padding: 24px 32px; border-bottom: 1px solid #f1f5f9; 
+      padding: 16px 24px; border-bottom: 1px solid #f1f5f9; 
       display: flex; justify-content: space-between; align-items: center; 
       background: #ffffff; flex-shrink: 0;
     }
-    .header-content { display: flex; align-items: center; gap: 24px; }
+    .header-content { display: flex; align-items: center; gap: 16px; }
     
-    .avatar-large { width: 80px; height: 80px; border-radius: 20px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(139, 26, 26, 0.4); flex-shrink: 0; }
+    .avatar-large { width: 64px; height: 64px; border-radius: 16px; background: #8b1a1a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; box-shadow: 0 8px 20px -4px rgba(139, 26, 26, 0.3); flex-shrink: 0; }
     
     .profile-details h3 { font-size: 1.5rem; font-weight: 950; color: #0f172a; margin: 0 0 4px; letter-spacing: -1px; line-height: 1.2; }
     .university-pill { display: inline-flex; padding: 4px 12px; background: #f1f5f9; border-radius: 8px; font-size: 0.8rem; font-weight: 800; color: #64748b; font-family: monospace; border: 1px solid #e2e8f0; margin-bottom: 8px; }
@@ -278,10 +278,10 @@ import { ApiService } from '../../../core/services/api.service';
     .cell-remarks { max-width: 200px; }
     .remark-text { font-size: 0.8rem; color: #64748b; line-height: 1.5; font-style: italic; }
 
-    .empty-notif { padding: 80px 40px; text-align: center; }
-    .empty-illu { font-size: 3rem; margin-bottom: 20px; opacity: 0.5; }
-    .empty-notif h4 { font-size: 1.25rem; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
-    .empty-notif p { color: #64748b; font-size: 0.9rem; }
+    .empty-notif { padding: 60px 24px; text-align: center; min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .empty-illu { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+    .empty-notif h4 { font-size: 1.25rem; font-weight: 800; color: #1e293b; margin: 0 0 8px; }
+    .empty-notif p { color: #64748b; font-size: 0.9rem; margin: 0; }
 
     .modal-footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; }
     .close-btn { color: #94a3b8; }
