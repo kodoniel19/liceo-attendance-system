@@ -114,17 +114,25 @@ import { Attendance } from '../../../core/models';
   `,
   styles: [`
     .history-filter { margin-bottom: 24px; display: flex; gap: 12px; }
-    .filters-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .filters-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
     .filter-field { 
-      flex: 1; min-width: 140px;
+      flex: 1; min-width: 130px;
       margin: 0;
-      ::ng-deep .mat-mdc-text-field-wrapper { background: white !important; border-radius: 12px !important; height: 44px !important; display: flex; align-items: center; border: 1px solid var(--color-primary); }
-      ::ng-deep .mdc-notched-outline__leading,
-      ::ng-deep .mdc-notched-outline__notch,
-      ::ng-deep .mdc-notched-outline__trailing { display: none !important; }
-      ::ng-deep .mat-mdc-select-value { font-size: 0.8rem; font-weight: 600; color: #444; }
-      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 18px; width: 18px; height: 18px; margin-right: 4px; }
-      ::ng-deep .mat-mdc-form-field-infix { padding-top: 0 !important; border-top: 0 !important; }
+      ::ng-deep .mat-mdc-text-field-wrapper { 
+        background: white !important; 
+        border: 1px solid var(--color-primary) !important; 
+        border-radius: 12px !important; 
+        height: 42px !important; 
+        display: flex; 
+        align-items: center; 
+        padding: 0 10px !important;
+      }
+      ::ng-deep .mdc-notched-outline { display: none !important; }
+      ::ng-deep .mat-mdc-select-value { font-size: 0.8rem; font-weight: 700; color: #444; }
+      ::ng-deep .mat-icon { color: var(--color-primary); font-size: 16px; width: 16px; height: 16px; margin-right: 4px; }
+      ::ng-deep .mat-mdc-form-field-infix { padding: 0 !important; border: none !important; min-height: 0 !important; width: auto !important; }
+      ::ng-deep .mat-mdc-form-field-label-wrapper { display: none !important; }
+      ::ng-deep .mat-mdc-select-arrow svg { color: var(--color-primary) !important; }
     }
 
     /* Premium Overlay Styling */
