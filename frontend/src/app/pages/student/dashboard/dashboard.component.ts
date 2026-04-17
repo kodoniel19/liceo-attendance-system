@@ -312,10 +312,15 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   getFormattedSchedule(s: any): string[] {
     try {
-      const dayData = (s.scheduleDay || '').trim();
-      if (!dayData || dayData === 'TBA') return ['TBA'];
+      // 1. Try all possible database key variations
+      const rawData = s.scheduleDay || s.schedule_day || s.scheduledDay || '';
+      const dayData = (rawData || '').trim();
       
-      // If it looks like JSON anywhere in the string
+      if (!dayData || dayData === 'TBA') {
+        return ['TBA'];
+      }
+      
+      // 2. JSON Parser (Multi-day)
       if (dayData.includes('[')) {
         const jsonStart = dayData.indexOf('[');
         const jsonEnd = dayData.lastIndexOf(']');
@@ -333,33 +338,36 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
                 hour = hour % 12 || 12;
                 return `${hour}:${parts[1]} ${ampm}`;
               };
-              return `${item.day ? item.day.slice(0,3) : '?'} ${formatTime(item.start)} - ${formatTime(item.end)}`;
+              const dayLabel = item.day ? (item.day.length > 3 ? item.day.slice(0,3) : item.day) : '?';
+              return `${dayLabel} ${formatTime(item.start)} - ${formatTime(item.end)}`;
             });
           }
         }
       }
+      
+      // 3. Legacy Fallback (Plain string)
+      const formatLegacyTime = (t: string) => {
+        if (!t) return '';
+        const parts = t.split(':');
+        if (parts.length < 2) return t;
+        let h = parseInt(parts[0], 10);
+        const m = parts[1];
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${h}:${m} ${ampm}`;
+      };
+
+      if (s.scheduleTimeStart || s.schedule_time_start) {
+         const tStart = s.scheduleTimeStart || s.schedule_time_start;
+         const tEnd = s.scheduleTimeEnd || s.schedule_time_end;
+         return [`${dayData} ${formatLegacyTime(tStart)} - ${formatLegacyTime(tEnd)}`];
+      }
+      
+      return [dayData];
     } catch (e) {
-      console.error('Schedule parse error for:', s.courseCode, e);
+      console.error('Formatter error for:', s.courseCode, e);
+      return ['TBA'];
     }
-    
-    // Legacy fallback
-    const days = s.scheduleDay || 'TBA';
-    const formatLegacyTime = (t: string) => {
-      if (!t) return '';
-      const parts = t.split(':');
-      if (parts.length < 2) return t;
-      let h = parseInt(parts[0], 10);
-      const m = parts[1];
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      return `${h}:${m} ${ampm}`;
-    };
-    
-    if (s.scheduleTimeStart) {
-       return [`${days} ${formatLegacyTime(s.scheduleTimeStart)} - ${formatLegacyTime(s.scheduleTimeEnd)}`];
-    }
-    
-    return [days];
   }
 
   hasChartData(): boolean {

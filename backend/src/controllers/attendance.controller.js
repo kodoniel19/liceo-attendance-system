@@ -78,6 +78,7 @@ exports.getMyAttendanceSummary = async (req, res, next) => {
       WHERE e.student_id = ? AND e.status = 'active' AND cl.is_active = TRUE
       GROUP BY cl.id, co.id, u.id, cl.schedule_day, cl.schedule_time_start, cl.schedule_time_end, cl.room
     `, [studentId]);
+    console.log(`[BACKEND DEBUG] Attendance Summary for Student ${studentId}:`, JSON.stringify(summary, null, 2));
 
     res.json({ success: true, data: summary });
   } catch (err) {
