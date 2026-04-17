@@ -179,7 +179,11 @@ import { ToastService } from '../../../core/services/toast.service';
     }
     
     @media (max-width: 480px) { 
-      .register-grid { grid-template-columns: 1fr; } 
+      .register-grid { grid-template-columns: 1fr; gap: 4px; } 
+      .auth-header h2 { font-size: 1.2rem !important; }
+      .auth-header p { font-size: 0.7rem !important; margin-bottom: 4px !important; }
+      mat-form-field { margin-bottom: 4px; }
+      .auth-submit-btn { height: 40px; margin-top: 4px; }
     }
   `]
 })
