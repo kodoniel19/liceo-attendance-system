@@ -45,7 +45,6 @@ import { ApiService } from '../../../core/services/api.service';
                     <th>Average Rate</th>
                     <th>Subjects Enrolled</th>
                     <th>Risk Level</th>
-                    <th>Actions</th>
                  </tr>
               </thead>
               <tbody>
@@ -77,11 +76,6 @@ import { ApiService } from '../../../core/services/api.service';
                           {{ s.overallRate < 50 ? 'Critical' : 'Moderate' }} Risk
                        </span>
                     </td>
-                    <td>
-                       <button mat-flat-button class="view-btn" (click)="viewRecord(s)">
-                          View Record
-                       </button>
-                    </td>
                  </tr>
               </tbody>
            </table>
@@ -91,82 +85,6 @@ import { ApiService } from '../../../core/services/api.service';
            <div class="empty-icon">🛡️</div>
            <h3>No Students At Risk</h3>
            <p>All students are maintaining attendance above institutional thresholds.</p>
-        </div>
-      </div>
-
-      <!-- History Modal -->
-      <div class="modal-overlay" *ngIf="showHistoryModal()" 
-           style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; backdrop-filter: blur(12px); overflow: auto;">
-        
-        <div class="history-modal animate-fade-in-up" 
-             style="background: white; border-radius: 28px; width: 100%; max-width: 680px; min-height: 520px; display: flex; flex-direction: column; box-shadow: 0 40px 120px -20px rgba(0,0,0,0.4); overflow: hidden; border: none; position: relative; flex-shrink: 0;">
-           
-           <div class="modal-header" style="flex-shrink: 0;">
-             <div class="header-content">
-               <div class="avatar-large">{{ selectedStudent()?.lastName?.[0] || '?' }}{{ selectedStudent()?.firstName?.[0] || '' }}</div>
-               <div class="profile-details">
-                 <div class="university-pill">{{ selectedStudent()?.universityId || 'ID UNKNOWN' }}</div>
-                 <h3>{{ selectedStudent()?.firstName }} {{ selectedStudent()?.lastName }}</h3>
-                 <span class="attendance-avg-badge">
-                   <mat-icon style="font-size: 16px; width: 16px; height: 16px;">analytics</mat-icon>
-                   Overall: {{ selectedStudent()?.overallRate | number:'1.0-1' }}%
-                 </span>
-               </div>
-             </div>
-             <button mat-icon-button (click)="closeHistoryModal()" class="close-btn" title="Close" style="color: #94a3b8;">
-               <mat-icon>close</mat-icon>
-             </button>
-           </div>
-           
-           <div class="modal-body" style="flex: 1; overflow-y: auto;">
-              <div *ngIf="historyLoading()" class="loading-state-modal">
-                <mat-spinner diameter="40"></mat-spinner>
-                <p>Retrieving academic records...</p>
-              </div>
-              
-              <div *ngIf="!historyLoading() && attendanceHistory().length > 0" class="history-list-container">
-                <div class="history-table-wrapper">
-                  <table class="history-premium-table">
-                    <thead>
-                      <tr>
-                        <th>Date & Time</th>
-                        <th>Subject & Section</th>
-                        <th>Status</th>
-                        <th>Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let record of attendanceHistory()">
-                        <td class="cell-date">
-                          <div class="date-primary">{{ record.sessionDate | date:'MMM dd, yyyy' }}</div>
-                          <div class="date-secondary">{{ record.sessionDate | date:'shortTime' }}</div>
-                        </td>
-                        <td class="cell-subject">
-                          <div class="subject-name">{{ record.courseName }}</div>
-                          <div class="subject-meta">{{ record.courseCode }} • {{ record.sectionName }}</div>
-                        </td>
-                        <td class="cell-status">
-                          <span class="status-chip" [ngClass]="record.status">{{ record.status }}</span>
-                        </td>
-                        <td class="cell-remarks">
-                          <span class="remark-text">{{ record.remarks || 'No remarks recorded' }}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="empty-notif" *ngIf="!historyLoading() && attendanceHistory().length === 0">
-                 <div class="empty-illu">📋</div>
-                 <h4>Zero Records Found</h4>
-                 <p>This student hasn't logged any attendance sessions yet.</p>
-              </div>
-           </div>
-           
-           <div class="modal-footer" style="flex-shrink: 0;">
-             <button mat-button (click)="closeHistoryModal()">Dismiss</button>
-           </div>
         </div>
       </div>
     </div>
