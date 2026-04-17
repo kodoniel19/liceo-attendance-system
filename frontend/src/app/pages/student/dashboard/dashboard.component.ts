@@ -119,7 +119,9 @@ Chart.register(...registerables);
             <div class="course-card__info">
               <div class="info-item">
                 <mat-icon>calendar_today</mat-icon>
-                <span class="info-text">{{ $any(s).schedule || 'TBA' }}</span>
+                <div class="schedule-lines">
+                  <div *ngFor="let line of getFormattedSchedule(s)">{{ line }}</div>
+                </div>
               </div>
               <div class="info-item">
                 <mat-icon>location_on</mat-icon>
@@ -208,8 +210,10 @@ Chart.register(...registerables);
        display: flex; flex-direction: column; gap: 6px;
     }
     .info-item { display: flex; align-items: flex-start; gap: 6px; color: #64748b; }
-    .info-item mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--color-primary); margin-top: 1px; }
+    .info-item mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--color-primary); margin-top: 2px; }
     .info-text { font-size: 0.75rem; font-weight: 600; line-height: 1.3; white-space: pre-line; }
+    .schedule-lines { display: flex; flex-direction: column; gap: 2px; }
+    .schedule-lines div { font-size: 0.75rem; font-weight: 600; color: #64748b; line-height: 1.3; }
 
     .invitations-section { margin-top: 24px; }
     .invitation-card {
@@ -239,7 +243,7 @@ Chart.register(...registerables);
       .course-card__name { font-size: 0.85rem !important; line-height: 1.2; }
       .course-card__code { font-size: 0.65rem !important; }
       .mini-stat { font-size: 0.7rem !important; padding: 2px 8px !important; }
-      .info-text { font-size: 0.7rem !important; }
+      .info-text, .schedule-lines div { font-size: 0.7rem !important; }
     }
   `]
 })
@@ -300,6 +304,52 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         this.invitations.set(all.filter(e => e.enrollmentStatus === 'pending'));
       }
     });
+  }
+
+  getFormattedSchedule(s: any): string[] {
+    try {
+      const dayData = s.scheduleDay || '';
+      if (!dayData) return ['TBA'];
+      
+      // If it looks like JSON
+      if (dayData.startsWith('[')) {
+        const parsed = JSON.parse(dayData);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(item => {
+            const formatTime = (t: string) => {
+              if (!t) return '';
+              const [h, m] = t.split(':');
+              let hour = parseInt(h, 10);
+              const ampm = hour >= 12 ? 'PM' : 'AM';
+              hour = hour % 12 || 12;
+              return `${hour}:${m} ${ampm}`;
+            };
+            return `${item.day.slice(0,3)} ${formatTime(item.start)} - ${formatTime(item.end)}`;
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Schedule parse error:', e);
+    }
+    
+    // Legacy fallback
+    const days = s.scheduleDay || 'TBA';
+    const formatLegacyTime = (t: string) => {
+      if (!t) return '';
+      const parts = t.split(':');
+      if (parts.length < 2) return t;
+      let h = parseInt(parts[0], 10);
+      const m = parts[1];
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${m} ${ampm}`;
+    };
+    
+    if (s.scheduleTimeStart) {
+       return [`${days} ${formatLegacyTime(s.scheduleTimeStart)} - ${formatLegacyTime(s.scheduleTimeEnd)}`];
+    }
+    
+    return [days];
   }
 
   hasChartData(): boolean {
