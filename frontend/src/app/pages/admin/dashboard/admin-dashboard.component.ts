@@ -148,13 +148,14 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    // Refresh triggered by other components
+    // Refresh triggered by other components - use silent mode
     this.api.refresh$.subscribe(() => {
-      this.load();
+      this.load(true);
     });
   }
 
-  load(): void {
+  load(silent = false): void {
+    if (!silent) this.loading.set(true);
     this.api.getSystemStats().subscribe({
       next: r => { this.stats.set(r.data); this.loading.set(false); },
       error: () => this.loading.set(false)

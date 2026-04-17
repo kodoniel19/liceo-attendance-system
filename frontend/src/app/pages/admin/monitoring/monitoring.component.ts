@@ -16,7 +16,7 @@ import { ApiService } from '../../../core/services/api.service';
           <h1>At-Risk Monitoring</h1>
           <p>Identifying students with low attendance thresholds across all courses</p>
         </div>
-        <button mat-raised-button color="primary" (click)="load()">
+        <button mat-raised-button color="primary" (click)="load(true)">
           <mat-icon>refresh</mat-icon> Refresh Data
         </button>
       </div>
@@ -234,8 +234,8 @@ export class AdminMonitoringComponent implements OnInit {
 
   ngOnInit(): void { this.load(); }
 
-  load(): void {
-    this.loading.set(true);
+  load(silent = false): void {
+    if (!silent) this.loading.set(true);
     this.api.getAtRiskStudents().subscribe({
       next: r => { this.students.set(r.data || []); this.loading.set(false); },
       error: () => this.loading.set(false)

@@ -145,10 +145,9 @@ import { User } from '../../../core/models';
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>Email Address</mat-label>
-              <input matInput type="email" formControlName="email" autocomplete="off" />
+              <input matInput type="email" formControlName="email" autocomplete="off" placeholder="example@liceo.edu.ph" />
               <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
-              <mat-error *ngIf="userForm.get('email')?.hasError('pattern') && !userForm.get('email')?.hasError('required')">Only @liceo.edu.ph emails are allowed</mat-error>
-              <mat-error *ngIf="userForm.get('email')?.hasError('email') && !userForm.get('email')?.hasError('pattern') && !userForm.get('email')?.hasError('required')">Invalid email format</mat-error>
+              <mat-error *ngIf="userForm.get('email')?.hasError('email')">Invalid email format</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>{{ editingUser() ? 'New Password (Optional)' : 'Password' }}</mat-label>
@@ -250,7 +249,6 @@ export class AdminUsersComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.load();
-    this.api.refresh$.subscribe(() => this.load());
   }
 
   private initForm(): void {
@@ -258,15 +256,15 @@ export class AdminUsersComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       universityId: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.minLength(8)]],
       role: ['student', Validators.required],
       department: ['']
     });
   }
 
-  load(): void {
-    this.loading.set(true);
+  load(silent = false): void {
+    if (!silent) this.loading.set(true);
     this.api.getUsers().subscribe({
       next: r => { this.allUsers.set(r.data || []); this.loading.set(false); },
       error: () => this.loading.set(false)
@@ -301,12 +299,14 @@ export class AdminUsersComponent implements OnInit {
     const editing = this.editingUser();
     const obs = editing ? this.api.updateUser(editing.id, v) : this.api.createUser(v);
     obs.subscribe({
-      next: () => {
+      next: (r) => {
         this.toast.success('User saved!');
-        this.api.triggerRefresh('users');
+        
+        // Optimistic refresh
+        this.load(true);
+        
         this.saving.set(false);
         this.closeModal();
-        this.load();
       },
       error: e => {
         this.toast.error(e?.error?.message || 'Error saving user.');
@@ -318,8 +318,10 @@ export class AdminUsersComponent implements OnInit {
   toggleActive(u: User): void {
     this.api.toggleUserActive(u.id).subscribe({
       next: () => {
-        this.api.triggerRefresh('users');
-        this.load();
+        // Optimistic toggle
+        this.allUsers.update(list => 
+          list.map(x => x.id === u.id ? { ...x, is_active: !(x.is_active ?? (x as any).isActive) } : x)
+        );
       },
       error: e => this.toast.error('Error toggling status.')
     });
@@ -330,8 +332,8 @@ export class AdminUsersComponent implements OnInit {
     this.api.deleteUser(u.id).subscribe({
       next: () => {
         this.toast.success('User permanently deleted.');
-        this.api.triggerRefresh('users');
-        this.load();
+        // Optimistic delete
+        this.allUsers.update(list => list.filter(x => x.id !== u.id));
       },
       error: e => this.toast.error(e?.error?.message || 'Error deleting user.')
     });

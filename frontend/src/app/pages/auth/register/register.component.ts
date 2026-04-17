@@ -89,8 +89,8 @@ import { ToastService } from '../../../core/services/toast.service';
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.errors && (form.get('email')?.dirty || form.get('email')?.touched)">
                 <span *ngIf="form.get('email')?.hasError('required')">Required</span>
-                <span *ngIf="!form.get('email')?.hasError('required') && form.get('email')?.value && (form.get('email')?.hasError('pattern') || form.get('email')?.hasError('email'))">
-                  Use liceo.edu.ph email only
+                <span *ngIf="!form.get('email')?.hasError('required') && (form.get('email')?.hasError('email'))">
+                  Invalid email format
                 </span>
               </mat-error>
             </mat-form-field>
@@ -244,7 +244,7 @@ export class RegisterComponent implements OnInit {
     lastName: ['', Validators.required],
     universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
     email: ['', {
-      validators: [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)],
+      validators: [Validators.required, Validators.email],
       updateOn: 'blur'
     }],
     department: [''],

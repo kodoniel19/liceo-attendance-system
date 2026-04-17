@@ -229,7 +229,6 @@ export class InstructorCoursesComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.load();
-    this.api.refresh$.subscribe(() => this.load());
   }
 
   private initForm(): void {
@@ -242,8 +241,8 @@ export class InstructorCoursesComponent implements OnInit {
     });
   }
 
-  load(): void {
-    this.loading.set(true);
+  load(silent = false): void {
+    if (!silent) this.loading.set(true);
     this.api.getCourses().subscribe({
       next: r => { this.courses.set(r.data || []); this.loading.set(false); },
       error: () => this.loading.set(false)
@@ -278,12 +277,12 @@ export class InstructorCoursesComponent implements OnInit {
     const obs = c ? this.api.updateCourse(c.id, v) : this.api.createCourse(v);
 
     obs.subscribe({
-      next: () => {
+      next: (r) => {
         this.toast.success(c ? 'Course updated!' : 'Course created!');
-        this.api.triggerRefresh('courses');
         this.saving.set(false);
         this.closeModal();
-        this.load();
+        // Optimistic silent refresh
+        this.load(true);
       },
       error: e => {
         this.toast.error(e?.error?.message || 'Failed to save course.');
@@ -313,11 +312,11 @@ export class InstructorCoursesComponent implements OnInit {
     this.api.deleteCourse(c.id).subscribe({
       next: () => {
         this.toast.success('Course deleted!');
-        this.api.triggerRefresh('courses');
         this.cancelDelete();
         this.closeModal();
-        this.load();
         this.saving.set(false);
+        // Optimistic delete
+        this.courses.update(list => list.filter(x => x.id !== c.id));
       },
       error: e => {
         this.toast.error(e?.error?.message || 'Failed to delete course. It may be in use.');

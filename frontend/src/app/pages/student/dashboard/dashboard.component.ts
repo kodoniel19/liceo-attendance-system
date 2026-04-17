@@ -210,14 +210,14 @@ export class StudentDashboardComponent implements OnInit {
     // Listen for real-time updates from notification service
     this.api.refresh$.subscribe(source => {
       if (source?.includes('enrollments') || source === 'general') {
-        this.refreshDashboard();
+        this.refreshDashboard(true);
       }
     });
   }
 
 
-  refreshDashboard(): void {
-    this.summaryLoading.set(true);
+  refreshDashboard(silent = false): void {
+    if (!silent) this.summaryLoading.set(true);
     this.api.getDashboardStats().subscribe({ next: r => this.stats.set(r.data) });
     this.api.getMyAttendanceSummary().subscribe({
       next: r => { this.summary.set(r.data || []); this.summaryLoading.set(false); },
@@ -237,7 +237,8 @@ export class StudentDashboardComponent implements OnInit {
       next: () => {
         this.toast.success('Successfully enrolled in class!');
         this.processing.set(false);
-        this.refreshDashboard();
+        // Optimistic refresh
+        this.refreshDashboard(true);
       },
       error: (e) => {
         this.toast.error(e?.error?.message || 'Failed to accept invitation.');
@@ -253,7 +254,8 @@ export class StudentDashboardComponent implements OnInit {
       next: () => {
         this.toast.info('Class invitation declined.');
         this.processing.set(false);
-        this.refreshDashboard();
+        // Optimistic refresh
+        this.refreshDashboard(true);
       },
       error: (e) => {
         this.toast.error(e?.error?.message || 'Failed to decline invitation.');
