@@ -50,7 +50,7 @@ import { Subscription, forkJoin } from 'rxjs';
           <div class="stat-card">
             <div class="stat-card__icon info"><span class="material-icons">people</span></div>
             <div class="stat-card__value">{{ classmates().length }}</div>
-            <div class="stat-card__label">Classmates</div>
+            <div class="stat-card__label">Students</div>
           </div>
         </div>
 
@@ -111,8 +111,8 @@ import { Subscription, forkJoin } from 'rxjs';
              </div>
           </mat-tab>
 
-          <!-- Classmates Tab -->
-          <mat-tab label="Classmates">
+          <!-- Students Tab -->
+          <mat-tab label="Students">
              <div class="tab-content">
                 <div class="classmates-grid">
                    <div class="classmate-card shadow-premium" *ngFor="let c of classmates()">
@@ -129,7 +129,7 @@ import { Subscription, forkJoin } from 'rxjs';
                 </div>
                 <div class="empty-state" *ngIf="!classmates().length">
                    <mat-icon>group_off</mat-icon>
-                   <p>No classmates found.</p>
+                   <p>No other students found.</p>
                 </div>
              </div>
           </mat-tab>
@@ -284,14 +284,17 @@ import { Subscription, forkJoin } from 'rxjs';
     .shadow-premium { box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
     .empty-state { text-align: center; padding: 40px; color: #94a3b8; mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 12px; } }
     
-    ::ng-deep .modern-tabs .mat-mdc-tab-labels { background: white; border-radius: 12px; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    ::ng-deep .modern-tabs .mat-mdc-tab { color: #64748b; }
+    ::ng-deep .modern-tabs .mat-mdc-tab-labels { background: white; border-radius: 12px; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); justify-content: space-around; }
+    ::ng-deep .modern-tabs .mat-mdc-tab { color: #64748b; min-width: 0 !important; padding: 0 10px !important; }
+    ::ng-deep .modern-tabs .mdc-tab__text-label { font-size: 0.8rem !important; }
     ::ng-deep .modern-tabs .mdc-tab--active .mdc-tab__text-label { color: var(--color-primary); font-weight: 800; }
     ::ng-deep .modern-tabs .mat-mdc-tab-label-container { border-bottom: none; }
+    ::ng-deep .modern-tabs .mat-mdc-tab-header-pagination { display: none !important; } /* Hide the arrow buttons */
   `]
 })
 export class SubjectDetailComponent implements OnInit {
   api = inject(ApiService);
+  auth = inject(AuthService);
   route = inject(ActivatedRoute);
 
   section = signal<ClassSection | null>(null);
@@ -351,7 +354,12 @@ export class SubjectDetailComponent implements OnInit {
     }).subscribe({
       next: (results) => {
         this.section.set(results.section.data || null);
-        this.classmates.set(results.classmates.data || []);
+        
+        // Filter out the current user from the student list
+        const currentUserId = this.auth.user()?.id;
+        const students = (results.classmates.data || []).filter((s: any) => (s.id || s.userId || s.user_id) !== currentUserId);
+        
+        this.classmates.set(students);
         this.attendance.set(results.attendance.data || []);
         this.announcements.set(results.announcements.data || []);
         this.loading.set(false);
