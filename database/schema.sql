@@ -55,7 +55,7 @@ CREATE TABLE class_sections (
     section_name VARCHAR(50) NOT NULL,
     academic_year VARCHAR(20) NOT NULL,
     semester ENUM('1st', '2nd', 'summer') NOT NULL,
-    schedule_day ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','MWF','TTH') NOT NULL,
+    schedule_day VARCHAR(255) NOT NULL,
     schedule_time_start TIME NOT NULL,
     schedule_time_end TIME NOT NULL,
     room VARCHAR(50),
@@ -77,7 +77,7 @@ CREATE TABLE enrollments (
     student_id INT UNSIGNED NOT NULL,
     class_section_id INT UNSIGNED NOT NULL,
     enrollment_date DATE NOT NULL,
-    status ENUM('active', 'dropped', 'incomplete') DEFAULT 'active',
+    status ENUM('active', 'dropped', 'incomplete', 'pending', 'declined') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_enrollment (student_id, class_section_id),
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -97,6 +97,7 @@ CREATE TABLE class_sessions (
     notes TEXT,
     late_threshold_minutes INT DEFAULT 15 COMMENT 'Minutes after start to be marked as late',
     status ENUM('scheduled', 'active', 'ended', 'cancelled') DEFAULT 'scheduled',
+    is_resumed BOOLEAN DEFAULT FALSE,
     created_by INT UNSIGNED NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -115,6 +116,7 @@ CREATE TABLE qr_sessions (
     class_session_id INT UNSIGNED NOT NULL,
     qr_token VARCHAR(255) NOT NULL UNIQUE,
     qr_secret VARCHAR(100) NOT NULL COMMENT 'For HMAC verification',
+    qr_data_url MEDIUMTEXT,
     expires_at DATETIME NOT NULL,
     expiration_minutes INT DEFAULT 15,
     is_active BOOLEAN DEFAULT TRUE,
@@ -152,6 +154,25 @@ CREATE TABLE attendance (
     INDEX idx_session (class_session_id),
     INDEX idx_status (status),
     INDEX idx_scan_time (scan_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- ANNOUNCEMENTS TABLE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS announcements (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    class_section_id INT UNSIGNED,
+    instructor_id INT UNSIGNED NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    is_global BOOLEAN DEFAULT FALSE,
+    target_role ENUM('all', 'student', 'instructor') DEFAULT 'all',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (class_section_id) REFERENCES class_sections(id) ON DELETE CASCADE,
+    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_section (class_section_id),
+    INDEX idx_instructor (instructor_id),
+    INDEX idx_global (is_global)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
