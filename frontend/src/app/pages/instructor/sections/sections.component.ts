@@ -894,14 +894,9 @@ export class SectionsComponent implements OnInit {
       if (!targetSid) return;
       this.api.getAvailableStudents(targetSid, query).subscribe({
         next: r => {
-          let results = r.data || [];
-          if (forAddModal) {
-            const enrolledIds = this.enrolledStudents().map(s => s.id);
-            results = results.filter((s: any) => !enrolledIds.includes(s.id));
-            this.addSearchResults.set(results);
-          } else {
-            this.searchResults.set(results);
-          }
+          const results = r.data || [];
+          this.addSearchResults.set(results);
+          this.searchResults.set(results);
         }
       });
     }
@@ -948,22 +943,26 @@ export class SectionsComponent implements OnInit {
   enrollStudent(s: any): void {
     const sec = this.selectedSection();
     if (!sec) return;
+    
+    // Optimistic UI update
+    this.enrolledStudents.update(list => [...list, { ...s, status: 'pending' }]);
+    
     this.api.enrollStudent(sec.id, s.id).subscribe({
       next: () => {
         this.toast.success(`${s.first_name || s.firstName} enrolled!`);
         this.loadEnrolled(sec.id);
         
-        // Seamlessly update background count without a full reload spinner
+        // Seamlessly update background count
         this.rawSections.update(list => 
           list.map(x => x.id === sec.id ? { ...x, enrolledCount: (x.enrolledCount || 0) + 1 } : x)
         );
 
-        // Remove triggerRefresh to avoid background reload/spinner
-        // this.api.triggerRefresh('sections');
-        // Refresh available students list
         this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
       },
-      error: e => this.toast.error(e?.error?.message || 'Failed to enroll student.')
+      error: e => {
+        this.toast.error(e?.error?.message || 'Failed to enroll student.');
+        this.loadEnrolled(sec.id); // Revert on error
+      }
     });
   }
 
@@ -971,22 +970,27 @@ export class SectionsComponent implements OnInit {
     const sec = this.selectedSection();
     if (!sec) return;
     this.confirmRemoveId.set(null);
+    
+    // Optimistic UI update
+    const studentName = (s.first_name || s.firstName) + ' ' + (s.last_name || s.lastName);
+    this.enrolledStudents.update(list => list.filter(x => x.id !== s.id));
+
     this.api.unenrollStudent(sec.id, s.id).subscribe({
       next: () => {
-        this.toast.success(`${s.first_name || s.firstName} ${s.last_name || s.lastName} removed.`);
+        this.toast.success(`${studentName} removed.`);
         this.loadEnrolled(sec.id);
         
-        // Seamlessly update background count without a full reload spinner
+        // Seamlessly update background count
         this.rawSections.update(list => 
           list.map(x => x.id === sec.id ? { ...x, enrolledCount: Math.max(0, (x.enrolledCount || 0) - 1) } : x)
         );
 
-        // Remove triggerRefresh to avoid background reload/spinner
-        // this.api.triggerRefresh('sections');
-        // Refresh available students list so removed student can be found again
         this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
       },
-      error: e => this.toast.error(e?.error?.message || 'Failed to remove student.')
+      error: e => {
+        this.toast.error(e?.error?.message || 'Failed to remove student.');
+        this.loadEnrolled(sec.id); // Revert on error
+      }
     });
   }
 

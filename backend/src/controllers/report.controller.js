@@ -202,7 +202,7 @@ exports.getDashboardStats = async (req, res, next) => {
                WHERE cl.instructor_id = ? AND cs.status = 'active'`, [userId]),
         query(`SELECT 
                  COUNT(*) as total,
-                 SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present,
+                 SUM(CASE WHEN a.status IN ('present', 'late') THEN 1 ELSE 0 END) as present,
                  SUM(CASE WHEN a.status = 'late' THEN 1 ELSE 0 END) as late,
                  SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent
                FROM attendance a

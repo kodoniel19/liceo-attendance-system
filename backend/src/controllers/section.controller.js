@@ -263,10 +263,19 @@ exports.createAnnouncement = async (req, res, next) => {
 exports.unenrollStudent = async (req, res, next) => {
   try {
     const { sectionId, studentId } = req.params;
+    
     await query(
       "UPDATE enrollments SET status='dropped' WHERE student_id=? AND class_section_id=?",
       [studentId, sectionId]
     );
+
+    // Also remove them from any current/active sessions so counts reflect removal immediately
+    await query(`
+      DELETE a FROM attendance a
+      JOIN class_sessions cs ON a.class_session_id = cs.id
+      WHERE a.student_id = ? AND cs.class_section_id = ? AND cs.status = 'active'
+    `, [studentId, sectionId]);
+
     res.json({ success: true, message: 'Student removed from section.' });
   } catch (err) { next(err); }
 };
