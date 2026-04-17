@@ -125,7 +125,7 @@ import { ToastService } from '../../../core/services/toast.service';
               <span *ngIf="!loading()">Create Account</span>
             </button>
 
-            <p style="text-align:center;margin-top:16px;font-size:0.85rem;color:var(--color-text-muted)">
+            <p style="text-align:center;margin-top:16px;font-size:0.85rem;color:var(--color-text-muted);margin-bottom:80px">
               Already have an account?
               <a routerLink="/login" style="color:var(--color-primary);font-weight:600">Sign In</a>
             </p>
@@ -178,19 +178,26 @@ import { ToastService } from '../../../core/services/toast.service';
       }
     }
     
-    @media (max-width: 480px) { 
+    @media (max-width: 900px) { 
       .register-grid { grid-template-columns: 1fr; gap: 4px; } 
-      .auth-header h2 { font-size: 1.2rem !important; }
-      .auth-header p { font-size: 0.7rem !important; margin-bottom: 4px !important; }
-      mat-form-field { margin-bottom: 4px; }
-      .auth-submit-btn { height: 40px; margin-top: 4px; }
-      form { padding-bottom: 80px; } /* Space below the last element */
+      .auth-header h2 { font-size: 1.1rem !important; }
+      .auth-header p { font-size: 0.65rem !important; margin-bottom: 2px !important; }
+      .auth-badge { margin-bottom: 4px; }
+      mat-form-field { margin-bottom: 2px; }
+      .auth-submit-btn { height: 38px; margin-top: 2px; }
     }
 
-    /* Hide scrollbar but allow scrolling */
+    /* Prevent scrolling if possible and hide scrollbar */
     ::ng-deep .auth-page__right {
       scrollbar-width: none;
       &::-webkit-scrollbar { display: none; }
+      overflow-y: auto !important;
+    }
+    
+    @media (max-height: 700px) {
+       ::ng-deep .mobile-branding-header { margin-bottom: 8px; }
+       ::ng-deep .mobile-logo { width: 40px; }
+       ::ng-deep .auth-header h2 { font-size: 1rem !important; }
     }
   `]
 })

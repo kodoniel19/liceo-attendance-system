@@ -84,7 +84,7 @@ declare var google: any;
             
             <div class="auth-divider"><span>New to the system?</span></div>
 
-            <a routerLink="/register" mat-stroked-button color="primary" class="auth-register-btn">
+            <a routerLink="/register" mat-stroked-button color="primary" class="auth-register-btn" style="margin-bottom: 80px">
               Create Account
             </a>
           </form>
@@ -151,14 +151,19 @@ declare var google: any;
       &::-webkit-scrollbar { display: none; }
     }
 
-    @media (max-width: 480px) {
-      .auth-header h2 { font-size: 1.6rem; }
-      .auth-header p { font-size: 0.8rem; margin-bottom: 20px; }
-      .auth-badge { padding: 3px 10px; font-size: 0.65rem; }
-      .auth-form { gap: 4px; padding-bottom: 60px; } /* Added bottom padding here */
-      .auth-submit-btn { height: 46px; }
-      .google-btn-wrapper { height: 40px; margin-bottom: 4px; }
-      .auth-divider { margin: 12px 0 4px; }
+    @media (max-width: 900px) {
+      .auth-header h2 { font-size: 1.5rem; }
+      .auth-header p { font-size: 0.75rem; margin-bottom: 12px; }
+      .auth-badge { padding: 2px 10px; font-size: 0.6rem; margin-bottom: 4px; }
+      .auth-form { gap: 2px; }
+      mat-form-field { margin-bottom: 4px; }
+      .auth-submit-btn { height: 44px; }
+      .google-btn-wrapper { height: 40px; margin-bottom: 2px; }
+      .auth-divider { margin: 8px 0 2px; }
+    }
+    
+    @media (max-height: 600px) {
+      ::ng-deep .mobile-branding-header { display: none; }
     }
   `]
 })
