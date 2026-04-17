@@ -89,8 +89,9 @@ import { ToastService } from '../../../core/services/toast.service';
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.errors && (form.get('email')?.dirty || form.get('email')?.touched)">
                 <span *ngIf="form.get('email')?.hasError('required')">Required</span>
-                <span *ngIf="!form.get('email')?.hasError('required') && form.get('email')?.hasError('pattern')">Use liceo.edu.ph email only</span>
-                <span *ngIf="!form.get('email')?.hasError('required') && !form.get('email')?.hasError('pattern') && form.get('email')?.hasError('email')">Enter a valid email</span>
+                <span *ngIf="!form.get('email')?.hasError('required') && form.get('email')?.value && (form.get('email')?.hasError('pattern') || form.get('email')?.hasError('email'))">
+                  Use liceo.edu.ph email only
+                </span>
               </mat-error>
             </mat-form-field>
 
@@ -144,7 +145,7 @@ import { ToastService } from '../../../core/services/toast.service';
     .auth-header h2 { font-size: 1.4rem !important; margin: 0 0 2px !important; color: var(--color-primary); }
     .auth-header p { font-size: 0.75rem !important; margin: 0 0 8px !important; color: var(--color-text-muted); }
     
-    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: flex-start; }
+    .register-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: flex-start; }
     .auth-submit-btn { width: 100%; height: 42px; font-size: 0.9rem !important; margin-top: 2px; }
     
     .google-banner {
@@ -154,13 +155,13 @@ import { ToastService } from '../../../core/services/toast.service';
       p { margin: 0; font-size: 0.65rem; color: #64748b; }
     }
     
-    mat-form-field { margin-bottom: 18px; width: 100%; }
+    mat-form-field { margin-bottom: 8px; width: 100%; }
     
     ::ng-deep {
       .mat-mdc-form-field-error {
-        margin-top: 2px !important;
+        margin-top: 1px !important;
         display: block !important;
-        font-size: 0.75rem !important;
+        font-size: 0.6rem !important;
         font-weight: 500 !important;
       }
 
