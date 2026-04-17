@@ -958,7 +958,8 @@ export class SectionsComponent implements OnInit {
           list.map(x => x.id === sec.id ? { ...x, enrolledCount: (x.enrolledCount || 0) + 1 } : x)
         );
 
-        this.api.triggerRefresh('sections');
+        // Remove triggerRefresh to avoid background reload/spinner
+        // this.api.triggerRefresh('sections');
         // Refresh available students list
         this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
       },
@@ -980,7 +981,8 @@ export class SectionsComponent implements OnInit {
           list.map(x => x.id === sec.id ? { ...x, enrolledCount: Math.max(0, (x.enrolledCount || 0) - 1) } : x)
         );
 
-        this.api.triggerRefresh('sections');
+        // Remove triggerRefresh to avoid background reload/spinner
+        // this.api.triggerRefresh('sections');
         // Refresh available students list so removed student can be found again
         this.searchAvailableStudents(this.addStudentCtrl.value || '', sec.id, true);
       },
