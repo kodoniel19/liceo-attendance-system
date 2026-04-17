@@ -74,24 +74,26 @@ import { ToastService } from '../../../core/services/toast.service';
               </mat-form-field>
             </div>
 
-            <mat-form-field subscriptSizing="dynamic">
+            <mat-form-field>
               <mat-label>University ID</mat-label>
               <input matInput formControlName="universityId" placeholder="e.g. 20240010022">
               <mat-icon matPrefix>badge</mat-icon>
-              <mat-error *ngIf="form.get('universityId')?.hasError('required')">University ID is required</mat-error>
+              <mat-error *ngIf="form.get('universityId')?.hasError('required')">Required</mat-error>
               <mat-error *ngIf="form.get('universityId')?.hasError('pattern')">ID must be exactly 11 characters</mat-error>
             </mat-form-field>
 
-            <mat-form-field subscriptSizing="dynamic">
+            <mat-form-field>
               <mat-label>University Email</mat-label>
               <input matInput formControlName="email" type="email" placeholder="you@example.com" [readonly]="isGoogleSignUp()">
               <mat-icon matPrefix>email</mat-icon>
               <mat-icon matSuffix *ngIf="isGoogleSignUp()" style="color:#4285F4">verified</mat-icon>
               <mat-error *ngIf="form.get('email')?.hasError('required')">Required</mat-error>
-              <mat-error *ngIf="form.get('email')?.hasError('email') || form.get('email')?.hasError('pattern')">Use liceo.edu.ph email only</mat-error>
+              <mat-error *ngIf="form.get('email')?.invalid && (form.get('email')?.dirty || form.get('email')?.touched)">
+                {{ form.get('email')?.hasError('pattern') ? 'Use liceo.edu.ph email only' : 'Enter a valid email' }}
+              </mat-error>
             </mat-form-field>
 
-            <mat-form-field style="width:100%" subscriptSizing="dynamic">
+            <mat-form-field style="width:100%">
               <mat-label>Department</mat-label>
               <input matInput formControlName="department" 
                      [matAutocomplete]="deptAuto" 
@@ -104,7 +106,7 @@ import { ToastService } from '../../../core/services/toast.service';
               </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field subscriptSizing="dynamic">
+            <mat-form-field>
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" [type]="showPass() ? 'text' : 'password'">
               <mat-icon matPrefix>lock</mat-icon>
@@ -155,9 +157,9 @@ import { ToastService } from '../../../core/services/toast.service';
     
     ::ng-deep {
       .mat-mdc-form-field-error {
-        margin-top: 4px !important;
+        margin-top: 2px !important;
         display: block !important;
-        font-size: 0.8rem !important;
+        font-size: 0.65rem !important;
         font-weight: 500 !important;
       }
 
@@ -239,7 +241,10 @@ export class RegisterComponent implements OnInit {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
-    email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
+    email: ['', {
+      validators: [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)],
+      updateOn: 'blur'
+    }],
     department: [''],
     password: ['', [Validators.required, Validators.minLength(8)]]
   });
