@@ -16,16 +16,27 @@ const pool = mysql.createPool({
   timezone: 'local'
 });
 
-// Test connection on startup
+// Test connection and run auto-migrations on startup
 (async () => {
   try {
     const connection = await pool.getConnection();
     const [dbName] = await connection.query('SELECT DATABASE() as db');
     logger.info(`✅ MySQL database connected successfully [DB: ${dbName[0].db}]`);
+    
+    // Auto-migrate: Ensure is_resumed column exists
+    logger.info('Running auto-migrations...');
+    const [columns] = await connection.query("SHOW COLUMNS FROM class_sessions LIKE 'is_resumed'");
+    if (columns.length === 0) {
+      logger.info('Adding missing column: is_resumed to class_sessions');
+      await connection.query("ALTER TABLE class_sessions ADD COLUMN is_resumed BOOLEAN DEFAULT FALSE AFTER status");
+      logger.info('✅ Column is_resumed added successfully');
+    }
+    
     connection.release();
   } catch (err) {
-    logger.error('❌ MySQL connection failed:', err.message);
-    process.exit(1);
+    logger.error('❌ MySQL initialization failed:', err.message);
+    // Don't exit if it's just a migration error, let the app try to run
+    if (err.message.includes('connection failed')) process.exit(1);
   }
 })();
 

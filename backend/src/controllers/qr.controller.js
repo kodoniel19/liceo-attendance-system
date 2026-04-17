@@ -36,7 +36,13 @@ exports.generateQR = async (req, res, next) => {
 
     // Auto-resume session if it was ended
     if (session.status === 'ended') {
-      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      try {
+        await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      } catch (err) {
+        // Fallback for older DB versions without is_resumed column
+        await query('UPDATE class_sessions SET status = "active" WHERE id = ?', [sessionId]);
+        logger.warn(`Resumed session ${sessionId} without is_resumed flag (DB mismatch)`);
+      }
       logger.info(`Session ${sessionId} auto-resumed by QR generation`);
     }
 
@@ -299,7 +305,11 @@ exports.reopenQR = async (req, res, next) => {
     // Check if session needs auto-resuming
     const sessionQueryResult = await query('SELECT status FROM class_sessions WHERE id = ?', [sessionId]);
     if (sessionQueryResult.length && sessionQueryResult[0].status === 'ended') {
-      await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      try {
+        await query('UPDATE class_sessions SET status = "active", is_resumed = 1 WHERE id = ?', [sessionId]);
+      } catch (err) {
+        await query('UPDATE class_sessions SET status = "active" WHERE id = ?', [sessionId]);
+      }
     }
 
     // Find the most recent QR for this session
