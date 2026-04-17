@@ -300,7 +300,6 @@ exports.deactivateQR = async (req, res, next) => {
 exports.reopenQR = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const { expirationMinutes = 15 } = req.body;
 
     // Find the most recent QR for this session
     const qrSessions = await query(
