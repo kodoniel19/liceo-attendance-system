@@ -105,6 +105,7 @@ html {
   min-height: 100%;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto !important;
 }
 
 body {
