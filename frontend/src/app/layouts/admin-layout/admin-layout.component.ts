@@ -1,4 +1,4 @@
-import { Component, signal, inject, HostListener, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, HostListener, OnInit, computed, ViewChild, ElementRef } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -96,8 +96,8 @@ import { Subscription, timer } from 'rxjs';
             <div class="topbar-badge admin-badge">ADMIN</div>
           </div>
         </div>
-        <div class="admin-content">
-          <router-outlet />
+        <div class="admin-content" #adminContent>
+          <router-outlet (activate)="onRouteActivate()" />
         </div>
       </main>
     </div>
@@ -262,6 +262,7 @@ import { Subscription, timer } from 'rxjs';
   `]
 })
 export class AdminLayoutComponent implements OnInit {
+  @ViewChild('adminContent') adminContent?: ElementRef<HTMLDivElement>;
   auth = inject(AuthService);
   api = inject(ApiService);
   router = inject(Router);
@@ -315,6 +316,16 @@ export class AdminLayoutComponent implements OnInit {
       this.lastCheckedId = latest.id;
       localStorage.setItem('last_admin_notif_id', this.lastCheckedId.toString());
       this.unreadCount.set(0);
+    }
+  }
+
+  onRouteActivate(): void {
+    if (this.adminContent?.nativeElement) {
+      this.adminContent.nativeElement.scrollTop = 0;
+    }
+    const scrollContainer = document.querySelector('.admin-content');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
     }
   }
 

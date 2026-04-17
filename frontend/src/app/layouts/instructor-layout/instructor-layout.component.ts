@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -108,8 +108,8 @@ interface NavItem {
           <span class="topbar__title">Liceo Attendance</span>
         </div>
 
-        <div class="content-wrapper">
-          <router-outlet />
+        <div class="content-wrapper" #mainContent>
+          <router-outlet (activate)="onRouteActivate()" />
         </div>
       </mat-sidenav-content>
 
@@ -280,6 +280,7 @@ interface NavItem {
   `]
 })
 export class InstructorLayoutComponent implements OnInit, OnDestroy {
+  @ViewChild('mainContent') mainContent?: ElementRef<HTMLDivElement>;
   auth = inject(AuthService);
   api = inject(ApiService);
   private bp = inject(BreakpointObserver);
@@ -352,6 +353,16 @@ export class InstructorLayoutComponent implements OnInit, OnDestroy {
       this.lastCheckedId = latest.id;
       localStorage.setItem('last_instructor_notif_id', this.lastCheckedId.toString());
       this.unreadCount.set(0);
+    }
+  }
+
+  onRouteActivate(): void {
+    if (this.mainContent?.nativeElement) {
+      this.mainContent.nativeElement.scrollTop = 0;
+    }
+    const scrollContainer = document.querySelector('.main-content');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
     }
   }
 
