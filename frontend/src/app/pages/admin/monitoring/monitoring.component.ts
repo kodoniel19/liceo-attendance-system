@@ -215,13 +215,15 @@ import { ApiService } from '../../../core/services/api.service';
     .modal-overlay { 
       position: fixed; inset: 0; 
       background: rgba(15, 23, 42, 0.4); 
-      display: flex; justify-content: center; align-items: center; 
-      z-index: 2000; padding: 24px; 
+      display: flex; justify-content: center; align-items: flex-start; 
+      z-index: 2000; padding: 60px 24px; 
       backdrop-filter: blur(12px); 
+      overflow-y: auto;
     }
     .history-modal { 
       background: white; border-radius: 32px; width: 92%; max-width: 680px; 
-      max-height: 85vh;
+      max-height: none; min-height: 200px;
+      margin-bottom: 60px;
       display: flex; flex-direction: column; 
       box-shadow: 0 50px 100px -20px rgba(0,0,0,0.25); 
       overflow: hidden; border: none;
