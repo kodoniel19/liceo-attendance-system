@@ -130,7 +130,7 @@ import { User } from '../../../core/models';
 
           <form [formGroup]="userForm" class="modal-body">
             <div class="form-row">
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Role</mat-label>
                 <mat-select formControlName="role">
                   <mat-option value="student">Student</mat-option>
@@ -138,28 +138,28 @@ import { User } from '../../../core/models';
                   <mat-option value="admin">Admin</mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-form-field appearance="outline" *ngIf="userForm.get('role')?.value === 'admin'">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" *ngIf="userForm.get('role')?.value === 'admin'">
                 <mat-label>Department Name</mat-label>
                 <input matInput formControlName="department" autocomplete="off" placeholder="e.g. IT Department" />
               </mat-form-field>
-              <mat-form-field appearance="outline" *ngIf="userForm.get('role')?.value !== 'admin'">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" *ngIf="userForm.get('role')?.value !== 'admin'">
                 <mat-label>Department</mat-label>
                 <input matInput formControlName="department" autocomplete="off" />
               </mat-form-field>
             </div>
 
             <div class="form-row" *ngIf="userForm.get('role')?.value !== 'admin'">
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="firstName" autocomplete="off" />
               </mat-form-field>
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Last Name</mat-label>
                 <input matInput formControlName="lastName" autocomplete="off" />
               </mat-form-field>
             </div>
 
-            <mat-form-field appearance="outline" class="full-w" *ngIf="userForm.get('role')?.value !== 'admin'">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-w" *ngIf="userForm.get('role')?.value !== 'admin'">
               <mat-label>University ID</mat-label>
               <input matInput formControlName="universityId" autocomplete="off" maxlength="11" />
               <mat-error *ngIf="userForm.get('universityId')?.hasError('required')">Required</mat-error>
@@ -168,7 +168,7 @@ import { User } from '../../../core/models';
               </mat-error>
             </mat-form-field>
             
-            <mat-form-field appearance="outline" class="full-w">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-w">
               <mat-label>Email Address</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" placeholder="example@liceo.edu.ph" />
               <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
@@ -177,7 +177,7 @@ import { User } from '../../../core/models';
               </mat-error>
             </mat-form-field>
             
-            <mat-form-field appearance="outline" class="full-w">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-w">
               <mat-label>{{ editingUser() ? 'New Password (Optional)' : 'Password' }}</mat-label>
               <input matInput [type]="showPwd() ? 'text' : 'password'" formControlName="password" autocomplete="new-password" />
               <button mat-icon-button matSuffix type="button" (click)="showPwd.set(!showPwd())">
@@ -227,7 +227,6 @@ import { User } from '../../../core/models';
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
     .full-w { width: 100%; margin-bottom: 8px; }
     mat-form-field { width: 100%; display: block; }
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper { position: static !important; }
     .btn-primary-admin { background: #8B1A1A !important; color: white !important; }
   `]
 })

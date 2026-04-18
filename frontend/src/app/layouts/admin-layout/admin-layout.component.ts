@@ -335,7 +335,4 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   toggleSidebar(): void { this.sidebarCollapsed.update(v => !v); }
-
-  @HostListener('window:keydown.escape')
-  onEscape(): void { this.sidebarCollapsed.set(true); }
 }
