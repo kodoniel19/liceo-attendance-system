@@ -131,6 +131,25 @@ import { User } from '../../../core/models';
           <form [formGroup]="userForm" class="modal-body">
             <div class="form-row">
               <mat-form-field appearance="outline">
+                <mat-label>Role</mat-label>
+                <mat-select formControlName="role">
+                  <mat-option value="student">Student</mat-option>
+                  <mat-option value="instructor">Instructor</mat-option>
+                  <mat-option value="admin">Admin</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" *ngIf="userForm.get('role')?.value === 'admin'">
+                <mat-label>Department Name</mat-label>
+                <input matInput formControlName="department" autocomplete="off" placeholder="e.g. IT Department" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" *ngIf="userForm.get('role')?.value !== 'admin'">
+                <mat-label>Department</mat-label>
+                <input matInput formControlName="department" autocomplete="off" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-row" *ngIf="userForm.get('role')?.value !== 'admin'">
+              <mat-form-field appearance="outline">
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="firstName" autocomplete="off" />
               </mat-form-field>
@@ -139,6 +158,7 @@ import { User } from '../../../core/models';
                 <input matInput formControlName="lastName" autocomplete="off" />
               </mat-form-field>
             </div>
+
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>University ID</mat-label>
               <input matInput formControlName="universityId" autocomplete="off" maxlength="11" />
@@ -147,6 +167,7 @@ import { User } from '../../../core/models';
                 ID must be exactly 11 numbers
               </mat-error>
             </mat-form-field>
+            
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>Email Address</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" placeholder="example@liceo.edu.ph" />
@@ -155,6 +176,7 @@ import { User } from '../../../core/models';
                 Only Liceo emails are accepted
               </mat-error>
             </mat-form-field>
+            
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>{{ editingUser() ? 'New Password (Optional)' : 'Password' }}</mat-label>
               <input matInput [type]="showPwd() ? 'text' : 'password'" formControlName="password" autocomplete="new-password" />
@@ -162,20 +184,6 @@ import { User } from '../../../core/models';
                 <mat-icon>{{ showPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
             </mat-form-field>
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Role</mat-label>
-                <mat-select formControlName="role">
-                  <mat-option value="student">Student</mat-option>
-                  <mat-option value="instructor">Instructor</mat-option>
-                  <mat-option value="admin">Admin</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Department</mat-label>
-                <input matInput formControlName="department" autocomplete="off" />
-              </mat-form-field>
-            </div>
           </form>
 
           <div class="modal-footer">
@@ -259,13 +267,30 @@ export class AdminUsersComponent implements OnInit {
 
   private initForm(): void {
     this.userForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: [''],
+      lastName: [''],
       universityId: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
       email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
       password: ['', [Validators.minLength(8)]],
       role: ['student', Validators.required],
-      department: ['']
+      department: ['', Validators.required]
+    });
+
+    // Dynamic validators based on role
+    this.userForm.get('role')?.valueChanges.subscribe(role => {
+      const fName = this.userForm.get('firstName');
+      const lName = this.userForm.get('lastName');
+      const dept = this.userForm.get('department');
+
+      if (role === 'admin') {
+        fName?.clearValidators();
+        lName?.clearValidators();
+      } else {
+        fName?.setValidators([Validators.required]);
+        lName?.setValidators([Validators.required]);
+      }
+      fName?.updateValueAndValidity();
+      lName?.updateValueAndValidity();
     });
   }
 
@@ -301,7 +326,15 @@ export class AdminUsersComponent implements OnInit {
   saveUser(): void {
     if (this.userForm.invalid) { this.userForm.markAllAsTouched(); return; }
     this.saving.set(true);
-    const v = this.userForm.value;
+    let v = { ...this.userForm.value };
+    
+    // If Admin, fill names from department to satisfy backend requirements
+    if (v.role === 'admin') {
+      const deptName = v.department || 'Admin';
+      v.firstName = deptName;
+      v.lastName = 'Panel'; // Placeholder to distinguish generic accounts
+    }
+
     const editing = this.editingUser();
     const obs = editing ? this.api.updateUser(editing.id, v) : this.api.createUser(v);
     obs.subscribe({
