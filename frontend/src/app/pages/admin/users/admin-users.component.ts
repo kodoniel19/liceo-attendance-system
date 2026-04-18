@@ -159,7 +159,7 @@ import { User } from '../../../core/models';
               </mat-form-field>
             </div>
 
-            <mat-form-field appearance="outline" class="full-w">
+            <mat-form-field appearance="outline" class="full-w" *ngIf="userForm.get('role')?.value !== 'admin'">
               <mat-label>University ID</mat-label>
               <input matInput formControlName="universityId" autocomplete="off" maxlength="11" />
               <mat-error *ngIf="userForm.get('universityId')?.hasError('required')">Required</mat-error>
@@ -280,17 +280,20 @@ export class AdminUsersComponent implements OnInit {
     this.userForm.get('role')?.valueChanges.subscribe(role => {
       const fName = this.userForm.get('firstName');
       const lName = this.userForm.get('lastName');
-      const dept = this.userForm.get('department');
+      const uId = this.userForm.get('universityId');
 
       if (role === 'admin') {
         fName?.clearValidators();
         lName?.clearValidators();
+        uId?.clearValidators();
       } else {
         fName?.setValidators([Validators.required]);
         lName?.setValidators([Validators.required]);
+        uId?.setValidators([Validators.required, Validators.pattern(/^[0-9]{11}$/)]);
       }
       fName?.updateValueAndValidity();
       lName?.updateValueAndValidity();
+      uId?.updateValueAndValidity();
     });
   }
 
@@ -328,11 +331,14 @@ export class AdminUsersComponent implements OnInit {
     this.saving.set(true);
     let v = { ...this.userForm.value };
     
-    // If Admin, fill names from department to satisfy backend requirements
+    // If Admin, fill names and ID from department/dummy to satisfy backend requirements
     if (v.role === 'admin') {
       const deptName = v.department || 'Admin';
       v.firstName = deptName;
-      v.lastName = 'Panel'; // Placeholder to distinguish generic accounts
+      v.lastName = 'Panel'; 
+      if (!v.universityId) {
+        v.universityId = 'ADM-' + Date.now().toString().slice(-8); // Auto-generate unique ID
+      }
     }
 
     const editing = this.editingUser();
