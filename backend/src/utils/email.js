@@ -185,41 +185,39 @@ exports.sendAnnouncementNotification = async (emails, title, content, contextNam
 
   const resend = getResend();
   
-  // To avoid exposing all emails in "To", BCC all recipients or send individually.
-  // Given potential large lists, we will BCC them using a placeholder 'To'
-  const messageConfig = {
-    to: 'no-reply@liceo.edu.ph',
-    bcc: emails,
-    subject: `[Announcement] ${contextName}: ${title}`,
-    html
-  };
-
   try {
-    if (resend) {
-      await resend.emails.send({
-        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+    const promises = emails.map(async (recipientEmail) => {
+      const messageConfig = {
+        to: recipientEmail,
+        subject: `[Announcement] ${contextName}: ${title}`,
+        html
+      };
+
+      if (resend) {
+        return resend.emails.send({
+          from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+          ...messageConfig
+        });
+      }
+
+      if (process.env.SENDGRID_API_KEY) {
+        return sgMail.send({
+          from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+          ...messageConfig
+        });
+      }
+
+      const transporter = createTransporter();
+      return transporter.sendMail({
+        from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
         ...messageConfig
       });
-      logger.info(`Announcement sent via Resend to ${emails.length} users`);
-      return;
-    }
-
-    if (process.env.SENDGRID_API_KEY) {
-      await sgMail.send({
-        from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
-        ...messageConfig
-      });
-      logger.info(`Announcement sent via SendGrid to ${emails.length} users`);
-      return;
-    }
-
-    const transporter = createTransporter();
-    await transporter.sendMail({
-      from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
-      ...messageConfig
     });
-    logger.info(`Announcement sent via Gmail to ${emails.length} users`);
+
+    await Promise.all(promises);
+    logger.info(`Announcement successfully sent to ${emails.length} users individually.`);
   } catch (err) {
-    logger.error('Failed to send announcement email:', err);
+    logger.error('Failed to send announcement emails:', err);
   }
 };
+
