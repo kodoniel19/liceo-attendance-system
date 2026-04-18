@@ -11,25 +11,16 @@ const getResend = () => process.env.RESEND_API_KEY ? new Resend(process.env.RESE
 
 // Dev fallback: log to console when no SMTP configured
 const createTransporter = () => {
-  const config = {
+  return nodemailer.createTransport({
+    service: 'gmail',
     auth: {
-      user: process.env.SMTP_USER ? process.env.SMTP_USER.trim() : '',
-      pass: process.env.SMTP_PASS ? process.env.SMTP_PASS.trim() : ''
+      user: (process.env.SMTP_USER || '').trim(),
+      pass: (process.env.SMTP_PASS || '').trim()
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 10000
-  };
-
-  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.gmail.com') {
-    config.service = 'gmail';
-  } else {
-    config.host = process.env.SMTP_HOST.trim();
-    config.port = parseInt(process.env.SMTP_PORT) || 587;
-    config.secure = process.env.SMTP_SECURE === 'true';
-  }
-
-  return nodemailer.createTransport(config);
+  });
 };
 
 const baseTemplate = (content) => `
@@ -77,25 +68,9 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p>If you didn't request this, you can safely ignore this email.</p>
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
-  
   const resend = getResend();
+  
   try {
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      const transporter = createTransporter();
-      try {
-        await transporter.sendMail({
-          from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
-          to: email,
-          subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-          html
-        });
-        logger.info(`Password reset email sent (via Gmail) to ${email}`);
-        return;
-      } catch (err) {
-        logger.error(`Gmail Error (Fallback): ${err.message}`);
-      }
-    }
-
     if (resend) {
       try {
         await resend.emails.send({
@@ -107,7 +82,7 @@ exports.sendPasswordReset = async (email, firstName, token) => {
         logger.info(`Password reset email sent (via Resend) to ${email}`);
         return;
       } catch (err) {
-        logger.error(`Resend Error: ${err.message}`);
+        throw new Error(`Resend Error: ${err.message}`);
       }
     }
 
@@ -122,8 +97,21 @@ exports.sendPasswordReset = async (email, firstName, token) => {
         logger.info(`Password reset email sent (via SendGrid) to ${email}`);
         return;
       } catch (err) {
-        logger.error(`SendGrid Error: ${err.message}`);
+        throw new Error(`SendGrid Error: ${err.message}`);
       }
+    }
+
+    const transporter = createTransporter();
+    try {
+      await transporter.sendMail({
+        from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
+        to: email,
+        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+        html
+      });
+      logger.info(`Password reset email sent (via Gmail) to ${email}`);
+    } catch (err) {
+      throw new Error(`Gmail Error (Fallback): ${err.message}`);
     }
   } catch (err) {
     logger.error('Email delivery failed:', err);
@@ -143,19 +131,8 @@ exports.sendWelcome = async (email, firstName, role) => {
   `);
 
   const resend = getResend();
-  try {
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      const transporter = createTransporter();
-      await transporter.sendMail({
-        from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
-        to: email,
-        subject: 'Welcome to Liceo Attendance System',
-        html
-      });
-      logger.info(`Welcome email sent (via Gmail) to ${email}`);
-      return;
-    }
 
+  try {
     if (resend) {
       await resend.emails.send({
         from: process.env.SMTP_FROM || 'onboarding@resend.dev',
@@ -177,73 +154,17 @@ exports.sendWelcome = async (email, firstName, role) => {
       logger.info(`Welcome email sent (via SendGrid) to ${email}`);
       return;
     }
+
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
+      to: email,
+      subject: 'Welcome to Liceo Attendance System',
+      html
+    });
+    logger.info(`Welcome email sent (via Gmail) to ${email}`);
   } catch (err) {
     logger.error('Welcome email failed:', err);
     throw err;
   }
 };
-
-exports.sendAnnouncementNotification = async (emails, title, content, contextName, instructorName = 'Administrator') => {
-  if (!emails || !emails.length) return;
-
-  const html = baseTemplate(`
-    <h2>📢 New Announcement: ${contextName}</h2>
-    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Posted by: <strong>${instructorName}</strong></p>
-    <h3 style="color:#8B1A1A;">${title}</h3>
-    <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid #8B1A1A;">
-      <p style="white-space: pre-wrap; margin:0;">${content}</p>
-    </div>
-    <div style="text-align:center; margin-top:25px;">
-      <a href="${process.env.FRONTEND_URL}/login" class="btn">View in Portal</a>
-    </div>
-  `);
-
-  try {
-    const resend = getResend();
-    const useSmtp = process.env.SMTP_USER && process.env.SMTP_PASS;
-    let transporter = null;
-
-    if (useSmtp) {
-      transporter = createTransporter();
-    }
-
-    let successCount = 0;
-
-    for (const recipientEmail of emails) {
-      const messageConfig = {
-        to: recipientEmail,
-        subject: `[Announcement] ${contextName}: ${title} (from ${instructorName})`,
-        html
-      };
-
-      try {
-        if (useSmtp && transporter) {
-          await transporter.sendMail({
-            from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
-            ...messageConfig
-          });
-          successCount++;
-        } else if (resend) {
-          await resend.emails.send({
-            from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-            ...messageConfig
-          });
-          successCount++;
-        } else if (process.env.SENDGRID_API_KEY) {
-          await sgMail.send({
-            from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
-            ...messageConfig
-          });
-          successCount++;
-        }
-      } catch (err) {
-        logger.error(`Failed sending to ${recipientEmail}: ${err.message}`);
-      }
-    }
-
-    logger.info(`Announcement successfully sent to ${successCount} out of ${emails.length} users.`);
-  } catch (err) {
-    logger.error('Failed to execute announcement email sequence:', err);
-  }
-};
-

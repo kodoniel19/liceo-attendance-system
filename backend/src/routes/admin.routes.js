@@ -15,7 +15,4 @@ router.post('/broadcast', adminController.createGlobalAnnouncement);
 // View Student Record History
 router.get('/student/:id/attendance', adminController.getStudentAttendanceHistory);
 
-// Emergency SMTP Override Test
-router.get('/test-smtp', adminController.testSmtpConnection);
-
 module.exports = router;

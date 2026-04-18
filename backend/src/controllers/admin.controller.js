@@ -1,7 +1,6 @@
 const { query } = require('../config/database');
 const logger = require('../utils/logger');
 const { getPHTNow } = require('../utils/time');
-const emailService = require('../utils/email');
 
 // FEATURE #1: At-Risk Monitoring
 exports.getAtRiskStudents = async (req, res, next) => {
@@ -50,62 +49,14 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
     const { title, content, targetRole } = req.body;
     const adminId = req.user.id;
     const nowPHT = getPHTNow();
-    const roleFilter = targetRole || 'all';
 
     const result = await query(
       'INSERT INTO announcements (instructor_id, title, content, is_global, target_role, created_at) VALUES (?, ?, ?, TRUE, ?, ?)',
-      [adminId, title, content, roleFilter, nowPHT]
+      [adminId, title, content, targetRole || 'all', nowPHT]
     );
-
-    // Fetch admin name for the email
-    const [admin] = await query('SELECT first_name, last_name FROM users WHERE id = ?', [adminId]);
-    const adminName = admin ? `${admin.first_name} ${admin.last_name}` : 'Administrator';
 
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });
-    
-    // Fetch target emails in background to avoid freezing the request
-    (async () => {
-      try {
-        let emailSql = 'SELECT email FROM users WHERE is_active = 1 AND email IS NOT NULL';
-        const emailParams = [];
-        if (roleFilter !== 'all') {
-          emailSql += ' AND role = ?';
-          emailParams.push(roleFilter);
-        }
-        
-        const users = await query(emailSql, emailParams);
-        const emails = users.map(u => u.email).filter(e => e);
-
-        if (emails.length > 0) {
-          await emailService.sendAnnouncementNotification(
-            emails, 
-            title, 
-            content, 
-            'System Broadcast',
-            adminName
-          );
-        }
-      } catch (err) {
-        logger.error(`Failed to send broadcast emails: ${err.message}`);
-      }
-    })();
   } catch (err) { next(err); }
-};
-
-// EMERGENCY DEBUG: Let instructor/admin test SMTP credentials directly via UI or Postman
-exports.testSmtpConnection = async (req, res) => {
-  try {
-    const testEmail = req.user.email;
-    await emailService.sendAnnouncementNotification(
-      [testEmail], 
-      'LIVE SERVER SMTP TEST', 
-      'This email proves your Railway server is able to authenticate with Google.', 
-      'Debug'
-    );
-    res.json({ success: true, message: 'Fired an email successfully from Railway without crashing!' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Railway crashed sending email!', error: err.message });
-  }
 };
 
 // FEATURE: View Student Record History
