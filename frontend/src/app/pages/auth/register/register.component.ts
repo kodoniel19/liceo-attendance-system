@@ -76,10 +76,12 @@ import { ToastService } from '../../../core/services/toast.service';
 
             <mat-form-field>
               <mat-label>University ID</mat-label>
-              <input matInput formControlName="universityId" placeholder="e.g. 20240010022">
+              <input matInput formControlName="universityId" placeholder="e.g. 20240010022" maxlength="11">
               <mat-icon matPrefix>badge</mat-icon>
               <mat-error *ngIf="form.get('universityId')?.hasError('required')">Required</mat-error>
-              <mat-error *ngIf="form.get('universityId')?.hasError('pattern')">ID must be exactly 11 characters</mat-error>
+              <mat-error *ngIf="!form.get('universityId')?.hasError('required') && (form.get('universityId')?.hasError('pattern') || form.get('universityId')?.hasError('minlength'))">
+                ID must be exactly 11 numbers
+              </mat-error>
             </mat-form-field>
 
             <mat-form-field>
@@ -260,7 +262,7 @@ export class RegisterComponent implements OnInit {
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    universityId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)]],
+    universityId: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
     email: ['', {
       validators: [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)],
       updateOn: 'blur'

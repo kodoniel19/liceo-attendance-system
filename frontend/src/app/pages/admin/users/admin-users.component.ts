@@ -141,7 +141,11 @@ import { User } from '../../../core/models';
             </div>
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>University ID</mat-label>
-              <input matInput formControlName="universityId" autocomplete="off" />
+              <input matInput formControlName="universityId" autocomplete="off" maxlength="11" />
+              <mat-error *ngIf="userForm.get('universityId')?.hasError('required')">Required</mat-error>
+              <mat-error *ngIf="!userForm.get('universityId')?.hasError('required') && userForm.get('universityId')?.hasError('pattern')">
+                ID must be exactly 11 numbers
+              </mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-w">
               <mat-label>Email Address</mat-label>
@@ -257,7 +261,7 @@ export class AdminUsersComponent implements OnInit {
     this.userForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      universityId: ['', Validators.required],
+      universityId: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
       email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
       password: ['', [Validators.minLength(8)]],
       role: ['student', Validators.required],
