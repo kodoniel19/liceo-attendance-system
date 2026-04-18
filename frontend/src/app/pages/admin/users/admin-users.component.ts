@@ -80,7 +80,10 @@ import { User } from '../../../core/models';
                     </div>
                   </div>
                 </td>
-                <td><code class="uid">{{ u.universityId || u.university_id }}</code></td>
+                <td>
+                  <code class="uid" *ngIf="u.role !== 'admin'">{{ u.universityId || u.university_id }}</code>
+                  <span *ngIf="u.role === 'admin'">—</span>
+                </td>
                 <td><span class="role-badge" [class]="'role--' + u.role">{{ u.role }}</span></td>
                 <td class="dept-cell">{{ u.department || '—' }}</td>
                 <td>
@@ -254,7 +257,8 @@ export class AdminUsersComponent implements OnInit {
     const status = this.statusFilter();
 
     return this.allUsers().filter(u => {
-      const name = `${u.firstName || (u as any).first_name} ${u.lastName || (u as any).last_name} ${u.email} ${u.universityId || (u as any).university_id}`.toLowerCase();
+      const uId = u.role === 'admin' ? '' : (u.universityId || (u as any).university_id);
+      const name = `${u.firstName || (u as any).first_name} ${u.lastName || (u as any).last_name} ${u.email} ${uId}`.toLowerCase();
       const isActive = u.isActive ?? (u as any).is_active ?? 1;
       const statusMatch = !status || (status === 'active' && !!isActive) || (status === 'inactive' && !isActive);
       return name.includes(q) && (!role || u.role === role) && statusMatch;
