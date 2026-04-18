@@ -68,9 +68,25 @@ exports.sendPasswordReset = async (email, firstName, token) => {
     <p>If you didn't request this, you can safely ignore this email.</p>
     <p style="font-size:12px;color:#999;">If the button doesn't work, copy this link:<br>${resetUrl}</p>
   `);
-  const resend = getResend();
   
+  const resend = getResend();
   try {
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      const transporter = createTransporter();
+      try {
+        await transporter.sendMail({
+          from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
+          to: email,
+          subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
+          html
+        });
+        logger.info(`Password reset email sent (via Gmail) to ${email}`);
+        return;
+      } catch (err) {
+        logger.error(`Gmail Error (Fallback): ${err.message}`);
+      }
+    }
+
     if (resend) {
       try {
         await resend.emails.send({
@@ -82,7 +98,7 @@ exports.sendPasswordReset = async (email, firstName, token) => {
         logger.info(`Password reset email sent (via Resend) to ${email}`);
         return;
       } catch (err) {
-        throw new Error(`Resend Error: ${err.message}`);
+        logger.error(`Resend Error: ${err.message}`);
       }
     }
 
@@ -97,21 +113,8 @@ exports.sendPasswordReset = async (email, firstName, token) => {
         logger.info(`Password reset email sent (via SendGrid) to ${email}`);
         return;
       } catch (err) {
-        throw new Error(`SendGrid Error: ${err.message}`);
+        logger.error(`SendGrid Error: ${err.message}`);
       }
-    }
-
-    const transporter = createTransporter();
-    try {
-      await transporter.sendMail({
-        from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
-        to: email,
-        subject: `Password Reset [Ref: ${Math.random().toString(36).substring(7).toUpperCase()}] – Liceo Attendance System`,
-        html
-      });
-      logger.info(`Password reset email sent (via Gmail) to ${email}`);
-    } catch (err) {
-      throw new Error(`Gmail Error (Fallback): ${err.message}`);
     }
   } catch (err) {
     logger.error('Email delivery failed:', err);
@@ -131,8 +134,19 @@ exports.sendWelcome = async (email, firstName, role) => {
   `);
 
   const resend = getResend();
-
   try {
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      const transporter = createTransporter();
+      await transporter.sendMail({
+        from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
+        to: email,
+        subject: 'Welcome to Liceo Attendance System',
+        html
+      });
+      logger.info(`Welcome email sent (via Gmail) to ${email}`);
+      return;
+    }
+
     if (resend) {
       await resend.emails.send({
         from: process.env.SMTP_FROM || 'onboarding@resend.dev',
@@ -154,15 +168,6 @@ exports.sendWelcome = async (email, firstName, role) => {
       logger.info(`Welcome email sent (via SendGrid) to ${email}`);
       return;
     }
-
-    const transporter = createTransporter();
-    await transporter.sendMail({
-      from: `"Liceo Attendance System" <${(process.env.SMTP_USER || '').trim()}>`,
-      to: email,
-      subject: 'Welcome to Liceo Attendance System',
-      html
-    });
-    logger.info(`Welcome email sent (via Gmail) to ${email}`);
   } catch (err) {
     logger.error('Welcome email failed:', err);
     throw err;
@@ -193,6 +198,14 @@ exports.sendAnnouncementNotification = async (emails, title, content, contextNam
         html
       };
 
+      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        const transporter = createTransporter();
+        return transporter.sendMail({
+          from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
+          ...messageConfig
+        });
+      }
+
       if (resend) {
         return resend.emails.send({
           from: process.env.SMTP_FROM || 'onboarding@resend.dev',
@@ -206,12 +219,6 @@ exports.sendAnnouncementNotification = async (emails, title, content, contextNam
           ...messageConfig
         });
       }
-
-      const transporter = createTransporter();
-      return transporter.sendMail({
-        from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
-        ...messageConfig
-      });
     });
 
     await Promise.all(promises);
