@@ -168,3 +168,58 @@ exports.sendWelcome = async (email, firstName, role) => {
     throw err;
   }
 };
+
+exports.sendAnnouncementNotification = async (emails, title, content, contextName) => {
+  if (!emails || !emails.length) return;
+
+  const html = baseTemplate(`
+    <h2>📢 New Announcement: ${contextName}</h2>
+    <h3 style="color:#8B1A1A;">${title}</h3>
+    <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid #8B1A1A;">
+      <p style="white-space: pre-wrap; margin:0;">${content}</p>
+    </div>
+    <div style="text-align:center; margin-top:25px;">
+      <a href="${process.env.FRONTEND_URL}/login" class="btn">View in Portal</a>
+    </div>
+  `);
+
+  const resend = getResend();
+  
+  // To avoid exposing all emails in "To", BCC all recipients or send individually.
+  // Given potential large lists, we will BCC them using a placeholder 'To'
+  const messageConfig = {
+    to: 'no-reply@liceo.edu.ph',
+    bcc: emails,
+    subject: `[Announcement] ${contextName}: ${title}`,
+    html
+  };
+
+  try {
+    if (resend) {
+      await resend.emails.send({
+        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+        ...messageConfig
+      });
+      logger.info(`Announcement sent via Resend to ${emails.length} users`);
+      return;
+    }
+
+    if (process.env.SENDGRID_API_KEY) {
+      await sgMail.send({
+        from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+        ...messageConfig
+      });
+      logger.info(`Announcement sent via SendGrid to ${emails.length} users`);
+      return;
+    }
+
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
+      ...messageConfig
+    });
+    logger.info(`Announcement sent via Gmail to ${emails.length} users`);
+  } catch (err) {
+    logger.error('Failed to send announcement email:', err);
+  }
+};

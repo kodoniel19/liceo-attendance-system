@@ -1,6 +1,7 @@
 const { query } = require('../config/database');
 const logger = require('../utils/logger');
 const { getPHTNow } = require('../utils/time');
+const emailService = require('../utils/email');
 
 exports.getSections = async (req, res, next) => {
   try {
@@ -255,6 +256,42 @@ exports.createAnnouncement = async (req, res, next) => {
       'INSERT INTO announcements (class_section_id, instructor_id, title, content, is_global, created_at) VALUES (?, ?, ?, ?, ?, ?)',
       [isGlobal ? null : sectionId, instructorId, title, content, isGlobal || false, nowPHT]
     );
+
+    // Dispatch emails in the background
+    (async () => {
+      try {
+        let emails = [];
+        let contextName = 'Class Announcement';
+
+        if (isGlobal || !sectionId) {
+           // If global, target all active students and instructors
+           const users = await query("SELECT email FROM users WHERE is_active = 1 AND email IS NOT NULL AND role IN ('student', 'instructor')");
+           emails = users.map(u => u.email).filter(e => e);
+           contextName = 'Instructor Broadcast';
+        } else {
+           // Target specifically active students enrolled in this section
+           const students = await query(`
+             SELECT u.email, co.course_code 
+             FROM enrollments e
+             JOIN users u ON e.student_id = u.id
+             JOIN class_sections cl ON e.class_section_id = cl.id
+             JOIN courses co ON cl.course_id = co.id
+             WHERE e.class_section_id = ? AND e.status = 'active' AND u.email IS NOT NULL
+           `, [sectionId]);
+
+           if (students.length > 0) {
+             emails = students.map(s => s.email).filter(e => e);
+             contextName = `Class Announcement: ${students[0].course_code || 'Update'}`;
+           }
+        }
+
+        if (emails.length > 0) {
+          await emailService.sendAnnouncementNotification(emails, title, content, contextName);
+        }
+      } catch (err) {
+        logger.error(`Error sending announcement emails: ${err.message}`);
+      }
+    })();
 
     res.json({ success: true, message: 'Announcement created successfully', id: result.insertId });
   } catch (err) { next(err); }

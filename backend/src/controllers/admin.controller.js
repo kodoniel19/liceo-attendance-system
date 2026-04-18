@@ -1,6 +1,7 @@
 const { query } = require('../config/database');
 const logger = require('../utils/logger');
 const { getPHTNow } = require('../utils/time');
+const emailService = require('../utils/email');
 
 // FEATURE #1: At-Risk Monitoring
 exports.getAtRiskStudents = async (req, res, next) => {
@@ -49,11 +50,29 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
     const { title, content, targetRole } = req.body;
     const adminId = req.user.id;
     const nowPHT = getPHTNow();
+    const roleFilter = targetRole || 'all';
 
     const result = await query(
       'INSERT INTO announcements (instructor_id, title, content, is_global, target_role, created_at) VALUES (?, ?, ?, TRUE, ?, ?)',
-      [adminId, title, content, targetRole || 'all', nowPHT]
+      [adminId, title, content, roleFilter, nowPHT]
     );
+
+    // Fetch target emails
+    let emailSql = 'SELECT email FROM users WHERE is_active = 1 AND email IS NOT NULL';
+    const emailParams = [];
+    if (roleFilter !== 'all') {
+      emailSql += ' AND role = ?';
+      emailParams.push(roleFilter);
+    }
+    
+    const users = await query(emailSql, emailParams);
+    const emails = users.map(u => u.email).filter(e => e);
+
+    // Send email notification dynamically in the background
+    if (emails.length > 0) {
+      emailService.sendAnnouncementNotification(emails, title, content, 'System Broadcast')
+        .catch(err => logger.error(`Failed to send broadcast emails: ${err.message}`));
+    }
 
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });
   } catch (err) { next(err); }
