@@ -75,7 +75,8 @@ import { User } from '../../../core/models';
                       {{ (u.firstName || u.first_name || '?')[0] }}{{ (u.lastName || u.last_name || '')[0] || '' }}
                     </div>
                     <div>
-                      <div class="user-name">{{ u.lastName || u.last_name }}, {{ u.firstName || u.first_name }}</div>
+                      <div class="user-name" *ngIf="u.role !== 'admin'">{{ u.lastName || u.last_name }}, {{ u.firstName || u.first_name }}</div>
+                      <div class="user-name" *ngIf="u.role === 'admin'">{{ u.firstName || u.first_name || u.lastName || u.last_name }}</div>
                       <div class="user-email">{{ u.email }}</div>
                     </div>
                   </div>
@@ -343,7 +344,7 @@ export class AdminUsersComponent implements OnInit {
     if (v.role === 'admin') {
       const deptName = v.department || 'Admin';
       v.firstName = deptName;
-      v.lastName = 'Panel'; 
+      v.lastName = ''; 
       if (!v.universityId) {
         v.universityId = 'ADM-' + Date.now().toString().slice(-8); // Auto-generate unique ID
       }
