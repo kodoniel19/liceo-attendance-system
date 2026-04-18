@@ -56,9 +56,9 @@ import { Subscription, timer } from 'rxjs';
 
         <div class="sidebar-footer">
           <div class="sidebar-user" *ngIf="!sidebarCollapsed()">
-            <div class="user-avatar">{{ auth.user()?.firstName?.[0] }}{{ auth.user()?.lastName?.[0] }}</div>
+            <div class="user-avatar">{{ (auth.user()?.department?.[0] || 'A').toUpperCase() }}</div>
             <div>
-              <div class="user-name">{{ auth.user()?.firstName }} {{ auth.user()?.lastName }}</div>
+              <div class="user-name">{{ auth.user()?.department || 'IT Department' }}</div>
               <div class="user-role">Administrator</div>
             </div>
           </div>
