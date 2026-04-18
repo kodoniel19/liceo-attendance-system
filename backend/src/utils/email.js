@@ -191,6 +191,7 @@ exports.sendAnnouncementNotification = async (emails, title, content, contextNam
     </div>
   `);
 
+  try {
     const resend = getResend();
     const useSmtp = process.env.SMTP_USER && process.env.SMTP_PASS;
     let transporter = null;
