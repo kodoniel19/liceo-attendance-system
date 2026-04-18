@@ -290,6 +290,7 @@ exports.createAnnouncement = async (req, res, next) => {
         }
 
         if (emails.length > 0) {
+          logger.info(`Found ${emails.length} recipients for announcement: ${title}`);
           await emailService.sendAnnouncementNotification(
             emails, 
             title, 
@@ -297,6 +298,8 @@ exports.createAnnouncement = async (req, res, next) => {
             contextName,
             instructorName
           );
+        } else {
+          logger.info(`No active students found for section ${sectionId}. Skipping email.`);
         }
       } catch (err) {
         logger.error(`Error sending announcement emails: ${err.message}`);

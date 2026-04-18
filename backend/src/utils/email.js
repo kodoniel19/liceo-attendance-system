@@ -11,10 +11,7 @@ const getResend = () => process.env.RESEND_API_KEY ? new Resend(process.env.RESE
 
 // Dev fallback: log to console when no SMTP configured
 const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true',
+  const config = {
     auth: {
       user: process.env.SMTP_USER ? process.env.SMTP_USER.trim() : '',
       pass: process.env.SMTP_PASS ? process.env.SMTP_PASS.trim() : ''
@@ -22,7 +19,17 @@ const createTransporter = () => {
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 10000
-  });
+  };
+
+  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.gmail.com') {
+    config.service = 'gmail';
+  } else {
+    config.host = process.env.SMTP_HOST.trim();
+    config.port = parseInt(process.env.SMTP_PORT) || 587;
+    config.secure = process.env.SMTP_SECURE === 'true';
+  }
+
+  return nodemailer.createTransport(config);
 };
 
 const baseTemplate = (content) => `
