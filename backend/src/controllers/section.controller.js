@@ -257,6 +257,10 @@ exports.createAnnouncement = async (req, res, next) => {
       [isGlobal ? null : sectionId, instructorId, title, content, isGlobal || false, nowPHT]
     );
 
+    // Fetch instructor name for the email
+    const [instructor] = await query('SELECT first_name, last_name FROM users WHERE id = ?', [instructorId]);
+    const instructorName = instructor ? `${instructor.first_name} ${instructor.last_name}` : 'Your Instructor';
+
     // Dispatch emails in the background
     (async () => {
       try {
@@ -286,7 +290,13 @@ exports.createAnnouncement = async (req, res, next) => {
         }
 
         if (emails.length > 0) {
-          await emailService.sendAnnouncementNotification(emails, title, content, contextName);
+          await emailService.sendAnnouncementNotification(
+            emails, 
+            title, 
+            content, 
+            contextName,
+            instructorName
+          );
         }
       } catch (err) {
         logger.error(`Error sending announcement emails: ${err.message}`);

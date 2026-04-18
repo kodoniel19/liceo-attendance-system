@@ -176,11 +176,12 @@ exports.sendWelcome = async (email, firstName, role) => {
   }
 };
 
-exports.sendAnnouncementNotification = async (emails, title, content, contextName) => {
+exports.sendAnnouncementNotification = async (emails, title, content, contextName, instructorName = 'Administrator') => {
   if (!emails || !emails.length) return;
 
   const html = baseTemplate(`
     <h2>📢 New Announcement: ${contextName}</h2>
+    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Posted by: <strong>${instructorName}</strong></p>
     <h3 style="color:#8B1A1A;">${title}</h3>
     <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid #8B1A1A;">
       <p style="white-space: pre-wrap; margin:0;">${content}</p>
@@ -190,43 +191,51 @@ exports.sendAnnouncementNotification = async (emails, title, content, contextNam
     </div>
   `);
 
-  const resend = getResend();
-  
-  try {
-    const promises = emails.map(async (recipientEmail) => {
+    const resend = getResend();
+    const useSmtp = process.env.SMTP_USER && process.env.SMTP_PASS;
+    let transporter = null;
+
+    if (useSmtp) {
+      transporter = createTransporter();
+    }
+
+    let successCount = 0;
+
+    for (const recipientEmail of emails) {
       const messageConfig = {
         to: recipientEmail,
-        subject: `[Announcement] ${contextName}: ${title}`,
+        subject: `[Announcement] ${contextName}: ${title} (from ${instructorName})`,
         html
       };
 
-      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-        const transporter = createTransporter();
-        return transporter.sendMail({
-          from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
-          ...messageConfig
-        });
+      try {
+        if (useSmtp && transporter) {
+          await transporter.sendMail({
+            from: `"Liceo Attendance" <${(process.env.SMTP_USER || '').trim()}>`,
+            ...messageConfig
+          });
+          successCount++;
+        } else if (resend) {
+          await resend.emails.send({
+            from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+            ...messageConfig
+          });
+          successCount++;
+        } else if (process.env.SENDGRID_API_KEY) {
+          await sgMail.send({
+            from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
+            ...messageConfig
+          });
+          successCount++;
+        }
+      } catch (err) {
+        logger.error(`Failed sending to ${recipientEmail}: ${err.message}`);
       }
+    }
 
-      if (resend) {
-        return resend.emails.send({
-          from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-          ...messageConfig
-        });
-      }
-
-      if (process.env.SENDGRID_API_KEY) {
-        return sgMail.send({
-          from: process.env.SMTP_FROM || 'no-reply@liceo.edu.ph',
-          ...messageConfig
-        });
-      }
-    });
-
-    await Promise.all(promises);
-    logger.info(`Announcement successfully sent to ${emails.length} users individually.`);
+    logger.info(`Announcement successfully sent to ${successCount} out of ${emails.length} users.`);
   } catch (err) {
-    logger.error('Failed to send announcement emails:', err);
+    logger.error('Failed to execute announcement email sequence:', err);
   }
 };
 

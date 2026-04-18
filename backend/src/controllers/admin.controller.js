@@ -57,6 +57,10 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
       [adminId, title, content, roleFilter, nowPHT]
     );
 
+    // Fetch admin name for the email
+    const [admin] = await query('SELECT first_name, last_name FROM users WHERE id = ?', [adminId]);
+    const adminName = admin ? `${admin.first_name} ${admin.last_name}` : 'Administrator';
+
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });
     
     // Fetch target emails in background to avoid freezing the request
@@ -73,7 +77,13 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
         const emails = users.map(u => u.email).filter(e => e);
 
         if (emails.length > 0) {
-          await emailService.sendAnnouncementNotification(emails, title, content, 'System Broadcast');
+          await emailService.sendAnnouncementNotification(
+            emails, 
+            title, 
+            content, 
+            'System Broadcast',
+            adminName
+          );
         }
       } catch (err) {
         logger.error(`Failed to send broadcast emails: ${err.message}`);
