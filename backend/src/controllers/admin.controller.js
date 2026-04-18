@@ -57,25 +57,45 @@ exports.createGlobalAnnouncement = async (req, res, next) => {
       [adminId, title, content, roleFilter, nowPHT]
     );
 
-    // Fetch target emails
-    let emailSql = 'SELECT email FROM users WHERE is_active = 1 AND email IS NOT NULL';
-    const emailParams = [];
-    if (roleFilter !== 'all') {
-      emailSql += ' AND role = ?';
-      emailParams.push(roleFilter);
-    }
-    
-    const users = await query(emailSql, emailParams);
-    const emails = users.map(u => u.email).filter(e => e);
-
-    // Send email notification dynamically in the background
-    if (emails.length > 0) {
-      emailService.sendAnnouncementNotification(emails, title, content, 'System Broadcast')
-        .catch(err => logger.error(`Failed to send broadcast emails: ${err.message}`));
-    }
-
     res.json({ success: true, message: 'Global broadcast sent successfully', id: result.insertId });
+    
+    // Fetch target emails in background to avoid freezing the request
+    (async () => {
+      try {
+        let emailSql = 'SELECT email FROM users WHERE is_active = 1 AND email IS NOT NULL';
+        const emailParams = [];
+        if (roleFilter !== 'all') {
+          emailSql += ' AND role = ?';
+          emailParams.push(roleFilter);
+        }
+        
+        const users = await query(emailSql, emailParams);
+        const emails = users.map(u => u.email).filter(e => e);
+
+        if (emails.length > 0) {
+          await emailService.sendAnnouncementNotification(emails, title, content, 'System Broadcast');
+        }
+      } catch (err) {
+        logger.error(`Failed to send broadcast emails: ${err.message}`);
+      }
+    })();
   } catch (err) { next(err); }
+};
+
+// EMERGENCY DEBUG: Let instructor/admin test SMTP credentials directly via UI or Postman
+exports.testSmtpConnection = async (req, res) => {
+  try {
+    const testEmail = req.user.email;
+    await emailService.sendAnnouncementNotification(
+      [testEmail], 
+      'LIVE SERVER SMTP TEST', 
+      'This email proves your Railway server is able to authenticate with Google.', 
+      'Debug'
+    );
+    res.json({ success: true, message: 'Fired an email successfully from Railway without crashing!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Railway crashed sending email!', error: err.message });
+  }
 };
 
 // FEATURE: View Student Record History
