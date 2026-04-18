@@ -224,8 +224,10 @@ import { User } from '../../../core/models';
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .user-modal { background: white; border-radius: 20px; width: 100%; max-width: 500px; padding: 24px; }
     .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .full-w { width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+    .full-w { width: 100%; margin-bottom: 8px; }
+    mat-form-field { width: 100%; display: block; }
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper { position: static !important; }
     .btn-primary-admin { background: #8B1A1A !important; color: white !important; }
   `]
 })
@@ -270,7 +272,10 @@ export class AdminUsersComponent implements OnInit {
       firstName: [''],
       lastName: [''],
       universityId: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
-      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)]],
+      email: ['', {
+        validators: [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@liceo\.edu\.ph$/)],
+        updateOn: 'blur'
+      }],
       password: ['', [Validators.minLength(8)]],
       role: ['student', Validators.required],
       department: ['', Validators.required]
