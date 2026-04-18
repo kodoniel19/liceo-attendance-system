@@ -269,14 +269,14 @@ exports.createAnnouncement = async (req, res, next) => {
            emails = users.map(u => u.email).filter(e => e);
            contextName = 'Instructor Broadcast';
         } else {
-           // Target specifically active students enrolled in this section
+           // Target specifically active and pending students enrolled in this section
            const students = await query(`
              SELECT u.email, co.course_code 
              FROM enrollments e
              JOIN users u ON e.student_id = u.id
              JOIN class_sections cl ON e.class_section_id = cl.id
              JOIN courses co ON cl.course_id = co.id
-             WHERE e.class_section_id = ? AND e.status = 'active' AND u.email IS NOT NULL
+             WHERE e.class_section_id = ? AND e.status IN ('active', 'pending') AND u.email IS NOT NULL
            `, [sectionId]);
 
            if (students.length > 0) {
@@ -436,7 +436,7 @@ exports.getMyAnnouncements = async (req, res, next) => {
       LEFT JOIN class_sections cl ON a.class_section_id = cl.id
       LEFT JOIN courses co ON cl.course_id = co.id
       INNER JOIN users u ON a.instructor_id = u.id
-      LEFT JOIN enrollments e ON e.class_section_id = a.class_section_id AND e.student_id = ? AND e.status = 'active'
+      LEFT JOIN enrollments e ON e.class_section_id = a.class_section_id AND e.student_id = ? AND e.status IN ('active', 'pending')
       WHERE (
         (a.is_global = FALSE AND e.student_id IS NOT NULL AND cl.is_active = TRUE AND a.created_at >= e.created_at)
         OR (a.is_global = TRUE AND a.target_role IN ('all', 'student') 
