@@ -42,6 +42,19 @@ const pool = mysql.createPool({
       await connection.query("ALTER TABLE courses ADD CONSTRAINT fk_course_instructor FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE SET NULL");
       logger.info('✅ Column instructor_id added successfully');
     }
+
+    // 3. course uniqueness constraint (per-instructor)
+    const [courseIndexes] = await connection.query("SHOW INDEX FROM courses WHERE Key_name = 'unique_course_per_instructor'");
+    if (courseIndexes.length === 0) {
+        try {
+            logger.info('Migrating course uniqueness to per-instructor model...');
+            // Drop old index if exists
+            try { await connection.query("ALTER TABLE courses DROP INDEX course_code"); } catch (e) {}
+            // Add new composite index
+            await connection.query("ALTER TABLE courses ADD UNIQUE KEY unique_course_per_instructor (course_code, instructor_id)");
+            logger.info('✅ Course uniqueness migrated successfully');
+        } catch (e) { logger.error('Failed to migrate course uniqueness:', e.message); }
+    }
     
     connection.release();
   } catch (err) {
