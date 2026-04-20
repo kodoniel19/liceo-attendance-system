@@ -84,7 +84,7 @@ declare var google: any;
             
             <div class="auth-divider"><span>New to the system?</span></div>
 
-            <a routerLink="/register" mat-stroked-button color="primary" class="auth-register-btn" style="margin-bottom: 80px">
+            <a routerLink="/register" mat-stroked-button color="primary" class="auth-register-btn">
               Create Account
             </a>
           </form>
@@ -145,10 +145,14 @@ declare var google: any;
     
     .google-btn-wrapper { display: flex; justify-content: center; height: 44px; margin-bottom: 8px; }
     
-    /* Hide scrollbar but allow scrolling */
     ::ng-deep .auth-page__right {
       scrollbar-width: none;
       &::-webkit-scrollbar { display: none; }
+      
+      @media (min-width: 901px) {
+        justify-content: center !important;
+        padding: 40px 32px !important;
+      }
     }
 
     @media (max-width: 900px) {
