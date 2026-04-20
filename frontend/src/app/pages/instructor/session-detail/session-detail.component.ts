@@ -432,7 +432,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.loadSessionData();
     this.loadAttendance();
     this.checkQRStatus();
-    this.startQRPoll(); // Always start polling for real-time updates
+    this.startAttendanceMonitor(); // Always start polling for real-time updates
 
     this.timerSub = interval(1000).subscribe(() => this.now.set(Date.now()));
 
@@ -506,7 +506,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       next: r => {
         this.qrData.set(r.data);
         this.buildQRImage(r.data);
-        this.startQRPoll();
+        this.startAttendanceMonitor();
         this.loadSessionData(); // IMPORTANT: Refresh session status (e.g. from 'ended' to 'active')
         this.qrLoading.set(false);
         this.pausedRemainingSeconds.set(null); // Clear pause state
@@ -525,7 +525,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       next: r => {
         this.qrData.set(r.data);
         this.buildQRImage(r.data);
-        this.startQRPoll();
+        this.startAttendanceMonitor();
         this.loadSessionData(); // Sync session status
         this.qrLoading.set(false);
         this.pausedRemainingSeconds.set(null); // Clear pause state
@@ -595,26 +595,51 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     return `${m}:${s.toString().padStart(2, '0')} remaining`;
   }
 
-  private startQRPoll(): void {
+  private startAttendanceMonitor(): void {
     if (this.qrPollInterval) return;
+    
+    console.log('Attendance Real-Time Monitor Started...');
     this.qrPollInterval = setInterval(() => {
-      this.api.getQRStatus(this.sessionId).subscribe({
+      // 1. Refresh Attendance Data (The "Reflect Automatically" part)
+      this.api.getSessionAttendance(this.sessionId).subscribe({
         next: r => {
-          if (r.data) this.qrData.set(r.data);
+          const data = r.data || [];
+          const oldPresent = this.counts().present + this.counts().late;
+          const newPresent = data.filter((a: any) => a.status === 'present' || a.status === 'late').length;
           
-          // Only stop polling if the whole session is ended
-          if (this.session()?.status === 'ended') {
-            clearInterval(this.qrPollInterval);
-            this.qrPollInterval = null;
-            return;
+          // Only update and toast if someone new joined
+          if (newPresent > oldPresent) {
+            this.toast.info('New student scan detected!');
+            this.loadAttendance(true); 
+          } else {
+            // Keep signals in sync silently
+            this.attendance.set(data);
+            this.counts.set({
+              present: data.filter((a:any) => a.status === 'present').length,
+              late:    data.filter((a:any) => a.status === 'late').length,
+              absent:  data.filter((a:any) => a.status === 'absent').length,
+              excused: data.filter((a:any) => a.status === 'excused').length,
+            });
+            // Also update filtered view if not searching
+            if (!this.search.value) this.filteredAttendance.set(data);
           }
-
-          // If QR becomes inactive but session is still active, we might still want slow polling 
-          // but for now let's just keep polling every 2s while the page is open if the session is active
-          this.loadAttendance(true); // SILENT REFRESH
-        }
+        },
+        error: () => console.warn('Attendance monitor heartbeat failed.')
       });
-    }, 2000); // 2s for "Real-Time" feel
+
+      // 2. Separately Refresh QR status if active
+      if (this.session()?.status === 'active') {
+        this.api.getQRStatus(this.sessionId).subscribe({
+          next: r => {
+            if (r.data) this.qrData.set(r.data);
+            if (this.session()?.status === 'ended') {
+              clearInterval(this.qrPollInterval);
+              this.qrPollInterval = null;
+            }
+          }
+        });
+      }
+    }, 2000); 
   }
 
   // ── Manual Attendance ─────────────────────────────────────
