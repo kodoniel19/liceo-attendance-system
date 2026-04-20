@@ -432,6 +432,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.loadSessionData();
     this.loadAttendance();
     this.checkQRStatus();
+    this.startQRPoll(); // Always start polling for real-time updates
 
     this.timerSub = interval(1000).subscribe(() => this.now.set(Date.now()));
 
@@ -595,20 +596,25 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   private startQRPoll(): void {
-    if (this.qrPollInterval) return; // Don't start multiple intervals
+    if (this.qrPollInterval) return;
     this.qrPollInterval = setInterval(() => {
       this.api.getQRStatus(this.sessionId).subscribe({
         next: r => {
           if (r.data) this.qrData.set(r.data);
-          if (!r.data?.isActive) {
+          
+          // Only stop polling if the whole session is ended
+          if (this.session()?.status === 'ended') {
             clearInterval(this.qrPollInterval);
             this.qrPollInterval = null;
-            this.qrImageUrl.set(null);
+            return;
           }
+
+          // If QR becomes inactive but session is still active, we might still want slow polling 
+          // but for now let's just keep polling every 2s while the page is open if the session is active
           this.loadAttendance(true); // SILENT REFRESH
         }
       });
-    }, 5000); // 5s is fine if interval is stable
+    }, 2000); // 2s for "Real-Time" feel
   }
 
   // ── Manual Attendance ─────────────────────────────────────
