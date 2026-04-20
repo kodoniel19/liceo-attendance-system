@@ -23,13 +23,24 @@ const pool = mysql.createPool({
     const [dbName] = await connection.query('SELECT DATABASE() as db');
     logger.info(`✅ MySQL database connected successfully [DB: ${dbName[0].db}]`);
     
-    // Auto-migrate: Ensure is_resumed column exists
+    // Auto-migrate: Ensure columns exist
     logger.info('Running auto-migrations...');
+
+    // 1. is_resumed for sessions
     const [columns] = await connection.query("SHOW COLUMNS FROM class_sessions LIKE 'is_resumed'");
     if (columns.length === 0) {
       logger.info('Adding missing column: is_resumed to class_sessions');
       await connection.query("ALTER TABLE class_sessions ADD COLUMN is_resumed BOOLEAN DEFAULT FALSE AFTER status");
       logger.info('✅ Column is_resumed added successfully');
+    }
+
+    // 2. instructor_id for courses
+    const [courseCols] = await connection.query("SHOW COLUMNS FROM courses LIKE 'instructor_id'");
+    if (courseCols.length === 0) {
+      logger.info('Adding missing column: instructor_id to courses');
+      await connection.query("ALTER TABLE courses ADD COLUMN instructor_id INT UNSIGNED NULL");
+      await connection.query("ALTER TABLE courses ADD CONSTRAINT fk_course_instructor FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE SET NULL");
+      logger.info('✅ Column instructor_id added successfully');
     }
     
     connection.release();
