@@ -112,6 +112,7 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
                 <div class="session-item__meta">
                   📅 {{ s.sessionDate || s.session_date | date:'MMM d, y' }}
                   <span *ngIf="auth.isAdmin()" class="instructor-tag">By {{ s.instructorFirst }} {{ s.instructorLast }}</span>
+                  <span class="sync-indicator" *ngIf="s.status === 'active'">⚡ Synced {{ now() | date:'h:mm:ss a' }}</span>
                 </div>
                 <div class="session-item__topic" *ngIf="s.topic">📌 {{ s.topic }}</div>
               </div>
@@ -333,6 +334,7 @@ import { ClassSession, ClassSection, QRSession } from '../../../core/models';
     .session-item__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
     .session-item__meta { font-size: 0.72rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .instructor-tag { background: #fee2e2; color: #8B1A1A; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; }
+    .sync-indicator { font-size: 0.65rem; color: var(--color-success); font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; }
     .session-item__name { font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
     .session-item__topic { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px; }
     .session-item__progress { margin: 12px 0; }

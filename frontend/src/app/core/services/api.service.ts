@@ -72,12 +72,16 @@ export class ApiService {
   }
 
   // ── Sessions ───────────────────────────────────────────────
-  getSessions(params?: any): Observable<ApiResponse<ClassSession[]>> { return this.get('/sessions', params); }
-  getSession(id: number): Observable<ApiResponse<ClassSession>> { return this.get(`/sessions/${id}`); }
+  getSessions(params: any = {}): Observable<ApiResponse<ClassSession[]>> { 
+    return this.get('/sessions', { ...params, _v: Date.now() }); 
+  }
+  getSession(id: number): Observable<ApiResponse<ClassSession>> { 
+    return this.get(`/sessions/${id}`, { _v: Date.now() }); 
+  }
   createSession(data: any): Observable<ApiResponse<ClassSession>> { return this.post('/sessions', data); }
   updateSession(id: number, data: any): Observable<ApiResponse<ClassSession>> { return this.patch(`/sessions/${id}`, data); }
-  getSessionAttendance(id: number, params?: any): Observable<ApiResponse<Attendance[]>> {
-    return this.get(`/sessions/${id}/attendance`, params);
+  getSessionAttendance(id: number, params: any = {}): Observable<ApiResponse<Attendance[]>> {
+    return this.get(`/sessions/${id}/attendance`, { ...params, _v: Date.now() });
   }
 
   // ── QR Code ────────────────────────────────────────────────

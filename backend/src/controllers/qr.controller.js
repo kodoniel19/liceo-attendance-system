@@ -115,6 +115,8 @@ exports.scanQR = async (req, res, next) => {
     const { token, sessionId } = req.body;
     const studentId = req.user.id;
 
+    console.log(`[SCAN DEBUG] Attempting scan: Student=${studentId}, Session=${sessionId}, Token=${token}`);
+
     if (!token || !sessionId) {
       return res.status(422).json({ success: false, message: 'QR token and session ID required.' });
     }
@@ -128,6 +130,7 @@ exports.scanQR = async (req, res, next) => {
     );
 
     if (!qrSessions.length) {
+      console.log(`[SCAN DEBUG] QR Invalid or Inactive for token ${token}`);
       return res.status(400).json({
         success: false,
         code: 'QR_INVALID',
@@ -136,9 +139,11 @@ exports.scanQR = async (req, res, next) => {
     }
 
     const qrSession = qrSessions[0];
+    console.log(`[SCAN DEBUG] Found QR session: id=${qrSession.id}`);
 
     // 2. Check expiration
     if (new Date() > new Date(qrSession.expires_at)) {
+      console.log(`[SCAN DEBUG] QR Expired: ${qrSession.expires_at}`);
       return res.status(400).json({
         success: false,
         code: 'QR_EXPIRED',
@@ -156,6 +161,7 @@ exports.scanQR = async (req, res, next) => {
     );
 
     if (!enrollments.length) {
+      console.log(`[SCAN DEBUG] Student ${studentId} NOT enrolled in session ${sessionId}`);
       return res.status(403).json({
         success: false,
         code: 'NOT_ENROLLED',
@@ -170,6 +176,7 @@ exports.scanQR = async (req, res, next) => {
     );
 
     if (existing.length && existing[0].status !== 'absent') {
+      console.log(`[SCAN DEBUG] Student ${studentId} already scanned (Status: ${existing[0].status})`);
       return res.status(409).json({
         success: false,
         code: 'ALREADY_RECORDED',
@@ -186,7 +193,6 @@ exports.scanQR = async (req, res, next) => {
       [sessionId]
     );
 
-    // Doesn't exist should have been caught, but just in case
     if (!classSession.length) {
       return res.status(404).json({ success: false, message: 'Session not found.' });
     }
@@ -197,7 +203,6 @@ exports.scanQR = async (req, res, next) => {
     const lateThreshold = classSession[0].late_threshold_minutes || 15;
     const isResumed = classSession[0]?.is_resumed === 1;
     
-    // Check if enough time has passed to be marked late (using DB time comparison)
     const timeCheckQueryResult = await query(
       'SELECT TIMESTAMPDIFF(MINUTE, created_at, NOW()) as minutesElapsed FROM qr_sessions WHERE id = ?',
       [qrSession.id]
@@ -205,15 +210,15 @@ exports.scanQR = async (req, res, next) => {
     const minutesElapsed = timeCheckQueryResult[0].minutesElapsed;
     
     let status = 'present';
-    // Logic: Mark late if timer expired OR if the instructor resumed this class from an "Ended" state
     if (minutesElapsed >= lateThreshold || isResumed) {
       status = 'late';
     }
 
+    console.log(`[SCAN DEBUG] Recording status: ${status} for Student ${studentId}`);
+
     // 6. Record attendance (upsert)
     await withTransaction(async (conn) => {
       if (existing.length) {
-        // Update existing absent record
         await conn.execute(
           `UPDATE attendance SET status = ?, scan_time = ?, qr_session_id = ?, ip_address = ?
            WHERE student_id = ? AND class_session_id = ?`,
@@ -226,15 +231,10 @@ exports.scanQR = async (req, res, next) => {
           [studentId, sessionId, qrSession.id, status, scanTime, req.ip]
         );
       }
-
-      // Increment scan count on QR session
-      await conn.execute(
-        'UPDATE qr_sessions SET scan_count = scan_count + 1 WHERE id = ?',
-        [qrSession.id]
-      );
+      await conn.execute('UPDATE qr_sessions SET scan_count = scan_count + 1 WHERE id = ?', [qrSession.id]);
     });
 
-    logger.info(`Attendance recorded: student=${studentId}, session=${sessionId}, status=${status}`);
+    console.log(`[SCAN DEBUG] SUCCESS: Attendance recorded for Student ${studentId}`);
 
     res.json({
       success: true,
@@ -248,6 +248,7 @@ exports.scanQR = async (req, res, next) => {
       }
     });
   } catch (err) {
+    console.error(`[SCAN DEBUG] FAILED:`, err);
     next(err);
   }
 };
