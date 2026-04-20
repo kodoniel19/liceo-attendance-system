@@ -491,7 +491,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
         if (qr && qr.isActive) {
           this.qrData.set(qr);
           this.buildQRImage(qr);
-          this.startQRPoll();
+          this.startAttendanceMonitor();
         } else if (qr) {
           this.qrData.set(qr); // keep data but inactive
         }
