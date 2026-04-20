@@ -467,15 +467,46 @@ export class SessionsComponent implements OnInit, OnDestroy {
     lateThresholdMinutes: [15]
   });
 
+  private monitorInterval: any = null;
+
   ngOnInit(): void {
     this.loadSections();
     this.loadSessions();
     // Refresh current time every second for smooth countdown
     this.timerSub = interval(1000).subscribe(() => this.now.set(Date.now()));
+    this.startAttendanceMonitor();
   }
 
   ngOnDestroy(): void {
     this.timerSub?.unsubscribe();
+    if (this.monitorInterval) clearInterval(this.monitorInterval);
+  }
+
+  private startAttendanceMonitor(): void {
+    if (this.monitorInterval) return;
+    this.monitorInterval = setInterval(() => {
+      // Perform silent refresh of sessions to update attendance counts & QR status
+      this.api.getSessions().subscribe({
+        next: (r) => {
+          const data = r.data || [];
+          // Preserve existing activeQRs map but update from fresh data
+          const qrMap = { ...this.activeQRs() };
+          
+          data.forEach((s: any) => {
+            if (s.activeQR) {
+              let qr = s.activeQR;
+              if (typeof qr === 'string') try { qr = JSON.parse(qr); } catch(e: any) {}
+              if (qr && qr.isActive) qrMap[s.id] = qr;
+            } else {
+              delete qrMap[s.id]; // QR is no longer active for this session
+            }
+          });
+
+          this.activeQRs.set(qrMap);
+          this.sessions.set(data);
+        }
+      });
+    }, 2000); // 2s Real-Time Sync
   }
 
   loadSections(): void {
