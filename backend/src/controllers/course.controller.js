@@ -17,6 +17,13 @@ exports.getCourses = async (req, res, next) => {
     `;
     const params = [];
 
+    // Account-specific filtering
+    if (req.user.role === 'instructor') {
+      // Instructors only see courses they created OR courses they are teaching in a section
+      sql += ` AND (c.instructor_id = ? OR c.id IN (SELECT course_id FROM class_sections WHERE instructor_id = ?))`;
+      params.push(req.user.id, req.user.id);
+    }
+
     if (search) { 
       sql += ' AND (c.course_code LIKE ? OR c.course_name LIKE ?)'; 
       const s = `%${search}%`; 
@@ -50,8 +57,8 @@ exports.createCourse = async (req, res, next) => {
       return res.status(422).json({ success: false, message: 'Course code and name required.' });
     }
     const result = await query(
-      'INSERT INTO courses (course_code, course_name, description, units, department) VALUES (?, ?, ?, ?, ?)',
-      [courseCode, courseName, description || null, units || 3, department || null]
+      'INSERT INTO courses (course_code, course_name, description, units, department, instructor_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [courseCode, courseName, description || null, units || 3, department || null, req.user.id]
     );
     const course = await query('SELECT * FROM courses WHERE id = ?', [result.insertId]);
     res.status(201).json({ success: true, data: course[0] });
