@@ -53,6 +53,7 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
             <div class="qr-status-value" [class.text-success]="session()?.status === 'active'" [class.text-muted]="session()?.status === 'ended'">
               <span *ngIf="session()?.status === 'active'">Active — {{ qrActive() ? 'Scanning in progress' : 'Ready to scan' }}</span>
               <span *ngIf="session()?.status === 'ended'">Session Ended</span>
+              <span class="sync-indicator" *ngIf="session()?.status === 'active'">⚡ Synced {{ now() | date:'h:mm:ss a' }}</span>
             </div>
             <div class="qr-expiry" *ngIf="qrActive() && qrData()?.expiresAt && session()?.status === 'active'">
               <span class="material-icons" style="font-size:14px;vertical-align:middle;margin-right:4px">timer</span>
@@ -311,7 +312,8 @@ import { Attendance, ClassSession, QRSession } from '../../../core/models';
     }
     @keyframes pulse { 0%,100% { box-shadow:0 0 0 4px rgba(16,185,129,0.2); } 50% { box-shadow:0 0 0 8px rgba(16,185,129,0.1); } }
     .qr-status-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-muted); }
-    .qr-status-value { font-size:0.9rem; font-weight:600; margin-top:2px; }
+    .qr-status-value { font-size:0.9rem; font-weight:600; margin-top:2px; display:flex; align-items:center; gap:10px; }
+    .sync-indicator { font-size:0.65rem; color: #10b981; font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
     .qr-expiry { font-size:0.75rem; color:var(--color-text-muted); margin-top:4px; }
     .qr-panel__actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
