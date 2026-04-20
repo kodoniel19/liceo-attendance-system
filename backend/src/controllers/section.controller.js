@@ -425,8 +425,9 @@ exports.getInstructorAnnouncements = async (req, res, next) => {
       FROM announcements a
       INNER JOIN users u ON a.instructor_id = u.id
       WHERE a.is_global = TRUE AND a.target_role IN ('all', 'instructor')
+      AND a.created_at >= (SELECT created_at FROM users WHERE id = ?)
       ORDER BY a.created_at DESC
-    `);
+    `, [instructorId]);
 
     res.json({ success: true, data: announcements });
   } catch (err) { next(err); }
