@@ -604,24 +604,19 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       this.api.getSessionAttendance(this.sessionId).subscribe({
         next: r => {
           const data = r.data || [];
-          const oldPresent = this.counts().present + this.counts().late;
-          const newPresent = data.filter((a: any) => a.status === 'present' || a.status === 'late').length;
           
-          // Only update and toast if someone new joined
-          if (newPresent > oldPresent) {
-            this.toast.info('New student scan detected!');
-            this.loadAttendance(true); 
-          } else {
-            // Keep signals in sync silently
-            this.attendance.set(data);
-            this.counts.set({
-              present: data.filter((a:any) => a.status === 'present').length,
-              late:    data.filter((a:any) => a.status === 'late').length,
-              absent:  data.filter((a:any) => a.status === 'absent').length,
-              excused: data.filter((a:any) => a.status === 'excused').length,
-            });
-            // Also update filtered view if not searching
-            if (!this.search.value) this.filteredAttendance.set(data);
+          // Silently update all signals to reflect the latest state
+          this.attendance.set(data);
+          this.counts.set({
+            present: data.filter((a:any) => a.status === 'present').length,
+            late:    data.filter((a:any) => a.status === 'late').length,
+            absent:  data.filter((a:any) => a.status === 'absent').length,
+            excused: data.filter((a:any) => a.status === 'excused').length,
+          });
+          
+          // Also update filtered view if not searching
+          if (!this.search.value) {
+            this.filteredAttendance.set(data);
           }
         },
         error: () => console.warn('Attendance monitor heartbeat failed.')
